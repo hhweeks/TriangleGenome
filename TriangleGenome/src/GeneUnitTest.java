@@ -27,8 +27,8 @@ public class GeneUnitTest extends JFrame
     int npoints=3;
     
     Random rand= new Random();
+    
     Point[] myVertices= new Point[NPOINTS];
-    myVertices[0]=new Point(0,0);
     for(int i=0;i<NPOINTS;i++)
     {
       myVertices[i]=new Point(0,0);
@@ -45,12 +45,19 @@ public class GeneUnitTest extends JFrame
     Gene blueGene= new Gene(myVertices,myColors);
     myGraphics.setColor(Color.white);
     myGraphics.fillRect(0, 0, 500, 500);
-    myGraphics.setColor(new Color(blueGene.r,blueGene.g,blueGene.b,blueGene.a));
-    tg.paint(myGraphics, blueGene);
+    
+    Genome myGenome=new Genome();
+    for(int i=0;i<200;i++)
+    {
+      myGraphics.setColor(new Color(myGenome.geneList.get(i).r,myGenome.geneList.get(i).g,myGenome.geneList.get(i).b,myGenome.geneList.get(i).a));
+      tg.paint(myGraphics, myGenome.geneList.get(i));     
+    }
+    myPic.repaint();
   }
   
   public void paint(Graphics g, Gene p)
   {
     g.fillPolygon(p);
   }
+  
 }
