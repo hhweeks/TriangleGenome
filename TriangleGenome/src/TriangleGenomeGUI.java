@@ -71,9 +71,11 @@ public class TriangleGenomeGUI extends JFrame{
 		//Genome genome=new Genome();
 		
 		triangleWindow=new ImagePanel(img.getWidth(),img.getHeight());
-		Graphics triangeWinGraphics=triangleWindow.getGraphics();
 		
-		GenomeGenerator.drawRandomTriangles(triangleWindow);
+		
+		Genome genome=new Genome();
+		GenomeUtilities.setRandomGenome(img.getWidth(),img.getHeight(), genome);
+		GenomeUtilities.drawNTriangles(200,triangleWindow, genome);
 		JPanel imagePane=new JPanel();
 		imagePane.setLayout(new GridLayout());
 		
