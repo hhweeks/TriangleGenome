@@ -9,7 +9,15 @@ public class Gene extends Polygon
   
   
   
-  public Gene(){}
+  public Gene(){
+	  for(int i=0;i<NPOINTS;i++)
+	    {
+	      xpoints[i]=0;
+	      ypoints[i]=0;
+	    }
+	    npoints=NPOINTS;
+	  
+  }
   
   
   
