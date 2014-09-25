@@ -48,11 +48,15 @@ public class AssertionTest {
 			Genome sonGenome, Genome daughterGenome){
 		Genome papaTest=papaGenome;
 		Genome mamaTest=mamaGenome;
+		Genome sonTest=sonGenome;
+		Genome daughterTest=daughterGenome;
 				
 		CrossOver.breed(papaGenome, mamaGenome, sonGenome, daughterGenome, 1004);
 		
-		assert papaGenome==papaTest;
-		assert mamaGenome==mamaTest;
+		assert papaTest==papaGenome;
+		assert mamaTest==mamaGenome;
+		assert sonTest==sonGenome;
+		assert daughterTest==daughterGenome;
 		assert !GenomeUtilities.genomeEqual(papaGenome, mamaGenome);
 		assert sonGenome!=papaGenome;
 		assert !GenomeUtilities.genomeEqual(sonGenome, papaGenome);
