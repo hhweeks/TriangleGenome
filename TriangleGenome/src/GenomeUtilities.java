@@ -45,7 +45,7 @@ public class GenomeUtilities {
 
 		myGraphics.setColor(Color.white);
 		myGraphics.fillRect(0, 0, width, height);
-		for (int i = 0; i < 200; i++) {
+		for (int i = 0; i < N; i++) {
 			myGraphics.setColor(new Color(myGenome.geneList.get(i).r,
 					myGenome.geneList.get(i).g, myGenome.geneList.get(i).b,
 					myGenome.geneList.get(i).a));
