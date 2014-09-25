@@ -10,10 +10,17 @@ public class AssertionTest {
 		Genome threeGenome=new Genome(500,500);
 		Genome fourGenome=new Genome(500,500);
 		GenomeUtilities.setRandomGenome(oneGenome);
-		//oneGenome.geneList.add(new Gene());
-		System.out.print(isValid(oneGenome));
-		CrossOver.breed(oneGenome, twoGenome, threeGenome, fourGenome, 1004);
+		Genome copyOfGenomeOne=GenomeUtilities.genomeCopy(oneGenome);
 		
+		GenomeUtilities.setRandomGenome(twoGenome);
+		GenomeUtilities.setRandomGenome(threeGenome);
+		GenomeUtilities.setRandomGenome(fourGenome);
+		//oneGenome.geneList.add(new Gene());
+		System.out.println(isValid(oneGenome));
+		CrossOver.breed(oneGenome, twoGenome, threeGenome, fourGenome, 1004);
+		System.out.println(crossOverTest(oneGenome, twoGenome, threeGenome, fourGenome));
+		System.out.println(GenomeUtilities.hammingDistance(oneGenome, twoGenome));
+		System.out.println(GenomeUtilities.hammingDistance(oneGenome, copyOfGenomeOne));
 		
 	}
 	
@@ -29,14 +36,38 @@ public class AssertionTest {
 			assert gene.g>=0&&gene.g<=255;
 			assert gene.b>=0&&gene.b<=255;
 			assert gene.a>=0&&gene.a<=255;
-			
-			//System.out.println("a in the Arr is:"+gene.elementArr[9]);
-			gene.print();
+
 			
 		}
 		
 		return true;
 	}
+	
+	
+	public static boolean crossOverTest(Genome papaGenome, Genome mamaGenome,
+			Genome sonGenome, Genome daughterGenome){
+		Genome papaTest=papaGenome;
+		Genome mamaTest=mamaGenome;
+				
+		CrossOver.breed(papaGenome, mamaGenome, sonGenome, daughterGenome, 1004);
+		
+		assert papaGenome==papaTest;
+		assert mamaGenome==mamaTest;
+		assert !GenomeUtilities.genomeEqual(papaGenome, mamaGenome);
+		assert sonGenome!=papaGenome;
+		assert !GenomeUtilities.genomeEqual(sonGenome, papaGenome);
+		assert daughterGenome!=papaGenome;
+		assert !GenomeUtilities.genomeEqual(daughterGenome, papaGenome);
+		assert sonGenome!=mamaGenome;
+		assert !GenomeUtilities.genomeEqual(sonGenome, mamaGenome);
+		assert daughterGenome!=mamaGenome;
+		assert !GenomeUtilities.genomeEqual(daughterGenome, mamaGenome);
+		
+		
+	return true	;
+	}
+	
+	
 	
 	
 
