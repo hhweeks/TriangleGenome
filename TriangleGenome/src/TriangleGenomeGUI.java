@@ -51,7 +51,7 @@ public class TriangleGenomeGUI extends JFrame{
 				File imageFile=new File(flname);
 				try{imageWindow.changeImage(ImageIO.read(imageFile));}
 				catch(IOException ec){
-					System.out.println("you're dumb");
+					System.out.println("Image2notFound");
 				}
 				
 				
@@ -66,27 +66,29 @@ public class TriangleGenomeGUI extends JFrame{
 		
 		
 		
+		//make triange window
 		
+		//Genome genome=new Genome();
 		
-		triangleWindow=new ImagePanel(readImage("poppyfields.png"),0,0);
+		triangleWindow=new ImagePanel(img.getWidth(),img.getHeight());
+		Graphics triangeWinGraphics=triangleWindow.getGraphics();
 		
+		GenomeGenerator.drawRandomTriangles(triangleWindow);
 		JPanel imagePane=new JPanel();
 		imagePane.setLayout(new GridLayout());
 		
+		//populate control panel
 		controlPanel.add(imageSelect);
 		controlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
 		//populate frame
 		this.add(controlPanel);
 		imagePane.add(imageWindow);
-		
 		imagePane.add(triangleWindow);
-		imagePane.setSize(300, 800);
+		imagePane.setSize(600, 800);
+		
+		
 		this.add(imagePane);
-		
-		
-		
-		
 		this.setSize(1500, 800);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,7 +99,13 @@ public class TriangleGenomeGUI extends JFrame{
 
 	    private BufferedImage image;
 	    int x,y;
-
+	    //construct blank image if passed height and width.
+	    public ImagePanel(int width,int height) {
+	    	
+	    	image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+	      
+	    }
+	    //construct an image of given size
 	    public ImagePanel(BufferedImage imagein,int xin,int yin) {
 	                      
 	          image = imagein;
@@ -116,9 +124,15 @@ public class TriangleGenomeGUI extends JFrame{
 	    	this.repaint();
 	    	
 	    }
+	    public BufferedImage getImage(){
+	    	return image;
+	    	
+	    }
+	    
 
 	}
 	
+	//for reading images from file names
 	public BufferedImage readImage (String filename)throws IOException{
 		File imageFile=new File(filename);
 	
