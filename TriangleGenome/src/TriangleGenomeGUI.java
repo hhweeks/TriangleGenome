@@ -69,7 +69,7 @@ public class TriangleGenomeGUI extends JFrame
     // make one genome for random display
     Genome genome=new Genome(img.getWidth(), img.getHeight());
     GenomeUtilities
-        .setRandomGenome(genome.IMG_WIDTH, genome.IMG_HEIGHT, genome);
+        .setRandomGenome(genome);
     GenomeUtilities.drawNTriangles(200, triangleWindow, genome);
 
     // generate statistics

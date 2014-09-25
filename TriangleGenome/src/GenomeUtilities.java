@@ -12,7 +12,7 @@ public class GenomeUtilities
   public static final int NCOLORS=4;// r,g,b,a
 
   // generates a completely random genome of 200 genes
-  public static void setRandomGenome(int width,int height,Genome genome)
+  public static void setRandomGenome(Genome genome)
   {
     Random rand=new Random();
     for(Gene myGene:genome.geneList)
@@ -21,8 +21,8 @@ public class GenomeUtilities
       for(int j=0;j<NPOINTS;j++)
       {
         myVertices[j]=new Point(0, 0);
-        myVertices[j].x=rand.nextInt(width);
-        myVertices[j].y=rand.nextInt(height);
+        myVertices[j].x=rand.nextInt(genome.IMG_WIDTH);
+        myVertices[j].y=rand.nextInt(genome.IMG_HEIGHT);
       }
 
       int[] myColors=new int[NCOLORS];
@@ -60,6 +60,30 @@ public class GenomeUtilities
     }
     myPic.repaint();
   }
+  
+  
+  public static BufferedImage getBufferedImage(Genome myGenome)
+	  {
+	    BufferedImage myIm=new BufferedImage(myGenome.IMG_WIDTH, myGenome.IMG_HEIGHT, BufferedImage.TYPE_INT_RGB);
+	    Graphics myGraphics=myIm.getGraphics();
+	    int height=myIm.getHeight();
+	    int width=myIm.getWidth();
+
+	    myGraphics.setColor(Color.white);
+	    myGraphics.fillRect(0, 0, width, height);
+	    for(int i=0;i<myGenome.NUM_GENES;i++)
+	    {
+	      myGraphics.setColor(new Color(myGenome.geneList.get(i).r,
+	          myGenome.geneList.get(i).g, myGenome.geneList.get(i).b,
+	          myGenome.geneList.get(i).a));
+	      myGraphics.fillPolygon(myGenome.geneList.get(i));
+	    }
+	    return myIm;
+	  }
+  
+  
+  
+  
 
   public static Genome genomeCopy(Genome myGenome)
   {

@@ -4,6 +4,7 @@ import java.awt.Polygon;
 public class Gene extends Polygon
 {
   public static final int NPOINTS=3;//triangle
+  public static final int NALLELE=10;	
   //public Polygon myTriangle;
   public int r,g,b,a;
   
