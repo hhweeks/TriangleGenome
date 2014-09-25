@@ -1,6 +1,8 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -21,12 +23,11 @@ public class TriangleGenomeGUI extends JFrame{
 	JButton startButton;
 	
 	public TriangleGenomeGUI()throws IOException{
-		String path="C:\\Users\\Paige\\Documents\\GitHub\\TriangleGenome\\TriangleGenome\\src\\TriangleGenome\\TriangleGenome\\src\\";
 		String[] filenames={"MonaLisa.png","poppyfields.png"};
 		
 		JPanel controlPanel=new JPanel();
 	
-		controlPanel.setBounds(0, 500, 800, 100);
+		controlPanel.setBounds(0, 500, 1500, 300);
 		controlPanel.setBackground(Color.BLACK);
 		
 		
@@ -36,12 +37,9 @@ public class TriangleGenomeGUI extends JFrame{
 		imageSelect.setSelectedIndex(0);
 		
 		String filename = (String)imageSelect.getSelectedItem();
-		File imageFile=new File(path+filename);
-		BufferedImage img;
-
-		img = ImageIO.read(imageFile);
-	
 		
+	
+		BufferedImage img=readImage(filename);
 		imageWindow=new ImagePanel(img,0,0);
 		
 		imageSelect.addActionListener(new ActionListener(){
@@ -49,9 +47,8 @@ public class TriangleGenomeGUI extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String flname=(String)imageSelect.getSelectedItem();
-				String path="C:\\Users\\Paige\\Documents\\GitHub\\TriangleGenome\\TriangleGenome\\src\\TriangleGenome\\TriangleGenome\\src\\";
 				
-				File imageFile=new File(path+flname);
+				File imageFile=new File(flname);
 				try{imageWindow.changeImage(ImageIO.read(imageFile));}
 				catch(IOException ec){
 					System.out.println("you're dumb");
@@ -71,21 +68,26 @@ public class TriangleGenomeGUI extends JFrame{
 		
 		
 		
+		triangleWindow=new ImagePanel(readImage("poppyfields.png"),0,0);
 		
-		
+		JPanel imagePane=new JPanel();
+		imagePane.setLayout(new GridLayout());
 		
 		controlPanel.add(imageSelect);
 		controlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
 		//populate frame
 		this.add(controlPanel);
-		this.add(imageWindow);
+		imagePane.add(imageWindow);
+		
+		imagePane.add(triangleWindow);
+		imagePane.setSize(300, 800);
+		this.add(imagePane);
 		
 		
 		
 		
-		
-		this.setSize(750, 500);
+		this.setSize(1500, 800);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -117,7 +119,13 @@ public class TriangleGenomeGUI extends JFrame{
 
 	}
 	
+	public BufferedImage readImage (String filename)throws IOException{
+		File imageFile=new File(filename);
 	
+
+		return ImageIO.read(imageFile);
+		
+	}
 	
 public static void main(String[] args) throws IOException{
 	TriangleGenomeGUI tg=new TriangleGenomeGUI();
