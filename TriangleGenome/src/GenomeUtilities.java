@@ -54,4 +54,30 @@ public class GenomeUtilities {
 		myPic.repaint();
 	}
 
+	public static Genome genomeCopy(Genome myGenome) {
+
+		Genome genomeOut = new Genome();
+
+		for (int i = 0; i < myGenome.geneList.size(); i++) {
+
+			genomeOut.geneList.set(i, geneCopy(myGenome.geneList.get(i)));
+
+		}
+		return genomeOut;
+	}
+
+	public static Gene geneCopy(Gene myGene) {
+		Gene geneOut = new Gene();
+		geneOut.xpoints = myGene.xpoints;
+		geneOut.ypoints = myGene.ypoints;
+		geneOut.r = myGene.r;
+		geneOut.g = myGene.g;
+		geneOut.b = myGene.b;
+		geneOut.a = myGene.a;
+		geneOut.npoints = myGene.npoints;
+
+		return geneOut;
+
+	}
+
 }
