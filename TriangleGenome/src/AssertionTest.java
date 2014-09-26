@@ -21,7 +21,7 @@ public class AssertionTest {
 		System.out.println(crossOverTest(oneGenome, twoGenome, threeGenome, fourGenome));
 		System.out.println(GenomeUtilities.hammingDistance(oneGenome, twoGenome));
 		System.out.println(GenomeUtilities.hammingDistance(oneGenome, copyOfGenomeOne));
-		
+		isValid(threeGenome);
 	}
 	
 	
@@ -29,6 +29,7 @@ public class AssertionTest {
 		assert myGenome.geneList.size()==200;
 		Gene gene;
 		for(int i=0;i<200;i++){
+			System.out.println(i);
 			gene=myGenome.geneList.get(i);
 			
 			assert gene.npoints==3;

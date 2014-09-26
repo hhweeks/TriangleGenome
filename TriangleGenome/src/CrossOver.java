@@ -12,24 +12,24 @@ public class CrossOver {
 
 		sonGenome.geneList.clear();
 		sonGenome.geneList
-				.addAll(papaGenome.geneList.subList(0, genecross - 1));
+				.addAll(papaGenome.geneList.subList(0, genecross));
 
 		sonGenome.geneList.add(geneSplice(papaGenome.geneList.get(genecross),
 				mamaGenome.geneList.get(genecross), genesplit));
 
-		sonGenome.geneList.addAll(mamaGenome.geneList.subList(genecross + 1,
+		sonGenome.geneList.addAll(mamaGenome.geneList.subList(genecross,
 				mamaGenome.geneList.size() - 1));
 
 		daughterGenome.geneList.clear();
 		daughterGenome.geneList.addAll(mamaGenome.geneList.subList(0,
-				genecross - 1));
+				genecross));
 
 		daughterGenome.geneList.add(geneSplice(
 				mamaGenome.geneList.get(genecross),
 				papaGenome.geneList.get(genecross), genesplit));
 
 		daughterGenome.geneList.addAll(papaGenome.geneList.subList(
-				genecross + 1, mamaGenome.geneList.size() - 1));
+				genecross, mamaGenome.geneList.size() - 1));
 
 	}
 
