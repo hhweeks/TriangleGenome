@@ -49,6 +49,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 2: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -61,6 +62,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 3: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -73,6 +75,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 4: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -85,6 +88,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 5: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -97,6 +101,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 6: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -109,6 +114,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 7: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -121,6 +127,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 8: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -133,6 +140,7 @@ public class CrossOver {
 			gene.g = bottomGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 9: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -145,6 +153,7 @@ public class CrossOver {
 			gene.g = bottomGene.g;
 			gene.b = bottomGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		}
 		return gene;
