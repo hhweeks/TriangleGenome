@@ -50,7 +50,15 @@ public class TriangleGenomeGUI extends JFrame
         File imageFile=new File(flname);
         try
         {
-          imageWindow.changeImage(ImageIO.read(imageFile));
+        	imageWindow.changeImage(ImageIO.read(imageFile));
+        	BufferedImage img=imageWindow.image;
+        // make one genome for random display
+        Genome genome=new Genome(img.getWidth(), img.getHeight());
+        GenomeUtilities
+            .setRandomGenome(genome);
+        GenomeUtilities.drawNTriangles(200, triangleWindow, genome);
+        //triangleWindow.image=GenomeUtilities.getBufferedImage(myGenome);
+          
         } catch (IOException ec)
         {
           System.out.println("Image2notFound");

@@ -21,7 +21,8 @@ public class AssertionTest {
 		System.out.println(crossOverTest(oneGenome, twoGenome, threeGenome, fourGenome));
 		System.out.println(GenomeUtilities.hammingDistance(oneGenome, twoGenome));
 		System.out.println(GenomeUtilities.hammingDistance(oneGenome, copyOfGenomeOne));
-		
+		System.out.println(threeGenome.geneList.size());
+		isValid(threeGenome);
 	}
 	
 	

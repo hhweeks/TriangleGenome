@@ -12,24 +12,24 @@ public class CrossOver {
 
 		sonGenome.geneList.clear();
 		sonGenome.geneList
-				.addAll(papaGenome.geneList.subList(0, genecross - 1));
+				.addAll(papaGenome.geneList.subList(0, genecross-1));
 
 		sonGenome.geneList.add(geneSplice(papaGenome.geneList.get(genecross),
-				mamaGenome.geneList.get(genecross), genesplit));
+				mamaGenome.geneList.get(genecross+1), genesplit));
 
-		sonGenome.geneList.addAll(mamaGenome.geneList.subList(genecross + 1,
-				mamaGenome.geneList.size() - 1));
+		sonGenome.geneList.addAll(mamaGenome.geneList.subList(genecross,
+				mamaGenome.geneList.size()));
 
 		daughterGenome.geneList.clear();
 		daughterGenome.geneList.addAll(mamaGenome.geneList.subList(0,
-				genecross - 1));
+				genecross-1));
 
 		daughterGenome.geneList.add(geneSplice(
 				mamaGenome.geneList.get(genecross),
 				papaGenome.geneList.get(genecross), genesplit));
 
 		daughterGenome.geneList.addAll(papaGenome.geneList.subList(
-				genecross + 1, mamaGenome.geneList.size() - 1));
+				genecross+1, mamaGenome.geneList.size()));
 
 	}
 
@@ -49,6 +49,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 2: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -61,6 +62,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 3: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -73,6 +75,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 4: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -85,6 +88,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 5: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -97,6 +101,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 6: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -109,6 +114,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 7: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -121,6 +127,7 @@ public class CrossOver {
 			gene.g = topGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 8: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -133,6 +140,7 @@ public class CrossOver {
 			gene.g = bottomGene.g;
 			gene.b = topGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		case 9: {
 			gene.xpoints[0] = bottomGene.xpoints[0];
@@ -145,6 +153,7 @@ public class CrossOver {
 			gene.g = bottomGene.g;
 			gene.b = bottomGene.b;
 			gene.a = topGene.a;
+			break;
 		}
 		}
 		return gene;
