@@ -31,7 +31,7 @@ public class TriangleGenomeGUI extends JFrame
   JLabel genomeStats = new JLabel();
   BufferedImage img;
   String path = "images/";
-  Statistics stats;
+  long stats;
   String tmpGenomeStats  = "min:sec=0.0   gen=0   gen/sec=NaN   Fitness=";
 
   public TriangleGenomeGUI() throws IOException 
@@ -102,8 +102,8 @@ public class TriangleGenomeGUI extends JFrame
     GenomeUtilities.drawNTriangles(200, triangleWindow, genome);
 
     // generate statistics
-    stats = new Statistics(triangleWindow.image, imageWindow.image);
-    System.out.println(stats.getFitScore());
+    stats = Statistics.getFitScore(triangleWindow.image, imageWindow.image);
+    System.out.println(stats);
 
     // populate control panel
     controlPanel.add(imageSelect);
@@ -116,9 +116,9 @@ public class TriangleGenomeGUI extends JFrame
         Genome genome=new Genome(imageWindow.image.getWidth(), imageWindow.image.getHeight());
         GenomeUtilities.setRandomGenome(genome);
         GenomeUtilities.drawNTriangles(200, triangleWindow, genome);
-        stats = new Statistics(triangleWindow.image, imageWindow.image);
-        System.out.println(stats.getFitScore());
-        genomeStats.setText(tmpGenomeStats+  stats.getFitScore());
+        stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
+        System.out.println(stats);
+        genomeStats.setText(tmpGenomeStats+  stats);
       }
     });
     nextButton.addActionListener(new ActionListener()
@@ -129,9 +129,9 @@ public class TriangleGenomeGUI extends JFrame
         Genome genome=new Genome(imageWindow.image.getWidth(), imageWindow.image.getHeight());
         GenomeUtilities.setRandomGenome(genome);
         GenomeUtilities.drawNTriangles(200, triangleWindow, genome);
-        stats = new Statistics(triangleWindow.image, imageWindow.image);
-        System.out.println(stats.getFitScore());
-        genomeStats.setText(tmpGenomeStats+  stats.getFitScore());
+        stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
+        System.out.println(stats);
+        genomeStats.setText(tmpGenomeStats+  stats);
       }
     });
     
@@ -214,7 +214,7 @@ public class TriangleGenomeGUI extends JFrame
     imagePane.add(triangleWindow);
     imagePane.setSize(600, 800);
     
-    genomeStats.setText(tmpGenomeStats+  stats.getFitScore());
+    genomeStats.setText(tmpGenomeStats+  stats);
     this.add(genomeStats, BorderLayout.SOUTH);
 
     this.add(controlPanel);
