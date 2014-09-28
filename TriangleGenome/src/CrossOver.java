@@ -10,8 +10,8 @@ public class CrossOver {
 		
 		int genecross = crossPoint / 10;
 		int genesplit = crossPoint % 10;
-
-		System.out.println(crossPoint+";"+genecross+";"+genesplit);
+		//debug print statement
+		//System.out.println(crossPoint+";"+genecross+";"+genesplit);
 		sonGenome.geneList.clear();
 		sonGenome.geneList
 				.addAll(papaGenome.geneList.subList(0, Math.max(genecross,0)));
