@@ -146,9 +146,13 @@ public class GenomeUtilities {
 			count++;
 		if (gene1.xpoints[1] != gene2.xpoints[1])
 			count++;
+		if (gene1.xpoints[2] != gene2.xpoints[2])
+			count++;
 		if (gene1.ypoints[0] != gene2.ypoints[0])
 			count++;
 		if (gene1.ypoints[1] != gene2.ypoints[1])
+			count++;
+		if (gene1.ypoints[2] != gene2.ypoints[2])
 			count++;
 		if (gene1.r != gene2.r)
 			count++;

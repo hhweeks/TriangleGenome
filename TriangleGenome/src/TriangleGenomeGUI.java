@@ -81,8 +81,8 @@ public class TriangleGenomeGUI extends JFrame
     GenomeUtilities.drawNTriangles(200, triangleWindow, genome);
 
     // generate statistics
-    Statistics stats=new Statistics(triangleWindow.image, imageWindow.image);
-    System.out.println(stats.getFitScore());
+    
+    System.out.println(Statistics.getFitScore(triangleWindow.image, imageWindow.image));
 
     // populate control panel
     controlPanel.add(imageSelect);

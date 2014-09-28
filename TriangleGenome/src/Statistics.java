@@ -4,7 +4,11 @@ import java.awt.image.Raster;
 public class Statistics {
 	private long fitScore;
 
-	public Statistics(BufferedImage genomeImage, BufferedImage masterImage) {
+	
+	
+	
+	
+	public static long getFitScore(BufferedImage genomeImage, BufferedImage masterImage) {
 		Raster masterRaster = masterImage.getRaster();
 		Raster genomeRaster = genomeImage.getRaster();
 
@@ -35,16 +39,12 @@ public class Statistics {
 			
 
 		}
-		fitScore=euclidianDistanceSqr;
+		return euclidianDistanceSqr;
 
 	}
 	
 	
-	public long getFitScore(){
-		
-		return fitScore;
-		
-	}
+	
 	
 	
 	
