@@ -2,11 +2,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 
 public class Statistics {
-	private long fitScore;
-
-	
-	
-	
 	
 	public static long getFitScore(BufferedImage genomeImage, BufferedImage masterImage) {
 		Raster masterRaster = masterImage.getRaster();
@@ -20,9 +15,9 @@ public class Statistics {
 		int[] genomePixArray = new int[3];
 		int[] masterPixArray = new int[3];
 		int genomeRed;
-		for (int i = 0; i < Math.max(genomeImage.getWidth(),
+		for (int i = 0; i < Math.min(genomeImage.getWidth(),
 				masterImage.getWidth()); i++) {
-			for (int j = 0; j < Math.max(genomeImage.getHeight(),
+			for (int j = 0; j < Math.min(genomeImage.getHeight(),
 					masterImage.getHeight()); j++) {
 				redDistance = genomeRaster.getPixel(i, j, genomePixArray)[0]
 						- masterRaster.getPixel(i, j, masterPixArray)[0];

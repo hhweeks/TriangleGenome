@@ -56,7 +56,7 @@ public class TriangleGenomeGUI extends JFrame
     imageSelect.setSelectedIndex(0);
 
     String filename=(String) imageSelect.getSelectedItem();
-
+System.out.println(filename);
     BufferedImage img=readImage(filename);
     imageWindow=new ImagePanel(img, 0, 0);
 
@@ -276,7 +276,7 @@ public class TriangleGenomeGUI extends JFrame
   // for reading images from file names
   public BufferedImage readImage(String filename) throws IOException
   {
-    File imageFile=new File(filename);
+    File imageFile=new File(path+filename);
 
     return ImageIO.read(imageFile);
 
