@@ -29,6 +29,7 @@ public class TriangleGenomeGUI extends JFrame
   JButton readButton = new JButton("READ");
   JButton writeButton = new JButton("WRITE");
   JLabel genomeStats = new JLabel();
+  Genome drawGenome;
   BufferedImage img;
   String path = "images/";
   long stats;
@@ -50,13 +51,11 @@ public class TriangleGenomeGUI extends JFrame
     JPanel controlPanel=new JPanel();
 
     controlPanel.setBounds(0, 500, 1500, 300);
-    //controlPanel.setBackground(Color.BLACK);
 
     imageSelect=new JComboBox<String>(filenames);
     imageSelect.setSelectedIndex(0);
 
     String filename=(String) imageSelect.getSelectedItem();
-System.out.println(filename);
     BufferedImage img=readImage(filename);
     imageWindow=new ImagePanel(img, 0, 0);
 
@@ -74,10 +73,10 @@ System.out.println(filename);
         	imageWindow.changeImage(ImageIO.read(imageFile));
         	BufferedImage img=imageWindow.image;
         // make one genome for random display
-        Genome genome=new Genome(img.getWidth(), img.getHeight());
+        	drawGenome=new Genome(img.getWidth(), img.getHeight());
         GenomeUtilities
-            .setRandomGenome(genome);
-        GenomeUtilities.drawNTriangles(200, triangleWindow, genome);
+            .setRandomGenome(drawGenome);
+        GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         //triangleWindow.image=GenomeUtilities.getBufferedImage(myGenome);
           
         } catch (IOException ec)
@@ -96,10 +95,10 @@ System.out.println(filename);
     triangleWindow=new ImagePanel(img.getWidth(), img.getHeight());
 
     // make one genome for random display
-    Genome genome=new Genome(img.getWidth(), img.getHeight());
+    drawGenome=new Genome(img.getWidth(), img.getHeight());
     GenomeUtilities
-        .setRandomGenome(genome);
-    GenomeUtilities.drawNTriangles(200, triangleWindow, genome);
+        .setRandomGenome(drawGenome);
+    GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
 
     // generate statistics
     stats = Statistics.getFitScore(triangleWindow.image, imageWindow.image);
@@ -113,9 +112,9 @@ System.out.println(filename);
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        Genome genome=new Genome(imageWindow.image.getWidth(), imageWindow.image.getHeight());
-        GenomeUtilities.setRandomGenome(genome);
-        GenomeUtilities.drawNTriangles(200, triangleWindow, genome);
+    	  drawGenome=new Genome(imageWindow.image.getWidth(), imageWindow.image.getHeight());
+        GenomeUtilities.setRandomGenome(drawGenome);
+        GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
         System.out.println(stats);
         genomeStats.setText(tmpGenomeStats+  stats);
@@ -126,9 +125,9 @@ System.out.println(filename);
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        Genome genome=new Genome(imageWindow.image.getWidth(), imageWindow.image.getHeight());
-        GenomeUtilities.setRandomGenome(genome);
-        GenomeUtilities.drawNTriangles(200, triangleWindow, genome);
+        drawGenome=new Genome(imageWindow.image.getWidth(), imageWindow.image.getHeight());
+        GenomeUtilities.setRandomGenome(drawGenome);
+        GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
         System.out.println(stats);
         genomeStats.setText(tmpGenomeStats+  stats);
@@ -195,6 +194,8 @@ System.out.println(filename);
       public void stateChanged(ChangeEvent e)
       {
           System.out.println("triangleSlider value = " + triangleSlider.getValue());
+          GenomeUtilities.drawNTriangles(triangleSlider.getValue(),
+        	      triangleWindow,drawGenome);
       }
     });
     
@@ -271,6 +272,10 @@ System.out.println(filename);
 
     }
 
+  }
+  public Genome getDrawGenome(){
+	  
+	  return drawGenome;
   }
 
   // for reading images from file names
