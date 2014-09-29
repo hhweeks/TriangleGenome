@@ -26,20 +26,20 @@ public class Gene extends Polygon
   
   
   
-//  public Gene(Point[] myVertices, int[] myColors)//constructor to pass colors and vertex locations
-//  {
-//    for(int i=0;i<NPOINTS;i++)
-//    {
-//      xpoints[i]=myVertices[i].x;
-//      ypoints[i]=myVertices[i].y;
-//    }
-//    npoints=NPOINTS;
-//    
-//    r=myColors[0];
-//    g=myColors[1];
-//    b=myColors[2];
-//    a=myColors[3];
-//  }
+  public Gene(Point[] myVertices, int[] myColors)//constructor to pass colors and vertex locations
+  {
+    for(int i=0;i<NPOINTS;i++)
+    {
+      xpoints[i]=myVertices[i].x;
+      ypoints[i]=myVertices[i].y;
+    }
+    npoints=NPOINTS;
+    
+    r=myColors[0];
+    g=myColors[1];
+    b=myColors[2];
+    a=myColors[3];
+  }
   
   public void setPoints(Point[] myVertices){
 	  if (myVertices.length>NPOINTS){
