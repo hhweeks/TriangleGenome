@@ -2,7 +2,7 @@ import java.util.ArrayList;
 /****************************************************************************
  *UnitTestMain
  *@author Paige Romero
- *updated by Hans Weeks
+ *@author Hans Weeks
  *This static object is  used for single point cross over. The main method (breed)
  *accepts 4 Genomes as arguments, making the first 2 parents and the latter 2 children.
  *Breed copies genes from one parent up to the cross over point, calls geneSplice to create

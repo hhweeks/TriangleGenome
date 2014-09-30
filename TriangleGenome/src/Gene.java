@@ -5,7 +5,7 @@ import java.awt.Polygon;
  * UnitTestMain
  *
  * @author Hans Weeks 
- * updated by Paige Romero
+ * @author Paige Romero
  *         This object holds 10 peices of
  *         data, representing the expression of a triangle: x and y coordinates
  *         for three points, r,g,b color values and opacity value a. Building

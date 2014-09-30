@@ -7,7 +7,7 @@ import java.util.Random;
  * UnitTestMain
  *
  * @author Hans Weeks updated 
- * by Paige Romero 
+ * @author Romero 
  * 
  *         This object holds 200 (NUM_GENES)
  *         genes (data for triangle) in an ArrayList It stores the dimensions of
