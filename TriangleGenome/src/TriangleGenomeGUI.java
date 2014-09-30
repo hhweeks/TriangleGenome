@@ -20,6 +20,7 @@ public class TriangleGenomeGUI extends JFrame
 
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
+  static JPanel controlPanel;
   JComboBox<String> imageSelect;
   JSlider triangleSlider = new JSlider(0, 200, 0);
   JButton runPauseButton = new JButton("RUN");
@@ -48,7 +49,7 @@ public class TriangleGenomeGUI extends JFrame
       }
     }
     String[] filenames = findFiles.toArray(new String[findFiles.size()]);
-    JPanel controlPanel=new JPanel();
+     controlPanel=new JPanel();
 
     controlPanel.setBounds(0, 500, 1500, 300);
 
@@ -58,7 +59,7 @@ public class TriangleGenomeGUI extends JFrame
     String filename=(String) imageSelect.getSelectedItem();
     BufferedImage img=readImage(filename);
     imageWindow=new ImagePanel(img, 0, 0);
-
+    triangleWindow=new ImagePanel(img,0,0);
     imageSelect.addActionListener(new ActionListener()
     {
 
@@ -193,7 +194,7 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void stateChanged(ChangeEvent e)
       {
-          System.out.println("triangleSlider value = " + triangleSlider.getValue());
+          
           GenomeUtilities.drawNTriangles(triangleSlider.getValue(),
         	      triangleWindow,drawGenome);
       }
@@ -213,7 +214,7 @@ public class TriangleGenomeGUI extends JFrame
     imagePane.setLayout(new GridLayout());
     imagePane.add(imageWindow);
     imagePane.add(triangleWindow);
-    imagePane.setSize(600, 800);
+   // imagePane.setSize(600, 800);
     
     genomeStats.setText(tmpGenomeStats+  stats);
     this.add(genomeStats, BorderLayout.SOUTH);
@@ -248,6 +249,7 @@ public class TriangleGenomeGUI extends JFrame
       image=imagein;
       x=xin;
       y=yin;
+      this.setSize(x,y);
 
     }
 
@@ -255,6 +257,7 @@ public class TriangleGenomeGUI extends JFrame
     protected void paintComponent(Graphics g)
     {
       super.paintComponent(g);
+      controlPanel.repaint();
      g.drawImage(image, x, y, null);
     }
     

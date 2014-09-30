@@ -40,14 +40,12 @@ public static void drawNTriangles(int N,
       TriangleGenomeGUI.ImagePanel myPic, Genome myGenome) {
     BufferedImage myIm = myPic.getImage();
     Graphics myGraphics = myIm.getGraphics();
-    int height = TriangleGenomeGUI.imageWindow.image.getHeight();
-    int width = TriangleGenomeGUI.imageWindow.image.getWidth();
-    //clear previous geneome from display
+    int height = myIm.getHeight();
+    int width = myIm.getWidth();
+    //clear previous genome from display
     ////////////////////
-    int y = myIm.getHeight();
-    int x = myIm.getWidth();
-    myGraphics.setColor(new Color(238, 238, 238));
-    myGraphics.fillRect(0, 0, x, y);
+   // myGraphics.setColor(new Color(238, 238, 238));
+   // myGraphics.fillRect(0, 0, width, height);
     ////////////////////
 
     myGraphics.setColor(Color.white);
