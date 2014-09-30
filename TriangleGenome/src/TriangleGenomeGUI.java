@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -20,15 +22,21 @@ public class TriangleGenomeGUI extends JFrame
 
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
-  static JPanel controlPanel;
+  static JPanel buttonPanel;
+  static JPanel sliderPanel = new JPanel();
+  static JPanel controlPanel = new JPanel();
   JComboBox<String> imageSelect;
   JSlider triangleSlider = new JSlider(0, 200, 0);
+  JSlider tribeSlider = new JSlider(0, 1000, 0);
+  JLabel triangleLabel = new JLabel("triangles");
+  JLabel tribeLabel = new JLabel("tribes");
   JButton runPauseButton = new JButton("RUN");
   JButton nextButton = new JButton("NEXT");
   JButton resetButton = new JButton("RESET");
   JButton tableButton = new JButton("GENOME TABLE");
   JButton readButton = new JButton("READ");
   JButton writeButton = new JButton("WRITE");
+  JButton appendButton = new JButton("APPEND STATS TO FILE");
   JLabel genomeStats = new JLabel();
   Genome drawGenome;
   BufferedImage img;
@@ -49,9 +57,8 @@ public class TriangleGenomeGUI extends JFrame
       }
     }
     String[] filenames = findFiles.toArray(new String[findFiles.size()]);
-     controlPanel=new JPanel();
-
-    controlPanel.setBounds(0, 500, 1500, 300);
+    buttonPanel=new JPanel();
+    buttonPanel.setBounds(0, 500, 1500, 300);
 
     imageSelect=new JComboBox<String>(filenames);
     imageSelect.setSelectedIndex(0);
@@ -106,7 +113,8 @@ public class TriangleGenomeGUI extends JFrame
     System.out.println(stats);
 
     // populate control panel
-    controlPanel.add(imageSelect);
+    //imageSelect.setFont(new Font(imageSelect.getFont().getFontName(), 0,10));
+    buttonPanel.add(imageSelect);
     
     resetButton.addActionListener(new ActionListener()
     {
@@ -150,6 +158,7 @@ public class TriangleGenomeGUI extends JFrame
           tableButton.setEnabled(false);
           readButton.setEnabled(false);
           writeButton.setEnabled(false);
+          appendButton.setEnabled(false);
         }
         else
         {
@@ -161,6 +170,7 @@ public class TriangleGenomeGUI extends JFrame
           tableButton.setEnabled(true);
           readButton.setEnabled(true);
           writeButton.setEnabled(true);
+          appendButton.setEnabled(true);
         }
       }
     });
@@ -194,38 +204,58 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void stateChanged(ChangeEvent e)
       {
-          
           GenomeUtilities.drawNTriangles(triangleSlider.getValue(),
-        	      triangleWindow,drawGenome);
+                triangleWindow,drawGenome);
+          triangleLabel.setText(triangleSlider.getValue() + " triangle(s)");
+      }
+    });
+    tribeSlider.addChangeListener(new ChangeListener()
+    {
+      @Override
+      public void stateChanged(ChangeEvent e)
+      {
+          tribeLabel.setText("Tribe #" + tribeSlider.getValue());
       }
     });
     
-    controlPanel.add(runPauseButton);
-    controlPanel.add(nextButton);
-    controlPanel.add(resetButton);
-    controlPanel.add(triangleSlider);
-    controlPanel.add(tableButton);
-    controlPanel.add(readButton);
-    controlPanel.add(writeButton);
-    controlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+    buttonPanel.add(runPauseButton);
+    buttonPanel.add(nextButton);
+    buttonPanel.add(nextButton);
+    buttonPanel.add(triangleSlider);
+    buttonPanel.add(tableButton);
+    buttonPanel.add(readButton);
+    buttonPanel.add(writeButton);
+    buttonPanel.add(appendButton);
+    buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+    
+    controlPanel.setLayout(new BorderLayout());
+    controlPanel.add(buttonPanel, BorderLayout.NORTH);
 
     // display images together on a single Jpanel
     JPanel imagePane=new JPanel();
     imagePane.setLayout(new GridLayout());
     imagePane.add(imageWindow);
     imagePane.add(triangleWindow);
-   // imagePane.setSize(600, 800);
+   imagePane.setSize(600, 800);
     
     genomeStats.setText(tmpGenomeStats+  stats);
     this.add(genomeStats, BorderLayout.SOUTH);
 
-    this.add(controlPanel);
-    this.add(imagePane);
-    this.setSize(1500, 800);
+    //buttonPanel.setPreferredSize(new Dimension(1150, 250));
+    controlPanel.setPreferredSize(new Dimension(1150, 150));
+    this.add(imagePane, BorderLayout.CENTER);
+    sliderPanel.setLayout(new GridLayout(5, 0));
+    sliderPanel.add(triangleLabel);
+    sliderPanel.add(triangleSlider);
+    sliderPanel.add(tribeLabel);
+    sliderPanel.add(tribeSlider);
+    sliderPanel.add(genomeStats);
+    controlPanel.add(sliderPanel);
+    //controlPanel.add(genomeStats);
+    this.add(controlPanel, BorderLayout.SOUTH);
+    this.setSize(1150, 650);
     this.setVisible(true);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    
   }
 
   public class ImagePanel extends JPanel
@@ -257,7 +287,7 @@ public class TriangleGenomeGUI extends JFrame
     protected void paintComponent(Graphics g)
     {
       super.paintComponent(g);
-      controlPanel.repaint();
+      buttonPanel.repaint();
      g.drawImage(image, x, y, null);
     }
     
