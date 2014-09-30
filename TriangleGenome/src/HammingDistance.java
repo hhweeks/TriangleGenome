@@ -1,8 +1,23 @@
+   /****************************************************************************
+   *HammingDistance
+   *@author Hans Weeks
+   *This static object has only 1 method, which is to calculate the Hamming distance
+   *of 2 Genomes 
+   ****************************************************************************/
 public class HammingDistance
 {    
+  
+  /****************************************************************************
+   * calcDiff
+   * Input:2 Genomes to compare Hamming distance of
+   * Output:Hamming distance as an int
+   * Description: compares each allele (element) of each gene in a Genome. For each
+   *  value that differs, 1 is added to hamD. Two identical Genomes yield 0, two Genomes
+   *  which differ at every element yield 2000 (10*200 genes)
+   ****************************************************************************/
   public static long calcDiff(Genome gen1, Genome gen2)
   {
-    long hamD=0;
+    int hamD=0;
     if(gen1.geneList.size()!=gen2.geneList.size())
     {
       int gen1Size=gen1.geneList.size();
