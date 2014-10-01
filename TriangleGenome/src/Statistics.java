@@ -34,7 +34,7 @@ public class Statistics {
 			
 
 		}
-		return euclidianDistanceSqr;
+		return euclidianDistanceSqr/(masterImage.getHeight()*masterImage.getWidth());
 
 	}
 	

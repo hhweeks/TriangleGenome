@@ -60,29 +60,30 @@ public class GenomeUtilities
    * Description:draws triangles in layers 0-200. Is called by the slider on the GUI
    *  to allow us to see the triangles that may be entirely covered up otherwise. TODO correct?
    ****************************************************************************/
-  public static void drawNTriangles(int N,TriangleGenomeGUI.ImagePanel myPic, Genome myGenome)
-  {
-    BufferedImage myIm=myPic.getImage();
-    Graphics myGraphics=myIm.getGraphics();
-    int height=myIm.getHeight();
-    int width=myIm.getWidth();
-    // clear previous genome from display
-    // //////////////////
-    // myGraphics.setColor(new Color(238, 238, 238));
-    // myGraphics.fillRect(0, 0, width, height);
-    // //////////////////
+  public static void drawNTriangles(int N,
+	      TriangleGenomeGUI.ImagePanel myPic, Genome myGenome) {
+	    BufferedImage myIm = myPic.getImage();
+	    Graphics myGraphics = myIm.getGraphics();
+	    int height = TriangleGenomeGUI.imageWindow.image.getHeight();
+	    int width = TriangleGenomeGUI.imageWindow.image.getWidth();
+	    //clear previous geneome from display
+	    ////////////////////
+	    int y = myIm.getHeight();
+	    int x = myIm.getWidth();
+	    myGraphics.setColor(new Color(238, 238, 238));
+	    myGraphics.fillRect(0, 0, x, y);
+	    ////////////////////
 
-    myGraphics.setColor(Color.white);
-    myGraphics.fillRect(0, 0, width, height);
-    for(int i=0;i<N;i++)
-    {
-      myGraphics.setColor(new Color(myGenome.geneList.get(i).r,
-          myGenome.geneList.get(i).g, myGenome.geneList.get(i).b,
-          myGenome.geneList.get(i).a));
-      myGraphics.fillPolygon(myGenome.geneList.get(i));
-    }
-    myPic.repaint();
-  }
+	    myGraphics.setColor(Color.white);
+	    myGraphics.fillRect(0, 0, width, height);
+	    for (int i = 0; i < N; i++) {
+	      myGraphics.setColor(new Color(myGenome.geneList.get(i).r,
+	          myGenome.geneList.get(i).g, myGenome.geneList.get(i).b,
+	          myGenome.geneList.get(i).a));
+	      myGraphics.fillPolygon(myGenome.geneList.get(i));
+	    }
+	    myPic.repaint();
+	  }
 
   /****************************************************************************
    * getBufferedImage
