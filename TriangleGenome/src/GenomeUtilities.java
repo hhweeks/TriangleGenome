@@ -118,7 +118,7 @@ public class GenomeUtilities
       myGene.r=myColors[0];
       myGene.g=myColors[1];
       myGene.b=myColors[2];
-      subtractGene(myGene,copiedImage);
+     // subtractGene(myGene,copiedImage);
     }
   
 	  
@@ -153,8 +153,8 @@ public class GenomeUtilities
 				  raster.getPixel(x, y, pixel);
 				  
 				  red=Math.max(pixel[0]-gene.r,0);
-				  blue=Math.max(pixel[0]-gene.g,0);
-				  green=Math.max(pixel[0]-gene.b,0);
+				  green=Math.max(pixel[1]-gene.g,0);
+				  blue=Math.max(pixel[2]-gene.b,0);
 				  //System.out.println(red+";"+green+";"+blue);
 				  int rgb=new Color(red,green,blue).getRGB();
 				  image.setRGB(x, y, rgb);
