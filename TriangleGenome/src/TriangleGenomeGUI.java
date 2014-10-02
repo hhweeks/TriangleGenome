@@ -83,7 +83,7 @@ public class TriangleGenomeGUI extends JFrame
         // make one genome for random display
         	drawGenome=new Genome(img.getWidth(), img.getHeight());
         GenomeUtilities
-            .setRandomGenome(drawGenome);
+            .averagingGenome(drawGenome,img);
         GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         //triangleWindow.image=GenomeUtilities.getBufferedImage(myGenome);
           
@@ -105,7 +105,7 @@ public class TriangleGenomeGUI extends JFrame
     // make one genome for random display
     drawGenome=new Genome(img.getWidth(), img.getHeight());
     GenomeUtilities
-        .setRandomGenome(drawGenome);
+    .averagingGenome(drawGenome,img);
     GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
 
     // generate statistics
@@ -122,7 +122,7 @@ public class TriangleGenomeGUI extends JFrame
       public void actionPerformed(ActionEvent e)
       {
     	  drawGenome=new Genome(imageWindow.image.getWidth(), imageWindow.image.getHeight());
-        GenomeUtilities.setRandomGenome(drawGenome);
+        GenomeUtilities.averagingGenome(drawGenome,imageWindow.image);
         GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
         System.out.println(stats);
@@ -135,7 +135,7 @@ public class TriangleGenomeGUI extends JFrame
       public void actionPerformed(ActionEvent e)
       {
         drawGenome=new Genome(imageWindow.image.getWidth(), imageWindow.image.getHeight());
-        GenomeUtilities.setRandomGenome(drawGenome);
+        GenomeUtilities.averagingGenome(drawGenome,imageWindow.image);
         GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
         System.out.println(stats);
