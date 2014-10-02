@@ -1,15 +1,36 @@
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.Random;
-
+/****************************************************************************
+ *UnitTestMain
+ *@author Hans Weeks
+ *This method unit tests the Triangle Genome Project when assertions are enabled.
+ *This class has its own main() for this purpose. The areas it tests are:
+ *1.)Genome objects for valid values
+ *2.)Hamming Distance class for correct results
+ *3.)Crossover class for correctly crossed-over child genes
+ *in addition to assertion tests, DEBUG_OUTPUT prints additional debugging information
+ *about the program, DEBUG_CROSSOVER prints child gene vs. parent gene comparisons.
+ * 
+ ****************************************************************************/
 public class UnitTestMain
 {
-  private boolean DEBUG_OUTPUT=true;
+  private boolean DEBUG_OUTPUT=false;
+  private boolean DEBUG_CROSSOVER=false;
   private Random rand=new Random();
   
   int imgWidth=500;//consider loading and actual image here
   int imgHeight=500;
   
+  
+  /****************************************************************************
+   * Constructor
+   * Input:none
+   * Output:none
+   * Description: when created, calls the unit tests's methods to test the Triangle
+   *  Genome project in 3 major ares: validity of Genome, validity of Hamming test,
+   *  and validity of Crossover method.
+   ****************************************************************************/
   public UnitTestMain()
   {
     int imgWidth=500;//consider loading and actual image here
@@ -25,6 +46,14 @@ public class UnitTestMain
     crossoverTestHelper();
   }
 
+  /****************************************************************************
+   * genomeTest
+   * Input:Genome object to validate
+   * Output:none
+   * Description:validates that the given Genome by testing that each gene for color values that
+   *  are above 0 and below 255, all points are within the bounds of the image size and that
+   *  each Gene has 3 sets of x and y points.
+   ****************************************************************************/
   public void genomeTest(Genome gen)
   {
     for(Gene gene:gen.geneList)
@@ -43,6 +72,14 @@ public class UnitTestMain
     }
   }
   
+  /****************************************************************************
+   * hammingTest
+   * Input: two Genome objects to test the Hamming distance of
+   * Output:  none
+   * Description: runs assertion tests to ensure the Hamming distance is measured correctly
+   *  on two Genome objects with known Hamming distances. Calls determinedGenome method
+   *  to create genomes with known Hamming distances.
+   ****************************************************************************/
   public void hammingTest(Genome gen1, Genome gen2)
   {    
       long hamD;
@@ -106,32 +143,26 @@ public class UnitTestMain
       if(DEBUG_OUTPUT)System.out.println("the diff between genomes with distributed differences:"+hamD);
       
       //\\hamm distance between 2 genomes where the second is the child crossed over halfway through
+      int crossoverPoint=1500;
       Genome genSon=new Genome(gen1.IMG_WIDTH, gen1.IMG_HEIGHT);
       Genome genDot=new Genome(gen1.IMG_WIDTH, gen1.IMG_HEIGHT);
       determinedGenome(gen1, 0, 100);
       determinedGenome(gen2, 1, 254);
-      CrossOver.breed(gen1, gen2, genSon, genDot, 1005);
+      CrossOver.breed(gen1, gen2, genSon, genDot, crossoverPoint);
       hamD=HammingDistance.calcDiff(gen1, genSon);
-      if(DEBUG_OUTPUT)System.out.println("the parent and child with crossover at 100:"+hamD);
-//      assert(hamD==1005);
-      checkParentage(gen1, gen2, genSon, 1005);
-      
-      //\\random crossover
-      gen1.geneList.clear();
-      gen2.geneList.clear();
-      genSon.geneList.clear();
-      genDot.geneList.clear();
-      for(int i=0;i<200;i++)
-      {
-        gen1.geneList.add(new Gene());
-        gen2.geneList.add(new Gene());
-      }
-      GenomeUtilities.setRandomGenome(gen1);
-      GenomeUtilities.setRandomGenome(gen2);
-      CrossOver.breed(gen1, gen2, genSon, genDot, 1492);
-      checkParentage(gen1, gen2, genSon, 1492);
+      if(DEBUG_OUTPUT)System.out.println("the parent and child with crossover at "+crossoverPoint/10 + ":"+hamD);
+      assert(hamD==(2000-crossoverPoint));
+      checkParentage(gen1, gen2, genSon, crossoverPoint);      
   }
-  
+    
+  /****************************************************************************
+   * crossoverTestHelper
+   * Input:none (unlike the other validations, this one creates its own Genomes to test addresses)
+   * Output:none
+   * Description: creates 4 Genomes to crossover, places them in an array, then randomizes the
+   *  Genomes and calls the crossoverTest method on them. This is done in a loop, to test 6 sets
+   *  of 4 random genomes
+   ****************************************************************************/
   public void crossoverTestHelper()
   { 
     Genome gen1=new Genome(imgWidth,imgHeight);
@@ -153,6 +184,16 @@ public class UnitTestMain
     }
   }
   
+  /****************************************************************************
+   * crossoverTest
+   * Input: array of 4 genomes and a crossover point
+   * Output: none
+   * Description: ensures correct array length, then tests to make sure
+   *  1.) the Genomes do not have the same address
+   *  2.) the Genomes do not have identical values
+   *  then assigns to 4 Genomes to the genDad, Mom, Son, Dot. Calls crossover on
+   *  these genes at the crossover point the calls the checkParentage method on them
+   ****************************************************************************/
   public void crossoverTest(Genome[] genArr, int crossoverPoint)
   {
    long hamD;   
@@ -183,17 +224,27 @@ public class UnitTestMain
    checkParentage(genMom, genDad, genDot, crossoverPoint);
   }
   
+  /****************************************************************************
+   * checkParentage
+   * Input: 3 Genomes (2 parents and 1 child in specified order) and the crossover point
+   * Output: none
+   * Description: topParent refers to the parent whose genes appear first (lower index)
+   *  int the child's Genome. genDad is top parent for genSon and genMom is top parent for genDot.
+   *  This method checks that the crossover process was correct by assigning the child Genome 3 sections:
+   *  1.)the portion identical to the topParent
+   *  2.)the Gene which contains both top and bottomParent alleles
+   *  3.)the portion identical to the bottomParent
+   *  the method asserts that that these sections are the same
+   ****************************************************************************/
   public void checkParentage(Genome topParent, Genome bottomParent, Genome child, int crossoverPoint)
   {
-    int topGenesToCompare=(crossoverPoint/10);//all genes up until splice
-    
-    System.out.print("Unit test: the splice gene is at "+topGenesToCompare+", ");
-    child.geneList.get(topGenesToCompare).print();
+    int topGenesToCompare=(crossoverPoint/10);//all genes up until splice    
     
     //assert genomes of the same size
     assert(topParent.geneList.size()==bottomParent.geneList.size()&&topParent.geneList.size()==child.geneList.size());
     
-    //\\assert genes are the same for top genes of child and Top parent
+    //(1.)\\assert genes are the same for top genes of child and Top parent
+    ///////////////////////////////////////////////////////////////////////
     for(int i=0;i<topGenesToCompare-1;i++)
     {
       for(int j=0;j<topParent.geneList.get(i).NPOINTS;j++)//three points
@@ -207,7 +258,8 @@ public class UnitTestMain
       assert(topParent.geneList.get(i).a==child.geneList.get(i).a);
     }
     
-    //\\assert that the splice gene is correct part top parent, correct part bottom parent
+    //(2.)\\assert that the splice gene is correct part top parent, correct part bottom parent
+    //////////////////////////////////////////////////////////////////////////////////////////
     int withinGeneSplit=crossoverPoint%10;
     Genome[] genArr={topParent,bottomParent,child};
     int[][] alleleValue=new int[3][topParent.geneList.get(0).NALLELE];//3*10
@@ -219,18 +271,18 @@ public class UnitTestMain
       {
         alleleValue[i][2*j]=genArr[i].geneList.get(topGenesToCompare).xpoints[j];
         alleleValue[i][(2*j)+1]=genArr[i].geneList.get(topGenesToCompare).ypoints[j];
-        if(DEBUG_OUTPUT)System.out.println(i+"'s x"+j+":"+genArr[i].geneList.get(topGenesToCompare).xpoints[j]);
-        if(DEBUG_OUTPUT)System.out.println(i+"'s y"+j+":"+genArr[i].geneList.get(topGenesToCompare).ypoints[j]);
+        if(DEBUG_CROSSOVER)System.out.println(i+"'s x"+j+":"+genArr[i].geneList.get(topGenesToCompare).xpoints[j]);
+        if(DEBUG_CROSSOVER)System.out.println(i+"'s y"+j+":"+genArr[i].geneList.get(topGenesToCompare).ypoints[j]);
       }
       alleleValue[i][6]=genArr[i].geneList.get(topGenesToCompare).r;
       alleleValue[i][7]=genArr[i].geneList.get(topGenesToCompare).g;
       alleleValue[i][8]=genArr[i].geneList.get(topGenesToCompare).b;
       alleleValue[i][9]=genArr[i].geneList.get(topGenesToCompare).a;
-      if(DEBUG_OUTPUT)System.out.println(i+"'s r"+":"+genArr[i].geneList.get(topGenesToCompare).r);
-      if(DEBUG_OUTPUT)System.out.println(i+"'s g"+":"+genArr[i].geneList.get(topGenesToCompare).g);
-      if(DEBUG_OUTPUT)System.out.println(i+"'s b"+":"+genArr[i].geneList.get(topGenesToCompare).b);
-      if(DEBUG_OUTPUT)System.out.println(i+"'s a"+":"+genArr[i].geneList.get(topGenesToCompare).a);
-      if(DEBUG_OUTPUT)System.out.print("\n");      
+      if(DEBUG_CROSSOVER)System.out.println(i+"'s r"+":"+genArr[i].geneList.get(topGenesToCompare).r);
+      if(DEBUG_CROSSOVER)System.out.println(i+"'s g"+":"+genArr[i].geneList.get(topGenesToCompare).g);
+      if(DEBUG_CROSSOVER)System.out.println(i+"'s b"+":"+genArr[i].geneList.get(topGenesToCompare).b);
+      if(DEBUG_CROSSOVER)System.out.println(i+"'s a"+":"+genArr[i].geneList.get(topGenesToCompare).a);
+      if(DEBUG_CROSSOVER)System.out.print("\n");      
     }
     
     int numberOfGenes=genArr[0].geneList.get(topGenesToCompare).NALLELE;// 10 alleles
@@ -241,7 +293,7 @@ public class UnitTestMain
     {
       if(i==withinGeneSplit){binParent=1;}
       spliceArr[i]=alleleValue[binParent][i];
-      if(DEBUG_OUTPUT)System.out.println("spliceGene's "+i+":"+spliceArr[i]);
+      if(DEBUG_CROSSOVER)System.out.println("spliceGene's "+i+":"+spliceArr[i]);
     }
     
     for(int i=0;i<numberOfGenes;i++)
@@ -250,7 +302,8 @@ public class UnitTestMain
       assert(alleleValue[indexOfChild][i]==spliceArr[i]);
     }
     
-    //\\assert genes are the same for bottom of child and bottomParent
+    //(3.)\\assert genes are the same for bottom of child and bottomParent
+    //////////////////////////////////////////////////////////////////////
     for(int i=topGenesToCompare+1;i<bottomParent.geneList.size();i++)
     {
       int topX=topParent.geneList.get(i).r;
@@ -263,7 +316,7 @@ public class UnitTestMain
       }
       bottomX=bottomParent.geneList.get(i).r;
       childX=child.geneList.get(i).r;
-      System.out.println("bottomParent:"+bottomX+" , child:"+childX);
+      if(DEBUG_CROSSOVER)System.out.println("bottomParent:"+bottomX+" , child:"+childX);
       assert(bottomParent.geneList.get(i).r==child.geneList.get(i).r);
       assert(bottomParent.geneList.get(i).g==child.geneList.get(i).g);
       assert(bottomParent.geneList.get(i).b==child.geneList.get(i).b);
@@ -271,6 +324,14 @@ public class UnitTestMain
     }
   }
   
+  /****************************************************************************
+   * determinedGenome
+   * Input: Genome object to create deterministic genes in
+   * Output: none
+   * Description: creates a Genome where all points (x1->3 and y1->3) are pointVal
+   *  and all colors (r,g,b, and a) are colorVal for the sake of comparison in the
+   *  hammingTest method
+   ****************************************************************************/
   public void determinedGenome(Genome gen, int pointVal, int colorVal)
   {
     gen.geneList.clear();
@@ -293,7 +354,11 @@ public class UnitTestMain
       gen.geneList.add(gene);
     }
   }
-
+  
+  /****************************************************************************
+   * Main
+   * Description: creates a new UnitTestMain objecct
+   ****************************************************************************/
   public static void main(String[] args)
   {
     new UnitTestMain();
