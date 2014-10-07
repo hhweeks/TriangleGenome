@@ -38,6 +38,7 @@ public class TriangleGenomeGUI extends JFrame
   JButton writeButton = new JButton("WRITE");
   JButton appendButton = new JButton("APPEND STATS TO FILE");
   JLabel genomeStats = new JLabel();
+  TriangleGenomeGUI tg;
   Genome drawGenome;
   BufferedImage img;
   String path = "images/";
@@ -48,6 +49,7 @@ public class TriangleGenomeGUI extends JFrame
 
   public TriangleGenomeGUI() throws IOException 
   {
+	  tg=this;
 	  System.out.println("start");
     File folder = new File(path);
     ArrayList<String> findFiles = new ArrayList<String>();
@@ -127,11 +129,7 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-    	  drawGenome=getGenome();
-        GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
-        stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
-        System.out.println(stats);
-        genomeStats.setText(tmpGenomeStats+  stats);
+    	  triangleWindowUpdate();
       }
     });
     nextButton.addActionListener(new ActionListener()
@@ -139,11 +137,7 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        drawGenome=getGenome();
-        GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
-        stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
-        System.out.println(stats);
-        genomeStats.setText(tmpGenomeStats+  stats);
+    	  triangleWindowUpdate();
       }
     });
     
@@ -154,6 +148,7 @@ public class TriangleGenomeGUI extends JFrame
       {
         if(runPauseButton.getText().compareTo("RUN") == 0)
         {
+          
           runPauseButton.setText("PAUSE");
           imageSelect.setEnabled(false);
           resetButton.setEnabled(false);
@@ -163,19 +158,22 @@ public class TriangleGenomeGUI extends JFrame
           readButton.setEnabled(false);
           writeButton.setEnabled(false);
           appendButton.setEnabled(false);
-          for(int i=0;i<20;i++){
-        	  tribeList.get(0).goToLocalMax(20);
-          
-          drawGenome=getGenome();
-          GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
-          stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
-          System.out.println(stats);
-          genomeStats.setText(tmpGenomeStats+  stats);
-          }
+         
+          if(tribeList.get(0).isAlive())
+          {
+        	  tribeList.get(0).resume();}
+          else{tribeList.get(0).start();}
+          triangleWindowUpdate();
           
         }
         else
         {
+        	try {
+				tribeList.get(0).pauseThread();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
           runPauseButton.setText("RUN");
           imageSelect.setEnabled(true);
           resetButton.setEnabled(true);
@@ -330,10 +328,17 @@ public class TriangleGenomeGUI extends JFrame
 		  tribeList.add(tribe);
 		  
 	  }
-	  
-	  
-	  
   }
+	 public void triangleWindowUpdate(){
+		 drawGenome=getGenome();
+         GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
+         stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
+         System.out.println(stats);
+         genomeStats.setText(tmpGenomeStats+  stats);
+		 
+	 } 
+	  
+  
   public Genome getGenome(){
 	  return tribeList.get(0).genomeList.get(tribeIndex);
 	  

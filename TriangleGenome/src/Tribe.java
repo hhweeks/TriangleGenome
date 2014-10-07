@@ -4,10 +4,17 @@ import java.util.Collections;
 import java.util.Random;
 
 
-public class Tribe {
+public class Tribe extends Thread {
 	Random rand=new Random();
 	ArrayList<Genome> genomeList= new ArrayList<>();
 	BufferedImage masterImage;
+	
+	private final Object GUI_INITIALIZATION_MONITOR = new Object();
+    private boolean pauseThreadFlag = false;
+	
+	
+	
+	private volatile boolean running = true; // Run unless told to pause
 	public static final int STARTINGTRIBESIZE=1;
 	public static final int ENDINGTRIBESIZE=500;
 	public Tribe(BufferedImage image){
@@ -23,7 +30,35 @@ public class Tribe {
 	
 		
 	}
-	
+	public void run(){
+		while(true){
+		
+			 checkForPaused();
+			goToLocalMax(10);
+		}
+		
+	}
+	private void checkForPaused() {
+        synchronized (GUI_INITIALIZATION_MONITOR) {
+            while (pauseThreadFlag) {
+                try {
+                    GUI_INITIALIZATION_MONITOR.wait();
+                } catch (Exception e) {}
+            }
+        }
+    }
+
+    public void pauseThread() throws InterruptedException {
+        pauseThreadFlag = true;
+    }
+
+    public void resumeThread() {
+        synchronized(GUI_INITIALIZATION_MONITOR) {
+            pauseThreadFlag = false;
+            GUI_INITIALIZATION_MONITOR.notify();
+        }
+    }
+    
 	public void generateFitscores(){
 	for(Genome genome:genomeList){
 		//creates a fitscore from each image. 
