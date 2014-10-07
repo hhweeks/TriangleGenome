@@ -8,13 +8,16 @@ public class Tribe {
 	Random rand=new Random();
 	ArrayList<Genome> genomeList= new ArrayList<>();
 	BufferedImage masterImage;
-	public static final int STARTINGTRIBESIZE=200;
+	public static final int STARTINGTRIBESIZE=1;
 	public static final int ENDINGTRIBESIZE=500;
 	public Tribe(BufferedImage image){
 		masterImage=image;
 		//populate genome list
 	for(int i=0;i<STARTINGTRIBESIZE;i++){
-		genomeList.add(new Genome(masterImage));
+		System.out.println("tribe builder");
+		Genome genome=new Genome(masterImage);
+		GenomeUtilities.averagingGenome(genome, masterImage);
+		genomeList.add(genome);
 
 	}
 	

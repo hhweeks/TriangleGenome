@@ -126,6 +126,7 @@ public class Mutate
     {
       delta*=(-1);
     }
+    
     return (color+delta);
   }
   

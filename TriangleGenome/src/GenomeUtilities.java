@@ -245,10 +245,13 @@ public class GenomeUtilities
 	    myGraphics.setColor(Color.white);
 	    myGraphics.fillRect(0, 0, width, height);
 	    for (int i = 0; i < N; i++) {
-	      myGraphics.setColor(new Color(myGenome.geneList.get(i).r,
-	          myGenome.geneList.get(i).g, myGenome.geneList.get(i).b,
-	          myGenome.geneList.get(i).a));
-	      myGraphics.fillPolygon(myGenome.geneList.get(i));
+	    	Gene gene=myGenome.geneList.get(i);
+	    	checkColorValues(gene);
+	    	// gene.print();
+	      myGraphics.setColor(new Color(gene.r,
+	    		  gene.g, gene.b,
+	    		  gene.a));
+	      myGraphics.fillPolygon(gene);
 	    }
 	    myPic.repaint();
 	  }
@@ -271,14 +274,40 @@ public class GenomeUtilities
     myGraphics.fillRect(0, 0, width, height);
     for(int i=0;i<myGenome.NUM_GENES;i++)
     {
-      myGraphics.setColor(new Color(myGenome.geneList.get(i).r,
-          myGenome.geneList.get(i).g, myGenome.geneList.get(i).b,
-          myGenome.geneList.get(i).a));
+    	Gene gene=myGenome.geneList.get(i);
+    	checkColorValues(gene);
+    	// gene.print();
+      myGraphics.setColor(new Color(gene.r,
+    		  gene.g, gene.b,
+    		  gene.a));
+     
       myGraphics.fillPolygon(myGenome.geneList.get(i));
     }
     return myIm;
   }
 
+  
+  public static void checkColorValues(Gene gene){
+	  if(gene.a>255)gene.a=255;
+  	if(gene.a<0)gene.a=0;
+  	if(gene.r>255)gene.r=255;
+	if(gene.r<0)gene.r=0;
+	if(gene.g>255)gene.g=255;
+	if(gene.g<0)gene.g=0;
+	if(gene.b>255)gene.b=255;
+	if(gene.b<0)gene.b=0;
+	
+	  
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
   /****************************************************************************
    * genomeEqual
    * Input:two Genomes to compare

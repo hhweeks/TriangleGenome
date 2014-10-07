@@ -19,7 +19,7 @@ import javax.swing.event.ChangeListener;
 
 public class TriangleGenomeGUI extends JFrame
 {
-  public static final int NTRIBES=3;
+  public static final int NTRIBES=1;
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
   static JPanel buttonPanel;
@@ -27,7 +27,7 @@ public class TriangleGenomeGUI extends JFrame
   static JPanel controlPanel = new JPanel();
   JComboBox<String> imageSelect;
   JSlider triangleSlider = new JSlider(0, 200, 0);
-  JSlider tribeSlider = new JSlider(0, 1000, 0);
+  JSlider tribeSlider = new JSlider(0, NTRIBES, 0);
   JLabel triangleLabel = new JLabel("triangles");
   JLabel tribeLabel = new JLabel("tribes");
   JButton runPauseButton = new JButton("RUN");
@@ -48,6 +48,7 @@ public class TriangleGenomeGUI extends JFrame
 
   public TriangleGenomeGUI() throws IOException 
   {
+	  System.out.println("start");
     File folder = new File(path);
     ArrayList<String> findFiles = new ArrayList<String>();
     File[] listOfFiles = folder.listFiles();
@@ -162,6 +163,16 @@ public class TriangleGenomeGUI extends JFrame
           readButton.setEnabled(false);
           writeButton.setEnabled(false);
           appendButton.setEnabled(false);
+          for(int i=0;i<20;i++){
+        	  tribeList.get(0).goToLocalMax(20);
+          
+          drawGenome=getGenome();
+          GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
+          stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
+          System.out.println(stats);
+          genomeStats.setText(tmpGenomeStats+  stats);
+          }
+          
         }
         else
         {
@@ -256,6 +267,7 @@ public class TriangleGenomeGUI extends JFrame
     sliderPanel.add(genomeStats);
     controlPanel.add(sliderPanel);
     //controlPanel.add(genomeStats);
+    System.out.println("end");
     this.add(controlPanel, BorderLayout.SOUTH);
     this.setSize(1150, 650);
     this.setVisible(true);
@@ -313,8 +325,10 @@ public class TriangleGenomeGUI extends JFrame
   public void makeTribes(BufferedImage image){
 	  tribeList=new ArrayList<>();
 	  for(int i=0;i<NTRIBES;i++){
+		  Tribe tribe=new Tribe(image);
+		  System.out.println("makeTribes");
+		  tribeList.add(tribe);
 		  
-		  tribeList.add(new Tribe(image));
 	  }
 	  
 	  
