@@ -19,7 +19,7 @@ import javax.swing.event.ChangeListener;
 
 public class TriangleGenomeGUI extends JFrame
 {
-
+  public static final int NTRIBES=3;
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
   static JPanel buttonPanel;
@@ -42,6 +42,8 @@ public class TriangleGenomeGUI extends JFrame
   BufferedImage img;
   String path = "images/";
   long stats;
+  int tribeIndex;
+  ArrayList<Tribe> tribeList;
   String tmpGenomeStats  = "min:sec=0.0   gen=0   gen/sec=NaN   Fitness=";
 
   public TriangleGenomeGUI() throws IOException 
@@ -81,15 +83,17 @@ public class TriangleGenomeGUI extends JFrame
         	imageWindow.changeImage(ImageIO.read(imageFile));
         	BufferedImage img=imageWindow.image;
         // make one genome for random display
-        	drawGenome=new Genome(img.getWidth(), img.getHeight());
-        GenomeUtilities
-            .averagingGenome(drawGenome,img);
+        	
+        	drawGenome =getGenome();
+//        	drawGenome=new Genome(img.getWidth(), img.getHeight());
+//        GenomeUtilities
+//            .averagingGenome(drawGenome,img);
         GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         //triangleWindow.image=GenomeUtilities.getBufferedImage(myGenome);
           
         } catch (IOException ec)
         {
-          System.out.println("Image2notFound");
+          System.out.println("Image "+path+flname+ " not Found");
         }
 
       }
@@ -101,11 +105,12 @@ public class TriangleGenomeGUI extends JFrame
     // Genome genome=new Genome();
 
     triangleWindow=new ImagePanel(img.getWidth(), img.getHeight());
-
-    // make one genome for random display
-    drawGenome=new Genome(img.getWidth(), img.getHeight());
-    GenomeUtilities
-    .averagingGenome(drawGenome,img);
+    //build new tribes of appropriate image
+    
+    
+    makeTribes(imageWindow.getImage());
+    // make one genome for display
+    drawGenome=getGenome();
     GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
 
     // generate statistics
@@ -121,8 +126,7 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-    	  drawGenome=new Genome(imageWindow.image.getWidth(), imageWindow.image.getHeight());
-        GenomeUtilities.averagingGenome(drawGenome,imageWindow.image);
+    	  drawGenome=getGenome();
         GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
         System.out.println(stats);
@@ -134,8 +138,7 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        drawGenome=new Genome(imageWindow.image.getWidth(), imageWindow.image.getHeight());
-        GenomeUtilities.averagingGenome(drawGenome,imageWindow.image);
+        drawGenome=getGenome();
         GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
         System.out.println(stats);
@@ -214,7 +217,8 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void stateChanged(ChangeEvent e)
       {
-          tribeLabel.setText("Tribe #" + tribeSlider.getValue());
+    	  tribeIndex=tribeSlider.getValue();
+          tribeLabel.setText("Tribe #" + tribeIndex);
       }
     });
     
@@ -306,6 +310,25 @@ public class TriangleGenomeGUI extends JFrame
     }
 
   }
+  public void makeTribes(BufferedImage image){
+	  tribeList=new ArrayList<>();
+	  for(int i=0;i<NTRIBES;i++){
+		  
+		  tribeList.add(new Tribe(image));
+	  }
+	  
+	  
+	  
+  }
+  public Genome getGenome(){
+	  return tribeList.get(0).genomeList.get(tribeIndex);
+	  
+	  
+	  
+  }
+  
+  
+  
   public Genome getDrawGenome(){
 	  
 	  return drawGenome;

@@ -29,7 +29,15 @@ public class Tribe {
 		
 	}
 	}
-	
+	public void goToLocalMax(int N){
+		HillClimber hc=new HillClimber(masterImage);
+		
+	    for(Genome genome:genomeList){
+		hc.climbLoop(genome, N);
+	    }
+		
+		
+	}
 	
 	public static void nextGeneration(){
 		//Collections.sort(genomeList);
