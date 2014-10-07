@@ -161,7 +161,7 @@ public class TriangleGenomeGUI extends JFrame
          
           if(tribeList.get(0).isAlive())
           {
-        	  tribeList.get(0).resume();}
+        	  tribeList.get(0).resumeThread();}
           else{tribeList.get(0).start();}
           triangleWindowUpdate();
           
