@@ -30,57 +30,49 @@ public class HillClimber extends Thread
 
   public boolean climbStep(Genome myGenome)
   {
-    long startScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
+    long startScore = Statistics.getFitScore(
+        GenomeUtilities.getBufferedImage(myGenome), image);
     int maxBound;
 
-//    if (repeat)
-//    {
-//      maxBound = getAlleleBounds(myGenome, lastAllele);
-//      if (lastAllele + lastShift < 0)
-//      {
-//        // make lastShift+lastAllele=0:
-//        lastShift = -lastAllele;//
-//        repeat = false;
-//      }
-//      if (lastAllele + lastShift > maxBound)
-//      {
-//        // make lastShift+lastAllele=maxBound
-//        lastShift = maxBound - lastAllele;
-//        repeat = false;
-//      }
-//      Mutate.exposeToRadiation(lastGene, lastAllele, lastShift);
-//    } else
-    {
-      //mutate random gene at random allele
-      Gene mutateGene=getGene(myGenome);
-      int mutateAlleleIndex=getAllele(mutateGene);
-      maxBound = getAlleleBounds(myGenome, mutateAlleleIndex);
-      int shiftAmount = rand.nextInt(maxBound / 5);// shift by up to 20%
-      shiftAmount-=(maxBound / 10);// subtract, to leave shift by +/- 10
-      
-      int mutateAlleleValue=Mutate.getAlleleValue(mutateGene, mutateAlleleIndex);
-      if(mutateAlleleValue+shiftAmount>maxBound)
-      {
-        shiftAmount=maxBound-mutateAlleleValue;//this will set mutateAlleleValue to max when mutate is called
-      }
-      if(mutateAlleleValue+shiftAmount<0)
-      {
-        shiftAmount=-mutateAlleleValue;//will set mutateAlleleValue to 0 when mutate is called
-      }      
-      
-      Mutate.exposeToRadiation(mutateGene, mutateAlleleIndex, shiftAmount);
+    // mutate random gene at random allele
+    Gene mutateGene = getGene(myGenome);
+    int mutateAlleleIndex = getAllele(mutateGene);
+    maxBound = getAlleleBounds(myGenome, mutateAlleleIndex);
+    int shiftAmount = rand.nextInt(maxBound / 5);// shift by up to 20%
+    shiftAmount -= (maxBound / 10);// subtract, to leave shift by +/- 10
 
-      lastGene = mutateGene;
-      lastAllele = mutateAlleleIndex;
-      lastShift = shiftAmount;
+    int mutateAlleleValue = Mutate
+        .getAlleleValue(mutateGene, mutateAlleleIndex);
+    if (mutateAlleleValue + shiftAmount > maxBound)
+    {
+      shiftAmount = maxBound - mutateAlleleValue;// this will set mutateAlleleValue to max when mutate is called
+    }
+    if (mutateAlleleValue + shiftAmount < 0)
+    {
+      shiftAmount = -mutateAlleleValue;// will set mutateAlleleValue to 0 when mutate is called
     }
 
+    Mutate.exposeToRadiation(mutateGene, mutateAlleleIndex, shiftAmount);
+
+    lastGene = mutateGene;
+    lastAllele = mutateAlleleIndex;
+    lastShift = shiftAmount;
+
     long endScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
-//    while(endScore < startScore)//keep modifying the same SUCCESSFUL mutation
+//    while(true)//keep modifying the same SUCCESSFUL mutation
 //    {
-//      Mutate.exposeToRadiation(lastGene, lastAllele, -lastShift);
-//      startScore=endScore;
+//      startScore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
+//      if (mutateAlleleValue + shiftAmount > maxBound)//TODO redundant
+//      {
+//        shiftAmount = maxBound - mutateAlleleValue;// this will set mutateAlleleValue to max when mutate is called
+//      }
+//      if (mutateAlleleValue + shiftAmount < 0)//TODO redundant
+//      {
+//        shiftAmount = -mutateAlleleValue;// will set mutateAlleleValue to 0 when mutate is called
+//      }
+//      Mutate.exposeToRadiation(lastGene, lastAllele, lastShift);      
 //      endScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
+//      if(endScore>=startScore)break;
 //    }
     if(endScore > startScore)revertGenome(lastGene, lastAllele, lastShift);//until fitness decreases
     return endScore < startScore;
