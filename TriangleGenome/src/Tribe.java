@@ -36,10 +36,14 @@ public class Tribe extends Thread
     generateFitScores();
     while(true)
     {
-      checkForPaused();
+      
+    	checkForPaused();
+      
+      
+      
       System.out.println("start");
-      goToLocalMax(100);
-      System.out.println("mutate 100 times");
+      goToLocalMax(1000);
+      System.out.println("mutate 1000 times");
 
       Genome son=new Genome(masterImage);
       Genome daughter=new Genome(masterImage);
@@ -124,7 +128,10 @@ public class Tribe extends Thread
     System.out.println("climber started");
     for(Genome genome:genomeList)
     {
-      hc.climbLoop(genome, N);
+      for(int i=0;i<N;i++){
+      checkForPaused();
+      hc.climbLoop(genome, 5);
+      }
       genome.image=GenomeUtilities.getBufferedImage(genome);
     }
   }
@@ -143,8 +150,5 @@ public class Tribe extends Thread
 
   }
 
-  public static void main(String[] args)
-  {
-    nextGeneration();
-  }
+  
 }
