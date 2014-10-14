@@ -87,10 +87,10 @@ public class TriangleGenomeGUI extends JFrame
         	BufferedImage img=imageWindow.image;
         // make one genome for random display
         	
-        	drawGenome =getGenome();
-//        	drawGenome=new Genome(img.getWidth(), img.getHeight());
-//        GenomeUtilities
-//            .averagingGenome(drawGenome,img);
+//       	drawGenome =getGenome();
+        	drawGenome=new Genome(img.getWidth(), img.getHeight());
+        GenomeUtilities
+            .averagingGenome(drawGenome,img);
         GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         //triangleWindow.image=GenomeUtilities.getBufferedImage(myGenome);
           
@@ -232,7 +232,7 @@ public class TriangleGenomeGUI extends JFrame
     });
     
     buttonPanel.add(runPauseButton);
-    buttonPanel.add(nextButton);
+    buttonPanel.add(resetButton);
     buttonPanel.add(nextButton);
     buttonPanel.add(triangleSlider);
     buttonPanel.add(tableButton);

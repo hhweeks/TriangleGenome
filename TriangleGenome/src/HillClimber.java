@@ -23,8 +23,10 @@ public class HillClimber extends Thread
   public void climbLoop(Genome genome, int N)
   {
     for (int i = 0; i < N; i++)
-    {
+    {//long startTime=System.currentTimeMillis();
+    
       repeat = climbStep(genome);
+      //System.out.println(System.currentTimeMillis()-startTime);
     }
   }
 
@@ -74,8 +76,9 @@ public class HillClimber extends Thread
       lastAllele = mutateAlleleIndex;
       lastShift = shiftAmount;
     }
-
+    //System.out.println("Stats started");
     long endScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
+    
 //    while(endScore < startScore)//keep modifying the same SUCCESSFUL mutation
 //    {
 //      Mutate.exposeToRadiation(lastGene, lastAllele, -lastShift);
