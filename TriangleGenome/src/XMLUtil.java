@@ -225,9 +225,7 @@ public class XMLUtil
       e.printStackTrace();
     }
     
-    
-    return myGenome;
-    
+    return myGenome;    
   }
   
 
