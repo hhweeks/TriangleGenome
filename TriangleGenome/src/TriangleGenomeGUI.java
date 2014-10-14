@@ -86,7 +86,7 @@ public class TriangleGenomeGUI extends JFrame
           imageWindow.changeImage(ImageIO.read(imageFile));
           BufferedImage img=imageWindow.image;
           // make one genome for random display
-
+          makeTribes(img);
           drawGenome=getGenome();
           // drawGenome=new Genome(img.getWidth(), img.getHeight());
           // GenomeUtilities
@@ -125,6 +125,7 @@ public class TriangleGenomeGUI extends JFrame
 
     resetButton.addActionListener(new ActionListener()
     {
+    	
       @Override
       public void actionPerformed(ActionEvent e)
       {
