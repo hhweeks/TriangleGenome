@@ -44,6 +44,7 @@ public class UnitTestMain
     genomeTest(gen1);
     hammingTest(gen1, gen2);
     crossoverTestHelper();
+    writeTest(gen1);
   }
 
   /****************************************************************************
@@ -322,6 +323,11 @@ public class UnitTestMain
       assert(bottomParent.geneList.get(i).b==child.geneList.get(i).b);
       assert(bottomParent.geneList.get(i).a==child.geneList.get(i).a);
     }
+  }
+  
+  public void writeTest(Genome gen)
+  {
+    XMLUtil.writeXML("UnitWriteTest.xml", gen);    
   }
   
   /****************************************************************************
