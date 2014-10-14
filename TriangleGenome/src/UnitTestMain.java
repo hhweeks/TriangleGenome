@@ -10,12 +10,13 @@ import java.util.Random;
  *2.)Hamming Distance class for correct results
  *3.)Crossover class for correctly crossed-over child genes
  *in addition to assertion tests, DEBUG_OUTPUT prints additional debugging information
- *about the progrom.
+ *about the program, DEBUG_CROSSOVER prints child gene vs. parent gene comparisons.
  * 
  ****************************************************************************/
 public class UnitTestMain
 {
-  private boolean DEBUG_OUTPUT=true;
+  private boolean DEBUG_OUTPUT=false;
+  private boolean DEBUG_CROSSOVER=false;
   private Random rand=new Random();
   
   int imgWidth=500;//consider loading and actual image here
@@ -43,6 +44,7 @@ public class UnitTestMain
     genomeTest(gen1);
     hammingTest(gen1, gen2);
     crossoverTestHelper();
+    writeTest(gen1);
   }
 
   /****************************************************************************
@@ -142,30 +144,16 @@ public class UnitTestMain
       if(DEBUG_OUTPUT)System.out.println("the diff between genomes with distributed differences:"+hamD);
       
       //\\hamm distance between 2 genomes where the second is the child crossed over halfway through
+      int crossoverPoint=1500;
       Genome genSon=new Genome(gen1.IMG_WIDTH, gen1.IMG_HEIGHT);
       Genome genDot=new Genome(gen1.IMG_WIDTH, gen1.IMG_HEIGHT);
       determinedGenome(gen1, 0, 100);
       determinedGenome(gen2, 1, 254);
-      CrossOver.breed(gen1, gen2, genSon, genDot, 1005);
+      CrossOver.breed(gen1, gen2, genSon, genDot, crossoverPoint);
       hamD=HammingDistance.calcDiff(gen1, genSon);
-      if(DEBUG_OUTPUT)System.out.println("the parent and child with crossover at 100:"+hamD);
-//      assert(hamD==1005);
-      checkParentage(gen1, gen2, genSon, 1005);
-      
-      //\\random crossover
-      gen1.geneList.clear();
-      gen2.geneList.clear();
-      genSon.geneList.clear();
-      genDot.geneList.clear();
-      for(int i=0;i<200;i++)
-      {
-        gen1.geneList.add(new Gene());
-        gen2.geneList.add(new Gene());
-      }
-      GenomeUtilities.setRandomGenome(gen1);
-      GenomeUtilities.setRandomGenome(gen2);
-      CrossOver.breed(gen1, gen2, genSon, genDot, 1492);
-      checkParentage(gen1, gen2, genSon, 1492);
+      if(DEBUG_OUTPUT)System.out.println("the parent and child with crossover at "+crossoverPoint/10 + ":"+hamD);
+      assert(hamD==(2000-crossoverPoint));
+      checkParentage(gen1, gen2, genSon, crossoverPoint);      
   }
     
   /****************************************************************************
@@ -251,10 +239,7 @@ public class UnitTestMain
    ****************************************************************************/
   public void checkParentage(Genome topParent, Genome bottomParent, Genome child, int crossoverPoint)
   {
-    int topGenesToCompare=(crossoverPoint/10);//all genes up until splice
-    
-    System.out.print("Unit test: the splice gene is at "+topGenesToCompare+", ");
-    child.geneList.get(topGenesToCompare).print();
+    int topGenesToCompare=(crossoverPoint/10);//all genes up until splice    
     
     //assert genomes of the same size
     assert(topParent.geneList.size()==bottomParent.geneList.size()&&topParent.geneList.size()==child.geneList.size());
@@ -287,18 +272,18 @@ public class UnitTestMain
       {
         alleleValue[i][2*j]=genArr[i].geneList.get(topGenesToCompare).xpoints[j];
         alleleValue[i][(2*j)+1]=genArr[i].geneList.get(topGenesToCompare).ypoints[j];
-        if(DEBUG_OUTPUT)System.out.println(i+"'s x"+j+":"+genArr[i].geneList.get(topGenesToCompare).xpoints[j]);
-        if(DEBUG_OUTPUT)System.out.println(i+"'s y"+j+":"+genArr[i].geneList.get(topGenesToCompare).ypoints[j]);
+        if(DEBUG_CROSSOVER)System.out.println(i+"'s x"+j+":"+genArr[i].geneList.get(topGenesToCompare).xpoints[j]);
+        if(DEBUG_CROSSOVER)System.out.println(i+"'s y"+j+":"+genArr[i].geneList.get(topGenesToCompare).ypoints[j]);
       }
       alleleValue[i][6]=genArr[i].geneList.get(topGenesToCompare).r;
       alleleValue[i][7]=genArr[i].geneList.get(topGenesToCompare).g;
       alleleValue[i][8]=genArr[i].geneList.get(topGenesToCompare).b;
       alleleValue[i][9]=genArr[i].geneList.get(topGenesToCompare).a;
-      if(DEBUG_OUTPUT)System.out.println(i+"'s r"+":"+genArr[i].geneList.get(topGenesToCompare).r);
-      if(DEBUG_OUTPUT)System.out.println(i+"'s g"+":"+genArr[i].geneList.get(topGenesToCompare).g);
-      if(DEBUG_OUTPUT)System.out.println(i+"'s b"+":"+genArr[i].geneList.get(topGenesToCompare).b);
-      if(DEBUG_OUTPUT)System.out.println(i+"'s a"+":"+genArr[i].geneList.get(topGenesToCompare).a);
-      if(DEBUG_OUTPUT)System.out.print("\n");      
+      if(DEBUG_CROSSOVER)System.out.println(i+"'s r"+":"+genArr[i].geneList.get(topGenesToCompare).r);
+      if(DEBUG_CROSSOVER)System.out.println(i+"'s g"+":"+genArr[i].geneList.get(topGenesToCompare).g);
+      if(DEBUG_CROSSOVER)System.out.println(i+"'s b"+":"+genArr[i].geneList.get(topGenesToCompare).b);
+      if(DEBUG_CROSSOVER)System.out.println(i+"'s a"+":"+genArr[i].geneList.get(topGenesToCompare).a);
+      if(DEBUG_CROSSOVER)System.out.print("\n");      
     }
     
     int numberOfGenes=genArr[0].geneList.get(topGenesToCompare).NALLELE;// 10 alleles
@@ -309,7 +294,7 @@ public class UnitTestMain
     {
       if(i==withinGeneSplit){binParent=1;}
       spliceArr[i]=alleleValue[binParent][i];
-      if(DEBUG_OUTPUT)System.out.println("spliceGene's "+i+":"+spliceArr[i]);
+      if(DEBUG_CROSSOVER)System.out.println("spliceGene's "+i+":"+spliceArr[i]);
     }
     
     for(int i=0;i<numberOfGenes;i++)
@@ -332,12 +317,17 @@ public class UnitTestMain
       }
       bottomX=bottomParent.geneList.get(i).r;
       childX=child.geneList.get(i).r;
-      System.out.println("bottomParent:"+bottomX+" , child:"+childX);
+      if(DEBUG_CROSSOVER)System.out.println("bottomParent:"+bottomX+" , child:"+childX);
       assert(bottomParent.geneList.get(i).r==child.geneList.get(i).r);
       assert(bottomParent.geneList.get(i).g==child.geneList.get(i).g);
       assert(bottomParent.geneList.get(i).b==child.geneList.get(i).b);
       assert(bottomParent.geneList.get(i).a==child.geneList.get(i).a);
     }
+  }
+  
+  public void writeTest(Genome gen)
+  {
+    XMLUtil.writeXML("UnitWriteTest.xml", gen);    
   }
   
   /****************************************************************************
