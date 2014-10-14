@@ -138,16 +138,13 @@ public class Tribe extends Thread
 
   public static void nextGeneration()
   {
-
     // while(genomeList.size()<ENDINGTRIBESIZE){
     Random rand=new Random();
     for(int i=0;i<50;i++)
     {
       int index=(int) Math.abs(rand.nextGaussian()*4);
-
       System.out.println(index);
     }
-
   }
 
   
