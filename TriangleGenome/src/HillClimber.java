@@ -25,7 +25,7 @@ public class HillClimber extends Thread
     for (int i = 0; i < N; i++)
     {
       repeat = climbStep(genome);
-      System.out.println(System.currentTimeMillis());
+     //System.out.println(System.currentTimeMillis());
     }
   }
 
