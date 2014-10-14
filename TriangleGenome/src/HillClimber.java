@@ -30,8 +30,7 @@ public class HillClimber extends Thread
 
   public boolean climbStep(Genome myGenome)
   {
-    long startScore = Statistics.getFitScore(
-        GenomeUtilities.getBufferedImage(myGenome), image);
+    long startScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
     int maxBound;
 
     // mutate random gene at random allele
@@ -58,22 +57,7 @@ public class HillClimber extends Thread
     lastShift = shiftAmount;
 
     long endScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
-//    while(true)//keep modifying the same SUCCESSFUL mutation
-//    {
-//      startScore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
-//      mutateAlleleValue = Mutate.getAlleleValue(mutateGene, mutateAlleleIndex);
-//      if (mutateAlleleValue + shiftAmount > maxBound)//TODO redundant
-//      {
-//        shiftAmount = maxBound - mutateAlleleValue;// this will set mutateAlleleValue to max when mutate is called
-//      }
-//      if (mutateAlleleValue + shiftAmount < 0)//TODO redundant
-//      {
-//        shiftAmount = -mutateAlleleValue;// will set mutateAlleleValue to 0 when mutate is called
-//      }
-//      Mutate.exposeToRadiation(lastGene, lastAllele, lastShift);      
-//      endScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
-//      if(endScore>=startScore)break;
-//    }
+
     if(endScore > startScore)revertGenome(lastGene, lastAllele, lastShift);
     else if(endScore<startScore)repeatMutation(myGenome, lastGene, lastAllele, lastShift, maxBound, startScore, endScore);
     return endScore < startScore;

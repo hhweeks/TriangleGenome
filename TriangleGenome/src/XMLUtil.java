@@ -1,11 +1,16 @@
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.StringWriter;
 
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 import javax.xml.*;
 
 
@@ -126,6 +131,103 @@ public class XMLUtil
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+  
+  public static Genome readXML(String filePath)
+  {
+    Genome myGenome=null;
+    Gene myGene=null;
+    XMLInputFactory myXIF=XMLInputFactory.newInstance();
+    
+    try
+    {
+      XMLEventReader myXER=myXIF.createXMLEventReader(new FileInputStream(filePath));
+      while(myXER.hasNext())
+      {
+        XMLEvent myEvent=myXER.nextEvent();
+        if(myEvent.isStartElement())
+        {
+          StartElement mySE=myEvent.asStartElement();
+          if(mySE.getName().getLocalPart().equals("gene"))
+          {
+            myGene=new Gene();
+          }
+          //add gene's alleles
+          //x1
+          else if(mySE.getName().getLocalPart().equals("x1"))
+          {
+            myEvent=myXER.nextEvent();
+            myGene.xpoints[0]=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+          //y1
+          else if(mySE.getName().getLocalPart().equals("y1"))
+          {
+            myEvent=myXER.nextEvent();
+            myGene.ypoints[0]=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+          //x2
+          else if(mySE.getName().getLocalPart().equals("x2"))
+          {
+            myEvent=myXER.nextEvent();
+            myGene.xpoints[1]=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+          //y2
+          else if(mySE.getName().getLocalPart().equals("y2"))
+          {
+            myEvent=myXER.nextEvent();
+            myGene.ypoints[1]=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+          //x3
+          else if(mySE.getName().getLocalPart().equals("x3"))
+          {
+            myEvent=myXER.nextEvent();
+            myGene.xpoints[2]=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+          //y3
+          else if(mySE.getName().getLocalPart().equals("y3"))
+          {
+            myEvent=myXER.nextEvent();
+            myGene.ypoints[2]=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+          //r
+          else if(mySE.getName().getLocalPart().equals("red"))
+          {
+            myEvent=myXER.nextEvent();
+            myGene.r=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+          //g
+          else if(mySE.getName().getLocalPart().equals("green"))
+          {
+            myEvent=myXER.nextEvent();
+            myGene.g=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+          //b
+          else if(mySE.getName().getLocalPart().equals("blue"))
+          {
+            myEvent=myXER.nextEvent();
+            myGene.b=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+          //a
+          else if(mySE.getName().getLocalPart().equals("alpha"))
+          {
+            myEvent=myXER.nextEvent();
+            myGene.a=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+        }
+      }
+    } catch (FileNotFoundException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (XMLStreamException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    
+    return myGenome;
+    
   }
   
 

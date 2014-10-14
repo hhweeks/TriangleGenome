@@ -23,45 +23,45 @@ public class TriangleGenomeGUI extends JFrame
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
   static JPanel buttonPanel;
-  static JPanel sliderPanel = new JPanel();
-  static JPanel controlPanel = new JPanel();
+  static JPanel sliderPanel=new JPanel();
+  static JPanel controlPanel=new JPanel();
   JComboBox<String> imageSelect;
-  JSlider triangleSlider = new JSlider(0, 200, 0);
-  JSlider tribeSlider = new JSlider(0, NTRIBES, 0);
-  JLabel triangleLabel = new JLabel("triangles");
-  JLabel tribeLabel = new JLabel("tribes");
-  JButton runPauseButton = new JButton("RUN");
-  JButton nextButton = new JButton("NEXT");
-  JButton resetButton = new JButton("RESET");
-  JButton tableButton = new JButton("GENOME TABLE");
-  JButton readButton = new JButton("READ");
-  JButton writeButton = new JButton("WRITE");
-  JButton appendButton = new JButton("APPEND STATS TO FILE");
-  JLabel genomeStats = new JLabel();
+  JSlider triangleSlider=new JSlider(0, 200, 0);
+  JSlider tribeSlider=new JSlider(0, NTRIBES, 0);
+  JLabel triangleLabel=new JLabel("triangles");
+  JLabel tribeLabel=new JLabel("tribes");
+  JButton runPauseButton=new JButton("RUN");
+  JButton nextButton=new JButton("NEXT");
+  JButton resetButton=new JButton("RESET");
+  JButton tableButton=new JButton("GENOME TABLE");
+  JButton readButton=new JButton("READ");
+  JButton writeButton=new JButton("WRITE");
+  JButton appendButton=new JButton("APPEND STATS TO FILE");
+  JLabel genomeStats=new JLabel();
   TriangleGenomeGUI tg;
   Genome drawGenome;
   BufferedImage img;
-  String path = "images/";
+  String path="images/";
   long stats;
   int tribeIndex;
   ArrayList<Tribe> tribeList;
-  String tmpGenomeStats  = "min:sec=0.0   gen=0   gen/sec=NaN   Fitness=";
+  String tmpGenomeStats="min:sec=0.0   gen=0   gen/sec=NaN   Fitness=";
 
-  public TriangleGenomeGUI() throws IOException 
+  public TriangleGenomeGUI() throws IOException
   {
-	  tg=this;
-	  System.out.println("start");
-    File folder = new File(path);
-    ArrayList<String> findFiles = new ArrayList<String>();
-    File[] listOfFiles = folder.listFiles();
-    for (int i = 0; i < listOfFiles.length; i++)
+    tg=this;
+    System.out.println("start");
+    File folder=new File(path);
+    ArrayList<String> findFiles=new ArrayList<String>();
+    File[] listOfFiles=folder.listFiles();
+    for(int i=0;i<listOfFiles.length;i++)
     {
-      if (listOfFiles[i].isFile())
+      if(listOfFiles[i].isFile())
       {
         findFiles.add(listOfFiles[i].getName());
       }
     }
-    String[] filenames = findFiles.toArray(new String[findFiles.size()]);
+    String[] filenames=findFiles.toArray(new String[findFiles.size()]);
     buttonPanel=new JPanel();
     buttonPanel.setBounds(0, 500, 1500, 300);
 
@@ -71,7 +71,7 @@ public class TriangleGenomeGUI extends JFrame
     String filename=(String) imageSelect.getSelectedItem();
     BufferedImage img=readImage(filename);
     imageWindow=new ImagePanel(img, 0, 0);
-    triangleWindow=new ImagePanel(img,0,0);
+    triangleWindow=new ImagePanel(img, 0, 0);
     imageSelect.addActionListener(new ActionListener()
     {
 
@@ -80,23 +80,23 @@ public class TriangleGenomeGUI extends JFrame
       {
         String flname=(String) imageSelect.getSelectedItem();
 
-        File imageFile=new File(path + flname);
+        File imageFile=new File(path+flname);
         try
         {
-        	imageWindow.changeImage(ImageIO.read(imageFile));
-        	BufferedImage img=imageWindow.image;
-        // make one genome for random display
-        	
-        	drawGenome =getGenome();
-//        	drawGenome=new Genome(img.getWidth(), img.getHeight());
-//        GenomeUtilities
-//            .averagingGenome(drawGenome,img);
-        GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
-        //triangleWindow.image=GenomeUtilities.getBufferedImage(myGenome);
-          
+          imageWindow.changeImage(ImageIO.read(imageFile));
+          BufferedImage img=imageWindow.image;
+          // make one genome for random display
+
+          drawGenome=getGenome();
+          // drawGenome=new Genome(img.getWidth(), img.getHeight());
+          // GenomeUtilities
+          // .averagingGenome(drawGenome,img);
+          GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
+          // triangleWindow.image=GenomeUtilities.getBufferedImage(myGenome);
+
         } catch (IOException ec)
         {
-          System.out.println("Image "+path+flname+ " not Found");
+          System.out.println("Image "+path+flname+" not Found");
         }
 
       }
@@ -108,28 +108,27 @@ public class TriangleGenomeGUI extends JFrame
     // Genome genome=new Genome();
 
     triangleWindow=new ImagePanel(img.getWidth(), img.getHeight());
-    //build new tribes of appropriate image
-    
-    
+    // build new tribes of appropriate image
+
     makeTribes(imageWindow.getImage());
     // make one genome for display
     drawGenome=getGenome();
     GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
 
     // generate statistics
-    stats = Statistics.getFitScore(triangleWindow.image, imageWindow.image);
+    stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
     System.out.println(stats);
 
     // populate control panel
-    //imageSelect.setFont(new Font(imageSelect.getFont().getFontName(), 0,10));
+    // imageSelect.setFont(new Font(imageSelect.getFont().getFontName(), 0,10));
     buttonPanel.add(imageSelect);
-    
+
     resetButton.addActionListener(new ActionListener()
     {
       @Override
       public void actionPerformed(ActionEvent e)
       {
-    	  triangleWindowUpdate();
+        triangleWindowUpdate();
       }
     });
     nextButton.addActionListener(new ActionListener()
@@ -137,18 +136,18 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-    	  triangleWindowUpdate();
+        triangleWindowUpdate();
       }
     });
-    
+
     runPauseButton.addActionListener(new ActionListener()
     {
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        if(runPauseButton.getText().compareTo("RUN") == 0)
+        if(runPauseButton.getText().compareTo("RUN")==0)
         {
-          
+
           runPauseButton.setText("PAUSE");
           imageSelect.setEnabled(false);
           resetButton.setEnabled(false);
@@ -158,22 +157,26 @@ public class TriangleGenomeGUI extends JFrame
           readButton.setEnabled(false);
           writeButton.setEnabled(false);
           appendButton.setEnabled(false);
-         
+
           if(tribeList.get(0).isAlive())
           {
-        	  tribeList.get(0).resumeThread();}
-          else{tribeList.get(0).start();}
+            tribeList.get(0).resumeThread();
+          } else
+          {
+            tribeList.get(0).start();
+          }
           triangleWindowUpdate();
-          
-        }
-        else
+
+        } else
         {
-        	try {
-				tribeList.get(0).pauseThread();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+          try
+          {
+            tribeList.get(0).pauseThread();
+          } catch (InterruptedException e1)
+          {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+          }
           runPauseButton.setText("RUN");
           imageSelect.setEnabled(true);
           resetButton.setEnabled(true);
@@ -186,7 +189,7 @@ public class TriangleGenomeGUI extends JFrame
         }
       }
     });
-    
+
     tableButton.addActionListener(new ActionListener()
     {
       @Override
@@ -216,9 +219,9 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void stateChanged(ChangeEvent e)
       {
-          GenomeUtilities.drawNTriangles(triangleSlider.getValue(),
-                triangleWindow,drawGenome);
-          triangleLabel.setText(triangleSlider.getValue() + " triangle(s)");
+        GenomeUtilities.drawNTriangles(triangleSlider.getValue(),
+            triangleWindow, drawGenome);
+        triangleLabel.setText(triangleSlider.getValue()+" triangle(s)");
       }
     });
     tribeSlider.addChangeListener(new ChangeListener()
@@ -226,11 +229,11 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void stateChanged(ChangeEvent e)
       {
-    	  tribeIndex=tribeSlider.getValue();
-          tribeLabel.setText("Tribe #" + tribeIndex);
+        tribeIndex=tribeSlider.getValue();
+        tribeLabel.setText("Tribe #"+tribeIndex);
       }
     });
-    
+
     buttonPanel.add(runPauseButton);
     buttonPanel.add(nextButton);
     buttonPanel.add(nextButton);
@@ -240,7 +243,7 @@ public class TriangleGenomeGUI extends JFrame
     buttonPanel.add(writeButton);
     buttonPanel.add(appendButton);
     buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-    
+
     controlPanel.setLayout(new BorderLayout());
     controlPanel.add(buttonPanel, BorderLayout.NORTH);
 
@@ -249,12 +252,12 @@ public class TriangleGenomeGUI extends JFrame
     imagePane.setLayout(new GridLayout());
     imagePane.add(imageWindow);
     imagePane.add(triangleWindow);
-   imagePane.setSize(600, 800);
-    
-    genomeStats.setText(tmpGenomeStats+  stats);
+    imagePane.setSize(600, 800);
+
+    genomeStats.setText(tmpGenomeStats+stats);
     this.add(genomeStats, BorderLayout.SOUTH);
 
-    //buttonPanel.setPreferredSize(new Dimension(1150, 250));
+    // buttonPanel.setPreferredSize(new Dimension(1150, 250));
     controlPanel.setPreferredSize(new Dimension(1150, 150));
     this.add(imagePane, BorderLayout.CENTER);
     sliderPanel.setLayout(new GridLayout(5, 0));
@@ -264,7 +267,7 @@ public class TriangleGenomeGUI extends JFrame
     sliderPanel.add(tribeSlider);
     sliderPanel.add(genomeStats);
     controlPanel.add(sliderPanel);
-    //controlPanel.add(genomeStats);
+    // controlPanel.add(genomeStats);
     System.out.println("end");
     this.add(controlPanel, BorderLayout.SOUTH);
     this.setSize(1150, 650);
@@ -293,7 +296,7 @@ public class TriangleGenomeGUI extends JFrame
       image=imagein;
       x=xin;
       y=yin;
-      this.setSize(x,y);
+      this.setSize(x, y);
 
     }
 
@@ -302,55 +305,50 @@ public class TriangleGenomeGUI extends JFrame
     {
       super.paintComponent(g);
       buttonPanel.repaint();
-     g.drawImage(image, x, y, null);
+      g.drawImage(image, x, y, null);
     }
-    
 
     private void changeImage(BufferedImage cim)
     {
       image=cim;
       this.repaint();
-
     }
 
     public BufferedImage getImage()
     {
       return image;
-
     }
 
   }
-  public void makeTribes(BufferedImage image){
-	  tribeList=new ArrayList<>();
-	  for(int i=0;i<NTRIBES;i++){
-		  Tribe tribe=new Tribe(image);
-		  System.out.println("makeTribes");
-		  tribeList.add(tribe);
-		  
-	  }
+
+  public void makeTribes(BufferedImage image)
+  {
+    tribeList=new ArrayList<>();
+    for(int i=0;i<NTRIBES;i++)
+    {
+      Tribe tribe=new Tribe(image);
+      System.out.println("makeTribes");
+      tribeList.add(tribe);
+    }
   }
-	 public void triangleWindowUpdate(){
-		 drawGenome=getGenome();
-         GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
-         stats =Statistics.getFitScore(triangleWindow.image, imageWindow.image);
-         System.out.println(stats);
-         genomeStats.setText(tmpGenomeStats+  stats);
-		 
-	 } 
-	  
-  
-  public Genome getGenome(){
-	  return tribeList.get(0).genomeList.get(tribeIndex);
-	  
-	  
-	  
+
+  public void triangleWindowUpdate()
+  {
+    drawGenome=getGenome();
+    GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
+    stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
+    System.out.println(stats);
+    genomeStats.setText(tmpGenomeStats+stats);
   }
-  
-  
-  
-  public Genome getDrawGenome(){
-	  
-	  return drawGenome;
+
+  public Genome getGenome()
+  {
+    return tribeList.get(0).genomeList.get(tribeIndex);
+  }
+
+  public Genome getDrawGenome()
+  {
+    return drawGenome;
   }
 
   // for reading images from file names
@@ -365,7 +363,6 @@ public class TriangleGenomeGUI extends JFrame
   public static void main(String[] args) throws IOException
   {
     TriangleGenomeGUI tg=new TriangleGenomeGUI();
-
   }
 
 }
