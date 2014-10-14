@@ -86,11 +86,11 @@ public class HillClimber extends Thread
       {
         shiftAmount = -mutateAlleleValue;// will set mutateAlleleValue to 0 when mutate is called
       }
-      Mutate.exposeToRadiation(mutateGene, allele, shiftAmount);
-      
+      Mutate.exposeToRadiation(mutateGene, allele, shiftAmount);      
       previousScore=currentScore;
       currentScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
     }
+    
     revertGenome(lastGene, lastAllele, lastShift);
   }
   
@@ -99,6 +99,7 @@ public class HillClimber extends Thread
     Gene myGene=myGenome.geneList.get(rand.nextInt(myGenome.NUM_GENES));
     return myGene;
   }
+  
   public int getAllele(Gene myGene)
   {
     int myAlleleIndex=rand.nextInt(myGene.NALLELE);// 10 alleles
