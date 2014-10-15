@@ -8,15 +8,17 @@ public class HillClimber extends Thread
   // repeat supersedes revert
   static Random rand = new Random();
   public BufferedImage image;
+  public Genome genome;
   boolean repeat;
   Gene lastGene;
+  int maxBound;
   // I need to to define input parameters based on which allele is which.
   int lastAllele;
   int lastShift;
 
   public HillClimber(BufferedImage img)
   {
-    image = img;
+	image =img;
     repeat = false;
   }
 
@@ -31,9 +33,9 @@ public class HillClimber extends Thread
 
   public boolean climbStep(Genome myGenome)
   {
-    long startScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
-    int maxBound;
-
+    
+    
+	genome=myGenome;
     // mutate random gene at random allele
     Gene mutateGene = getGene(myGenome);
     int mutateAlleleIndex = getAllele(mutateGene);
@@ -41,7 +43,11 @@ public class HillClimber extends Thread
     int shiftAmount = rand.nextInt(maxBound / 5);// shift by up to 20%
     shiftAmount -= (maxBound / 10);// subtract, to leave shift by +/- 10
 
+    
     int mutateAlleleValue = Mutate.getAlleleValue(mutateGene, mutateAlleleIndex);
+    
+   
+    
     if (mutateAlleleValue + shiftAmount > maxBound)
     {
       shiftAmount = maxBound - mutateAlleleValue;// this will set mutateAlleleValue to max when mutate is called
@@ -50,14 +56,16 @@ public class HillClimber extends Thread
     {
       shiftAmount = -mutateAlleleValue;// will set mutateAlleleValue to 0 when mutate is called
     }
-
+    long startScore =getLocalFit(mutateGene, mutateAlleleIndex, Math.abs(shiftAmount)) ;
     Mutate.exposeToRadiation(mutateGene, mutateAlleleIndex, shiftAmount);
-
+    long endScore =getLocalFit(mutateGene, mutateAlleleIndex, Math.abs(shiftAmount)) ;
+    //System.out.println(startScore+";"+endScore);
+    
     lastGene = mutateGene;
     lastAllele = mutateAlleleIndex;
     lastShift = shiftAmount;
 
-    long endScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
+   
 
     if(endScore > startScore)revertGenome(lastGene, lastAllele, lastShift);
     else if(endScore<startScore)repeatMutation(myGenome, lastGene, lastAllele, lastShift, maxBound, startScore, endScore);
@@ -71,7 +79,7 @@ public class HillClimber extends Thread
   
   public void repeatMutation(Genome myGenome, Gene mutateGene, int allele, int shiftAmount, int maxBound, long startScore, long endScore)
   {
-    long f0score=startScore;
+   // long f0score=startScore;
     long previousScore=startScore;
     long currentScore=endScore;
     int mutateAlleleValue;
@@ -147,31 +155,34 @@ public class HillClimber extends Thread
     return maxBound;
   }
 
-  public Gene getWurstQuadrent(Genome genome)
+//  public Gene getWurstQuadrent(Genome genome)
+//  {
+//    long tmpscore = 0;
+//    long score;
+//    int tmp = 0;
+//    for (int i = 0; i < 4; i++)
+//    {
+//      score = getLocalFit(genome.geneList.get(i));
+//      if (score > tmpscore)
+//      {
+//        tmp = i;
+//        tmpscore = score;
+//      }
+//
+//    }
+//
+//    return genome.geneList.get(tmp);
+//
+//  }
+//shiftMagnitude is the absolute value of the shift.
+  public long getLocalFit(Gene gene, int allele, int shiftMagnitude)
   {
-    long tmpscore = 0;
-    long score;
-    int tmp = 0;
-    for (int i = 0; i < 4; i++)
-    {
-      score = getLocalFit(genome.geneList.get(i));
-      if (score > tmpscore)
-      {
-        tmp = i;
-        tmpscore = score;
-      }
-
-    }
-
-    return genome.geneList.get(tmp);
-
-  }
-
-  public long getLocalFit(Gene gene)
-  {
-
-    Raster raster = this.image.getRaster();
+	  
+	  BufferedImage genomeImage=GenomeUtilities.getBufferedImage(genome);
+	  Raster genomeRaster=genomeImage.getRaster();
+    Raster raster = image.getRaster();
     int red, blue, green;
+    
     long sum = 0;
 
     int minX = Math.min(gene.xpoints[0],
@@ -182,34 +193,66 @@ public class HillClimber extends Thread
         Math.min(gene.ypoints[1], gene.ypoints[2]));
     int maxY = Math.max(gene.ypoints[0],
         Math.max(gene.ypoints[1], gene.ypoints[2]));
+    
+    //adds to boundaries based on affected variables
+    //
+   if(allele<6&&shiftMagnitude>0){
+	   if(allele%2==0) {
+		   minX=Math.max(minX-shiftMagnitude,0);
+		   maxX=Math.min(minX+shiftMagnitude,image.getWidth());
+		  // System.out.println("xchange");
 
-    for (int x = minX; x <= maxX; x++)
+	   }
+	   else{
+		   minY=Math.max(minY-shiftMagnitude,0);
+		   maxY=Math.min(maxX+shiftMagnitude,image.getHeight());
+		  // System.out.println("ychange");   
+	   }
+	   
+	   
+	   
+   }
+  
+   //prevent streight lines
+   //System.out.println(shiftMagnitude+"->"+allele+";"+maxX+";"+minX+";"+maxY+";" + minY);
+   
+   if(minX==maxX){minX--;maxX++;}
+   if(minY==maxY){minY--;maxY++;}
+    
+    
+    long runsum=0;
+    
+    for (int x = minX; x < maxX; x++)
     {
-      for (int y = minY; y <= maxY; y++)
+      for (int y = minY; y < maxY; y++)
       {
-        if (gene.contains(x, y))
-        {
+        
           int[] pixel =
           { 0, 0, 0 };
+          int[] genomePixel =
+              { 0, 0, 0 };
+          //System.out.println(x+";"+y);
           raster.getPixel(x, y, pixel);
+          genomeRaster.getPixel(x, y, genomePixel);
 
-          red = (pixel[0] - gene.r);
+          red = (pixel[0] - genomePixel[0]);
           red = red * red;
-          blue = pixel[0] - gene.b;
-          blue = blue * blue;
-          green = pixel[0] - gene.g;
+          green = pixel[1] - genomePixel[1];
           green = green * green;
+          blue = pixel[2] - genomePixel[2];
+          blue = blue * blue;
+          
           sum = red + green + blue;
+          runsum+=sum;
+           //System.out.println(red+";"+green+";"+blue);
 
-          // System.out.println(red+";"+green+";"+blue);
-
-        }
+        
 
       }
 
     }
-
-    return sum / ((maxX - minX) * (maxY - minY));
+//returns euclidian distance.
+     return runsum / ((maxX - minX) * (maxY - minY));
   }
 
 }

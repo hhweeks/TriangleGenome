@@ -13,12 +13,14 @@ public class Tribe extends Thread
   private boolean pauseThreadFlag=false;
 
   private volatile boolean running=true; // Run unless told to pause
-  public static final int STARTINGTRIBESIZE=8;
+  public static final int STARTINGTRIBESIZE=1;
   public static final int ENDINGTRIBESIZE=128;
+  TriangleGenomeGUI imagePanel;
 
-  public Tribe(BufferedImage image)
+  public Tribe(BufferedImage image,TriangleGenomeGUI tg)
   {
     masterImage=image;
+    imagePanel=tg;
     // populate genome list
     for(int i=0;i<STARTINGTRIBESIZE;i++)
     {
@@ -42,42 +44,37 @@ public class Tribe extends Thread
       
       
       System.out.println("start");
-      goToLocalMax(1000);
+      goToLocalMax(100);
       System.out.println("mutate 1000 times");
 
-      Genome son=new Genome(masterImage);
-      Genome daughter=new Genome(masterImage);
-      sigma=genomeList.size()/2;
-      int index0=(int) Math.abs(rand.nextGaussian()*sigma);
-      int index1=(int) Math.abs(rand.nextGaussian()*sigma);
-      while(index0>=genomeList.size())
-      {
-        index0=(int) Math.abs(rand.nextGaussian()*sigma);
-      }
-
-      while(index1>=genomeList.size())
-      {
-        index1=(int) Math.abs(rand.nextGaussian()*sigma);
-      }
-
-      CrossOver.breed(genomeList.get(index0), genomeList.get(index1), son, daughter, rand.nextInt(200));
-      genomeList.add(GenomeUtilities.genomeCopy(son));
-      genomeList.add(GenomeUtilities.genomeCopy(daughter));
-      System.out.println("crossover");
-      if(genomeList.size()>=ENDINGTRIBESIZE)
-      {
-        generateFitScores();
-        Collections.sort(genomeList);
-        System.out.println("sorted");
-
-        Genome survivor0=genomeList.get(0);
-        Genome survivor1=genomeList.get(1);
-        genomeList.clear();
-        genomeList.add(survivor0);
-        genomeList.add(survivor1);
-
-        System.out.println("trimmed");
-      }
+//      Genome son=new Genome(masterImage);
+//      Genome daughter=new Genome(masterImage);
+//      sigma=genomeList.size()/2;
+//      int index0=(int) Math.abs(rand.nextGaussian()*sigma);
+//      int index1=(int) Math.abs(rand.nextGaussian()*sigma);
+//      while(index0>=genomeList.size())
+//      {
+//        index0=(int) Math.abs(rand.nextGaussian()*sigma);
+//      }
+//
+//      while(index1>=genomeList.size())
+//      {
+//        index1=(int) Math.abs(rand.nextGaussian()*sigma);
+//      }
+//
+//      CrossOver.breed(genomeList.get(index0), genomeList.get(index1), son, daughter, rand.nextInt(200));
+//      genomeList.add(GenomeUtilities.genomeCopy(son));
+//      genomeList.add(GenomeUtilities.genomeCopy(daughter));
+//      System.out.println("crossover");
+//      if(genomeList.size()>=ENDINGTRIBESIZE)
+//      {
+//        generateFitScores();
+//        Collections.sort(genomeList);
+//        genomeList.clear();
+//        genomeList.addAll(genomeList.subList(0, STARTINGTRIBESIZE));
+//
+//        System.out.println("trimmed");
+//      }
     }
   }
 
@@ -126,13 +123,20 @@ public class Tribe extends Thread
   {
     HillClimber hc=new HillClimber(masterImage);
     System.out.println("climber started");
+    
     for(Genome genome:genomeList)
     {
       for(int i=0;i<N;i++){
       checkForPaused();
+     // long startTime=System.currentTimeMillis();
       hc.climbLoop(genome, 5);
+      imagePanel.triangleWindowUpdate();
+     // long endTime=System.currentTimeMillis();
+      //System.out.println(endTime-startTime);
       }
-      genome.image=GenomeUtilities.getBufferedImage(genome);
+      
+      //genome.image=GenomeUtilities.getBufferedImage(genome);
+     
     }
   }
 

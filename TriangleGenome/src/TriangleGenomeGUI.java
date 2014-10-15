@@ -43,7 +43,7 @@ public class TriangleGenomeGUI extends JFrame
   BufferedImage img;
   String path="images/";
   long stats;
-  int tribeIndex;
+  public int tribeIndex;
   ArrayList<Tribe> tribeList;
   String tmpGenomeStats="min:sec=0.0   gen=0   gen/sec=NaN   Fitness=";
 
@@ -327,7 +327,7 @@ public class TriangleGenomeGUI extends JFrame
     tribeList=new ArrayList<>();
     for(int i=0;i<NTRIBES;i++)
     {
-      Tribe tribe=new Tribe(image);
+      Tribe tribe=new Tribe(image,tg);
       System.out.println("makeTribes");
       tribeList.add(tribe);
     }
@@ -338,7 +338,7 @@ public class TriangleGenomeGUI extends JFrame
     drawGenome=getGenome();
     GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
     stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
-    System.out.println(stats);
+   // System.out.println(stats);
     genomeStats.setText(tmpGenomeStats+stats);
   }
 
