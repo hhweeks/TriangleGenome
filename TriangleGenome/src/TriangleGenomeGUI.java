@@ -134,7 +134,9 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        triangleWindowUpdate();
+        //triangleWindowUpdate();
+    	  makeTribes(triangleWindow.image);
+    	  triangleWindowUpdate();
       }
     });
     nextButton.addActionListener(new ActionListener()
@@ -259,7 +261,12 @@ public class TriangleGenomeGUI extends JFrame
     imagePane.add(triangleWindow);
     imagePane.setSize(600, 800);
 
-    genomeStats.setText(tmpGenomeStats+stats);
+    //genomeStats.setText(tmpGenomeStats+stats);
+    genomeStats.setText("min:sec = " + "" +
+    		"    gen = " + numUdates +
+    		"    gen/sec = " + "" +
+    		"    Fitness = " + stats
+    		);
     this.add(genomeStats, BorderLayout.SOUTH);
 
     // buttonPanel.setPreferredSize(new Dimension(1150, 250));
@@ -351,7 +358,12 @@ public class TriangleGenomeGUI extends JFrame
       drawGenome.fitscore=stats;
       System.out.println("50 updates happened");
     }
-    genomeStats.setText(tmpGenomeStats+stats);
+    //genomeStats.setText(tmpGenomeStats+stats);
+    genomeStats.setText("min:sec = " + "" +
+    		"    gen = " + numUdates +
+    		"    gen/sec = " + "" +
+    		"    Fitness = " + stats
+    		);
   }
 
   public Genome getGenome()
