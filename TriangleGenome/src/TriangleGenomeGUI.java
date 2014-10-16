@@ -44,6 +44,7 @@ public class TriangleGenomeGUI extends JFrame
   Genome drawGenome;
   BufferedImage img;
   String path="images/";
+  int numUdates;//used by triangleWindowUpdate
   long stats;
   public int tribeIndex;
   public int genomeIndex;
@@ -343,8 +344,11 @@ public class TriangleGenomeGUI extends JFrame
   {
     drawGenome=getGenome();
     GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
-    stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
-   // System.out.println(stats);
+    if(numUdates%50==0)
+    {
+      stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
+      drawGenome.fitscore=stats;
+    }
     genomeStats.setText(tmpGenomeStats+stats);
   }
 
