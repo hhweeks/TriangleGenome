@@ -9,6 +9,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.*;
@@ -27,9 +28,19 @@ public class XMLUtil
       //declaration
       myXSW.writeStartDocument("UTF-8", "1.0");
       myXSW.writeCharacters("\n");
-      //myXSW.writeStartElement(rootElement);
       
+      //write the root element      
       myXSW.writeStartElement("genome");
+      
+      //write genomes variable, width and height
+      myXSW.writeStartElement("width");
+      myXSW.writeCharacters(Integer.toString(myGenome.IMG_WIDTH));
+      myXSW.writeEndElement();
+      
+      myXSW.writeStartElement("height");
+      myXSW.writeCharacters(Integer.toString(myGenome.IMG_WIDTH));
+      myXSW.writeEndElement();
+      
       for(int index=0;index<myGenome.geneList.size();index++)
       {
         Gene gene=myGenome.geneList.get(index);
@@ -135,8 +146,11 @@ public class XMLUtil
   
   public static Genome readXML(String filePath)
   {
-    Genome myGenome=null;
+    Genome myGenome=null;//TODO write xml needs to have a field for width height so this can be initialized TODO actually, should just hand it an image from a file pathname
     Gene myGene=null;
+    int genWidth=0;
+    int genHeight=0;
+    
     XMLInputFactory myXIF=XMLInputFactory.newInstance();
     
     try
@@ -148,7 +162,19 @@ public class XMLUtil
         if(myEvent.isStartElement())
         {
           StartElement mySE=myEvent.asStartElement();
-          if(mySE.getName().getLocalPart().equals("gene"))
+          if(mySE.getName().getLocalPart().equals("width"))
+          {
+            myEvent=myXER.nextEvent();
+            genWidth=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+          else if(mySE.getName().getLocalPart().equals("height"))
+          {
+            myEvent=myXER.nextEvent();
+            genHeight=Integer.parseInt(myEvent.asCharacters().getData());
+            //if height found, we can now initialize myGenome
+            myGenome=new Genome(genWidth,genHeight);
+          }
+          else if(mySE.getName().getLocalPart().equals("gene"))
           {
             myGene=new Gene();
           }
@@ -212,6 +238,14 @@ public class XMLUtil
           {
             myEvent=myXER.nextEvent();
             myGene.a=Integer.parseInt(myEvent.asCharacters().getData());
+          }
+        }
+        if(myEvent.isEndElement())
+        {
+          EndElement myEE=myEvent.asEndElement();
+          if(myEE.getName().getLocalPart().equals("gene"));
+          {
+            myGenome.geneList.add(myGene);
           }
         }
       }

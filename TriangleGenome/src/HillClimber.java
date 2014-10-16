@@ -18,24 +18,13 @@ public class HillClimber extends Thread
 
   public HillClimber(BufferedImage img)
   {
-	image =img;
+    image =img;
     repeat = false;
   }
 
-  public void climbLoop(Genome genome, int N)
-  {
-    for (int i = 0; i < N; i++)
-    {
-      repeat = climbStep(genome);
-     //System.out.println(System.currentTimeMillis());
-    }
-  }
-
   public boolean climbStep(Genome myGenome)
-  {
-    
-    
-	genome=myGenome;
+  { 
+    genome=myGenome;
     // mutate random gene at random allele
     Gene mutateGene = getGene(myGenome);
     int mutateAlleleIndex = getAllele(mutateGene);
@@ -44,8 +33,7 @@ public class HillClimber extends Thread
     shiftAmount -= (maxBound / 10);// subtract, to leave shift by +/- 10
 
     
-    int mutateAlleleValue = Mutate.getAlleleValue(mutateGene, mutateAlleleIndex);
-    
+    int mutateAlleleValue = Mutate.getAlleleValue(mutateGene, mutateAlleleIndex);    
    
     
     if (mutateAlleleValue + shiftAmount > maxBound)
@@ -56,20 +44,46 @@ public class HillClimber extends Thread
     {
       shiftAmount = -mutateAlleleValue;// will set mutateAlleleValue to 0 when mutate is called
     }
-    long startScore =getLocalFit(mutateGene, mutateAlleleIndex, Math.abs(shiftAmount)) ;
+    
+    int iStep=5;
+    if(myGenome.fitscore<10000)
+    {
+      iStep=3;
+    }
+    if(myGenome.fitscore<7500)
+    {
+      iStep=2;
+    }
+    if(myGenome.fitscore<5000)
+    {
+      iStep=1;
+    }
+    
+//    System.out.println("fitscore="+myGenome.fitscore);
+//    System.out.println("Step size is "+iStep);
+    long startScoreLocal =Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
+    //long startScoreGlobal =Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);
     Mutate.exposeToRadiation(mutateGene, mutateAlleleIndex, shiftAmount);
-    long endScore =getLocalFit(mutateGene, mutateAlleleIndex, Math.abs(shiftAmount)) ;
+    long endScoreLocal =Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
     //System.out.println(startScore+";"+endScore);
     
     lastGene = mutateGene;
     lastAllele = mutateAlleleIndex;
     lastShift = shiftAmount;
 
-   
-
-    if(endScore > startScore)revertGenome(lastGene, lastAllele, lastShift);
-    else if(endScore<startScore)repeatMutation(myGenome, lastGene, lastAllele, lastShift, maxBound, startScore, endScore);
-    return endScore < startScore;
+    if(endScoreLocal > startScoreLocal)
+    {
+      revertGenome(lastGene, lastAllele, lastShift);
+    }
+    else if(endScoreLocal<startScoreLocal)repeatMutation(myGenome, lastGene, lastAllele, lastShift, maxBound, startScoreLocal, endScoreLocal,iStep);
+    
+    //long endScoreGlobal=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);//TODO debug
+//    if(endScoreLocal<startScoreLocal&&endScoreGlobal>startScoreGlobal)
+//    {
+//      System.out.println("broken local fit");
+//    }
+    
+    return endScoreLocal < startScoreLocal;
   }
   
   public void revertGenome(Gene mutateGene, int allele, int shiftAmount)
@@ -77,7 +91,7 @@ public class HillClimber extends Thread
     Mutate.exposeToRadiation(lastGene, lastAllele, -lastShift);
   }
   
-  public void repeatMutation(Genome myGenome, Gene mutateGene, int allele, int shiftAmount, int maxBound, long startScore, long endScore)
+  public void repeatMutation(Genome myGenome, Gene mutateGene, int allele, int shiftAmount, int maxBound, long startScore, long endScore,int iStep)
   {
    // long f0score=startScore;
     long previousScore=startScore;
@@ -97,15 +111,19 @@ public class HillClimber extends Thread
       }
       Mutate.exposeToRadiation(mutateGene, allele, shiftAmount);      
       previousScore=currentScore;
-      currentScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
-    }
-    
+      //currentScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
+      currentScore=Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
+    }    
     revertGenome(lastGene, lastAllele, lastShift);
   }
   
   public Gene getGene(Genome myGenome)
   {
-    Gene myGene=myGenome.geneList.get(rand.nextInt(myGenome.NUM_GENES));
+    //how to favor genes closest to the surface?
+    int randomGeneInt=rand.nextInt(myGenome.NUM_GENES);
+    
+    Gene myGene=myGenome.geneList.get(randomGeneInt);
+  
     return myGene;
   }
   
@@ -155,26 +173,6 @@ public class HillClimber extends Thread
     return maxBound;
   }
 
-//  public Gene getWurstQuadrent(Genome genome)
-//  {
-//    long tmpscore = 0;
-//    long score;
-//    int tmp = 0;
-//    for (int i = 0; i < 4; i++)
-//    {
-//      score = getLocalFit(genome.geneList.get(i));
-//      if (score > tmpscore)
-//      {
-//        tmp = i;
-//        tmpscore = score;
-//      }
-//
-//    }
-//
-//    return genome.geneList.get(tmp);
-//
-//  }
-//shiftMagnitude is the absolute value of the shift.
   public long getLocalFit(Gene gene, int allele, int shiftMagnitude)
   {
 	  

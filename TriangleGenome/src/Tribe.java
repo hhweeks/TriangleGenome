@@ -14,7 +14,7 @@ public class Tribe extends Thread
 
   private volatile boolean running=true; // Run unless told to pause
   public static final int STARTINGTRIBESIZE=1;
-  public static final int ENDINGTRIBESIZE=128;
+  public static final int ENDINGTRIBESIZE=1;
   TriangleGenomeGUI imagePanel;
 
   public Tribe(BufferedImage image,TriangleGenomeGUI tg)
@@ -44,7 +44,7 @@ public class Tribe extends Thread
       
       
       System.out.println("start");
-      goToLocalMax(100);
+      goToLocalMax(10000);
       System.out.println("mutate 1000 times");
 
 //      Genome son=new Genome(masterImage);
@@ -114,8 +114,8 @@ public class Tribe extends Thread
     {
       // creates a fitscore from each image.
       // Should we preserve the Buffered Image as a phenotype???
-      genome.fitscore=Statistics.getFitScore(masterImage,
-          GenomeUtilities.getBufferedImage(genome));
+//      genome.fitscore=Statistics.getFitScore(masterImage,GenomeUtilities.getBufferedImage(genome));
+      genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
     }
   }
 
@@ -126,11 +126,23 @@ public class Tribe extends Thread
     
     for(Genome genome:genomeList)
     {
+      long startScore=0;//TODO debug
+      long endScore=0;//TODO debug
       for(int i=0;i<N;i++){
       checkForPaused();
      // long startTime=System.currentTimeMillis();
-      hc.climbLoop(genome, 5);
+      
+      //startScore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
+      hc.climbStep(genome);
       imagePanel.triangleWindowUpdate();
+//      endScore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);//TODO debug
+//      long mutateResult=endScore-startScore;//TODO debug
+//      if(mutateResult>1)//TODO debug
+//      {
+//        System.out.println("kept bad mutation");//TODO debug//TODO debug
+//      }
+      
+      
      // long endTime=System.currentTimeMillis();
       //System.out.println(endTime-startTime);
       }
