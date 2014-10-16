@@ -342,12 +342,14 @@ public class TriangleGenomeGUI extends JFrame
 
   public void triangleWindowUpdate()
   {
+    numUdates++;
     drawGenome=getGenome();
     GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
     if(numUdates%50==0)
     {
       stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
       drawGenome.fitscore=stats;
+      System.out.println("50 updates happened");
     }
     genomeStats.setText(tmpGenomeStats+stats);
   }
