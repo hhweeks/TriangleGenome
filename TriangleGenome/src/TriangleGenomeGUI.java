@@ -93,7 +93,7 @@ public class TriangleGenomeGUI extends JFrame
           // .averagingGenome(drawGenome,img);
           GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
           // triangleWindow.image=GenomeUtilities.getBufferedImage(myGenome);
-
+          triangleSlider.setValue(200);
         } catch (IOException ec)
         {
           System.out.println("Image "+path+flname+" not Found");
@@ -211,7 +211,7 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        System.out.println("WRITE GENOME");
+        XMLUtil.writeXML(System.nanoTime() + ".xml", drawGenome);
       }
     });
     triangleSlider.addChangeListener(new ChangeListener()
@@ -237,6 +237,7 @@ public class TriangleGenomeGUI extends JFrame
     buttonPanel.add(runPauseButton);
     buttonPanel.add(nextButton);
     buttonPanel.add(nextButton);
+    triangleSlider.setValue(200);
     buttonPanel.add(triangleSlider);
     buttonPanel.add(tableButton);
     buttonPanel.add(readButton);
