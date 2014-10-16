@@ -30,6 +30,8 @@ public class TriangleGenomeGUI extends JFrame
   JSlider tribeSlider=new JSlider(0, NTRIBES, 0);
   JLabel triangleLabel=new JLabel("triangles");
   JLabel tribeLabel=new JLabel("tribes");
+  JSlider genomeSlider=new JSlider(0, NTRIBES, 0);
+  JLabel genomeLabel=new JLabel("genome");
   JButton runPauseButton=new JButton("RUN");
   JButton nextButton=new JButton("NEXT");
   JButton resetButton=new JButton("RESET");
@@ -44,6 +46,7 @@ public class TriangleGenomeGUI extends JFrame
   String path="images/";
   long stats;
   public int tribeIndex;
+  public int genomeIndex;
   ArrayList<Tribe> tribeList;
   String tmpGenomeStats="min:sec=0.0   gen=0   gen/sec=NaN   Fitness=";
 
@@ -154,10 +157,13 @@ public class TriangleGenomeGUI extends JFrame
           resetButton.setEnabled(false);
           nextButton.setEnabled(false);
           triangleSlider.setEnabled(false);
+          genomeSlider.setEnabled(false);
+          tribeSlider.setEnabled(false);
           tableButton.setEnabled(false);
           readButton.setEnabled(false);
           writeButton.setEnabled(false);
           appendButton.setEnabled(false);
+          
 
           if(tribeList.get(0).isAlive())
           {
@@ -183,6 +189,8 @@ public class TriangleGenomeGUI extends JFrame
           resetButton.setEnabled(true);
           nextButton.setEnabled(true);
           triangleSlider.setEnabled(true);
+          genomeSlider.setEnabled(true);
+          tribeSlider.setEnabled(true);
           tableButton.setEnabled(true);
           readButton.setEnabled(true);
           writeButton.setEnabled(true);
@@ -195,6 +203,7 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
+        System.out.println("TRIBE SIZE" + tribeList.size());
         new GenomeTable(drawGenome);
       }
     });
@@ -233,6 +242,18 @@ public class TriangleGenomeGUI extends JFrame
         tribeLabel.setText("Tribe #"+tribeIndex);
       }
     });
+    genomeSlider=new JSlider(0, tribeList.size(), 0);
+    genomeSlider.addChangeListener(new ChangeListener()
+    {
+      @Override
+      public void stateChanged(ChangeEvent e)
+      {
+        genomeIndex=genomeSlider.getValue();
+        genomeLabel.setText("Genome #"+genomeIndex);
+        drawGenome = tribeList.get(genomeIndex).genomeList.get(tribeIndex);
+        //triangleWindowUpdate();
+      }
+    });
 
     buttonPanel.add(runPauseButton);
     buttonPanel.add(nextButton);
@@ -243,6 +264,7 @@ public class TriangleGenomeGUI extends JFrame
     buttonPanel.add(readButton);
     buttonPanel.add(writeButton);
     buttonPanel.add(appendButton);
+    buttonPanel.add(resetButton);
     buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
     controlPanel.setLayout(new BorderLayout());
@@ -259,11 +281,14 @@ public class TriangleGenomeGUI extends JFrame
     this.add(genomeStats, BorderLayout.SOUTH);
 
     // buttonPanel.setPreferredSize(new Dimension(1150, 250));
-    controlPanel.setPreferredSize(new Dimension(1150, 150));
+    controlPanel.setPreferredSize(new Dimension(1150, 175));
     this.add(imagePane, BorderLayout.CENTER);
-    sliderPanel.setLayout(new GridLayout(5, 0));
+    sliderPanel.setLayout(new GridLayout(7, 0));
     sliderPanel.add(triangleLabel);
     sliderPanel.add(triangleSlider);
+    sliderPanel.add(genomeLabel);
+    
+    sliderPanel.add(genomeSlider);
     sliderPanel.add(tribeLabel);
     sliderPanel.add(tribeSlider);
     sliderPanel.add(genomeStats);
