@@ -187,16 +187,15 @@ public class TriangleGenomeGUI extends JFrame
           readButton.setEnabled(true);
           writeButton.setEnabled(true);
           appendButton.setEnabled(true);
-        }
       }
-    });
+    }});
 
     tableButton.addActionListener(new ActionListener()
     {
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        System.out.println("DISPLAY TABLE");
+        new GenomeTable(drawGenome);
       }
     });
     readButton.addActionListener(new ActionListener()
