@@ -51,6 +51,9 @@ public class TriangleGenomeGUI extends JFrame
   ArrayList<Tribe> tribeList;
   String tmpGenomeStats="min:sec=0.0   gen=0   gen/sec=NaN   Fitness=";
   String flname;
+  public long startTime = Long.MAX_VALUE;
+  static int seconds = 1;
+  boolean reset = false;
 
   public TriangleGenomeGUI() throws IOException
   {
@@ -135,6 +138,7 @@ public class TriangleGenomeGUI extends JFrame
       public void actionPerformed(ActionEvent e)
       {
         //triangleWindowUpdate();
+        reset = true;
     	  makeTribes(triangleWindow.image);
     	  triangleWindowUpdate();
       }
@@ -153,9 +157,10 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
+        //if(!reset) startTime = System.nanoTime();
         if(runPauseButton.getText().compareTo("RUN")==0)
         {
-
+          if(startTime > System.nanoTime()) startTime = System.nanoTime();
           runPauseButton.setText("PAUSE");
           toggleButtons(false);
 
@@ -226,15 +231,17 @@ public class TriangleGenomeGUI extends JFrame
         tribeLabel.setText("Tribe #"+tribeIndex);
       }
     });
-    genomeSlider=new JSlider(0, tribeList.size(), 0);
+    genomeSlider=new JSlider(0, tribeList.size() - 1, 0);
     genomeSlider.addChangeListener(new ChangeListener()
     {
       @Override
       public void stateChanged(ChangeEvent e)
       {
         genomeIndex=genomeSlider.getValue();
-        genomeLabel.setText("Genome #"+genomeIndex);
-        drawGenome = tribeList.get(genomeIndex).genomeList.get(tribeIndex);
+        genomeLabel.setText("Genome #"+genomeIndex + 1);
+        //System.out.println("tribe size " + tribeList.size());
+        drawGenome = tribeList.get(0).genomeList.get(tribeIndex);
+        //System.out.print("genome Index " + genomeIndex + "\ntribeIndex " + tribeIndex);
         //triangleWindowUpdate();
       }
     });
@@ -265,7 +272,8 @@ public class TriangleGenomeGUI extends JFrame
     genomeStats.setText("min:sec = " + "" +
     		"    gen = " + numUdates +
     		"    gen/sec = " + "" +
-    		"    Fitness = " + stats
+    		"    Fitness = " + stats + 
+    		"    Duration = " + "0"//getRunDuration(startTime)
     		);
     this.add(genomeStats, BorderLayout.SOUTH);
 
@@ -360,8 +368,9 @@ public class TriangleGenomeGUI extends JFrame
     }
     //genomeStats.setText(tmpGenomeStats+stats);
     genomeStats.setText("min:sec = " + "" +
+        "    Duration = " + getRunDuration(startTime)+
     		"    gen = " + numUdates +
-    		"    gen/sec = " + "" +
+    		"    gen/sec = " + getGenPerSec() +
     		"    Fitness = " + stats
     		);
   }
@@ -399,6 +408,16 @@ public class TriangleGenomeGUI extends JFrame
       appendButton.setEnabled(s);
   }
 
+  private String getRunDuration(long start)
+  {
+    seconds = (int) ((System.nanoTime() - start) * 0.000000001);
+    return seconds/60 + ":" + seconds%60 + "";
+  }
+  private double getGenPerSec()
+  {
+    try { return (double)numUdates/(double)seconds; }
+    catch(ArithmeticException e) { return -1; }
+  }
   public static void main(String[] args) throws IOException
   {
     TriangleGenomeGUI tg=new TriangleGenomeGUI();
