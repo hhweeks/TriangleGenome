@@ -5,27 +5,42 @@ public class AssertionTest {
 	
 	
 	public static void main(String[] args){
+		
+		
+		//generate 4 empty genomes
 		Genome oneGenome=new Genome(500,500);
 		Genome twoGenome=new Genome(500,500);
 		Genome threeGenome=new Genome(500,500);
 		Genome fourGenome=new Genome(500,500);
+		
+		//randomize the first two genomes and make a copy with different a different
+		//address and identical genes
 		GenomeUtilities.setRandomGenome(oneGenome);
+		GenomeUtilities.setRandomGenome(twoGenome);
 		Genome copyOfGenomeOne=GenomeUtilities.genomeCopy(oneGenome);
 		
-		GenomeUtilities.setRandomGenome(twoGenome);
-		GenomeUtilities.setRandomGenome(threeGenome);
-		GenomeUtilities.setRandomGenome(fourGenome);
-		//oneGenome.geneList.add(new Gene());
-		System.out.println(isValid(oneGenome));
-		CrossOver.breed(oneGenome, twoGenome, threeGenome, fourGenome, 1004);
-		System.out.println(crossOverTest(oneGenome, twoGenome, threeGenome, fourGenome));
-		System.out.println(GenomeUtilities.hammingDistance(oneGenome, twoGenome));
-		System.out.println(GenomeUtilities.hammingDistance(oneGenome, copyOfGenomeOne));
+		//Assertion test of random genome
+		isValid(oneGenome);
+		
+		//Assertion test of CrossOver-ed genomes
+		//CrossOver.breed(oneGenome, twoGenome, threeGenome, fourGenome, 1004);
+		
+		
+		crossOverTest(oneGenome, twoGenome, threeGenome, fourGenome,1004);
+		
+		isValid(threeGenome);
+		isValid(fourGenome);
+		
+		System.out.println("Hamming score for two random genomes:  "+GenomeUtilities.hammingDistance(oneGenome, twoGenome));
+		System.out.println("Hamming score for two identical genomes with diffent addresses:  "+GenomeUtilities.hammingDistance(oneGenome, copyOfGenomeOne));
+		System.out.println("Hamming score for a parent and child after a cross over:  "+GenomeUtilities.hammingDistance(oneGenome, threeGenome));
+		System.out.println("Hamming score for a parent and the other child after a cross over:  "+GenomeUtilities.hammingDistance(oneGenome, fourGenome));
+
 		
 	}
 	
 	
-	public static boolean isValid(Genome myGenome){
+	public static void isValid(Genome myGenome){
 		assert myGenome.geneList.size()==200;
 		Gene gene;
 		for(int i=0;i<200;i++){
@@ -39,20 +54,22 @@ public class AssertionTest {
 
 			
 		}
-		
-		return true;
+
 	}
 	
-	
-	public static boolean crossOverTest(Genome papaGenome, Genome mamaGenome,
-			Genome sonGenome, Genome daughterGenome){
+	//to be implemented as a CrossOver, with test functionality.
+	public static void crossOverTest(Genome papaGenome, Genome mamaGenome,
+		
+			
+		Genome sonGenome, Genome daughterGenome,int crossPoint){
+		
+		//making address copies for output validation
 		Genome papaTest=papaGenome;
 		Genome mamaTest=mamaGenome;
 		Genome sonTest=sonGenome;
 		Genome daughterTest=daughterGenome;
-				
-		CrossOver.breed(papaGenome, mamaGenome, sonGenome, daughterGenome, 1004);
-		
+		CrossOver.breed(papaGenome, mamaGenome, sonGenome, daughterGenome, crossPoint);
+		//testing for output validity
 		assert papaTest==papaGenome;
 		assert mamaTest==mamaGenome;
 		assert sonTest==sonGenome;
@@ -67,8 +84,17 @@ public class AssertionTest {
 		assert daughterGenome!=mamaGenome;
 		assert !GenomeUtilities.genomeEqual(daughterGenome, mamaGenome);
 		
+		//hamming validation for Correct crossover
+		long startDiff =GenomeUtilities.hammingDistance(papaGenome, mamaGenome);
+		long oneChildDiff =GenomeUtilities.hammingDistance(papaGenome, sonGenome);
+		long twoChildDiff =GenomeUtilities.hammingDistance(papaGenome, daughterGenome);
 		
-	return true	;
+		assert startDiff==oneChildDiff+twoChildDiff;
+		
+		
+		
+		
+
 	}
 	
 	

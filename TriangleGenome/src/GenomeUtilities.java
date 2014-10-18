@@ -2,6 +2,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.util.Random;
 
 /****************************************************************************
@@ -51,65 +54,172 @@ public class GenomeUtilities
       myGene.a=myColors[3];
       myGene.setPoints(myVertices);
     }
-    Gene gene0=genome.geneList.get(0);
-    Gene gene1=genome.geneList.get(1);
-    Gene gene2=genome.geneList.get(2);
-    Gene gene3=genome.geneList.get(3);
     
-    //x corners = 0 and imgwidth
-    //ycorners = 0 and imgheigth
-    
-    gene0.xpoints[0]=0;
-    gene0.ypoints[0]=0;
-    gene0.xpoints[1]=genome.IMG_WIDTH;
-    gene0.ypoints[1]=0;
-    
-    gene1.xpoints[0]=genome.IMG_WIDTH;
-    gene1.ypoints[0]=0;
-    gene1.xpoints[1]=genome.IMG_WIDTH;
-    gene1.ypoints[1]=genome.IMG_HEIGHT;
-    
-    gene2.xpoints[0]=genome.IMG_WIDTH;
-    gene2.ypoints[0]=genome.IMG_HEIGHT;
-    gene2.xpoints[1]=0;
-    gene2.ypoints[1]=genome.IMG_HEIGHT;
-    
-    gene3.xpoints[0]=0;
-    gene3.ypoints[0]=genome.IMG_HEIGHT;
-    gene3.xpoints[1]=0;
-    gene3.ypoints[1]=0;
-    
-    int centerX=genome.IMG_WIDTH/2;
-    int centerY=genome.IMG_HEIGHT/2;
-    
-    gene0.xpoints[2]=centerX;
-    gene0.ypoints[2]=centerY;
-    
-    gene1.xpoints[2]=centerX;
-    gene1.ypoints[2]=centerY;
-    
-    gene2.xpoints[2]=centerX;
-    gene2.ypoints[2]=centerY;
-    
-    gene3.xpoints[2]=centerX;
-    gene3.ypoints[2]=centerY;
+    //averagingGenome(genome,new BufferedImage(90, 90, BufferedImage.TYPE_INT_RGB));
   }
   
-  public static void findAverageRGB(Genome myGenome)
-  {
-    long red=0;//can a long hold 255*500*500?
-    long breen=0;
-    long blue=0;
+  public static void  averagingGenome(Genome genome,BufferedImage masterImage){
+	  Random rand=new Random();
+	  BufferedImage copiedImage= deepCopy(masterImage);
+	  int centerx=rand.nextInt(genome.IMG_WIDTH/16)-rand.nextInt(genome.IMG_WIDTH/16)+genome.IMG_WIDTH/2;
+	  int centery=rand.nextInt(genome.IMG_HEIGHT/16)-rand.nextInt(genome.IMG_HEIGHT/16)+genome.IMG_HEIGHT/2;
+	  
+	  
+	  Raster masterRaster=masterImage.getRaster();
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  int[] x0={0,0,centerx};
+	  int[] y0={0,genome.IMG_HEIGHT,centery};
+	  int[] x1={0,centerx,genome.IMG_WIDTH};
+	  int[] y1={0,centery,0};
+	  int[] x2={genome.IMG_WIDTH,genome.IMG_WIDTH,centerx};
+	  int[] y2={0,genome.IMG_HEIGHT,centery};
+	  int[] x3={0,centerx,genome.IMG_WIDTH};
+	  int[] y3={genome.IMG_HEIGHT,centery,genome.IMG_HEIGHT};
+	  genome.geneList.get(0).xpoints=x0;
+	  genome.geneList.get(0).ypoints=y0;
+	  genome.geneList.get(1).xpoints=x1;
+	  genome.geneList.get(1).ypoints=y1;
+	  genome.geneList.get(2).xpoints=x2;
+	  genome.geneList.get(2).ypoints=y2;
+	  genome.geneList.get(3).xpoints=x3;
+	  genome.geneList.get(3).ypoints=y3;
+	  
+	  for(int i=4;i<200;i++){
+		  Point[] myVertices=new Point[NPOINTS];
+		   for(int j=0;j<NPOINTS;j++)
+		      {
+		        myVertices[j]=new Point(0, 0);
+		        myVertices[j].x=rand.nextInt(genome.IMG_WIDTH);
+		        myVertices[j].y=rand.nextInt(genome.IMG_HEIGHT);
+		      }
+		      genome.geneList.get(i).setPoints(myVertices);
+	  }
+	  
+	  
+	  
+	  
+	  
+	 for(Gene myGene:genome.geneList){
+
+      
+      int randomAlpha=rand.nextInt(200)+55;
+     
+   
     
-    for(int i=0; i<myGenome.IMG_WIDTH;i++)
-    {
-      for(int j=0;j<myGenome.IMG_HEIGHT;j++)
-      {
-//        BufferedImage tg=TriangleGenomeGUI.tg;
-        
-      }
+      myGene.a=randomAlpha;
+      
+      int[] myColors=getAreaColorAvg(myGene,copiedImage);
+      myGene.r=myColors[0];
+      myGene.g=myColors[1];
+      myGene.b=myColors[2];
+     // subtractGene(myGene,copiedImage);
     }
+  
+	  
   }
+  
+  
+  static BufferedImage deepCopy(BufferedImage bi) {
+	  ColorModel cm = bi.getColorModel();
+	  boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+	  WritableRaster raster = bi.copyData(null);
+	  return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+	 }
+  
+  
+  //subtracts a drawn gene from an image.
+  //this will edit the input image.
+  public static void subtractGene(Gene gene,BufferedImage image){
+	  
+	  Raster raster=image.getRaster();
+	  int red,blue,green;
+	  
+	  int minX=Math.min(gene.xpoints[0], Math.min(gene.xpoints[1], gene.xpoints[2]));
+	  int maxX=Math.max(gene.xpoints[0], Math.max(gene.xpoints[1], gene.xpoints[2]));
+	  int minY=Math.min(gene.ypoints[0], Math.min(gene.ypoints[1], gene.ypoints[2]));
+	  int maxY=Math.max(gene.ypoints[0], Math.max(gene.ypoints[1], gene.ypoints[2]));
+	 
+	  
+	  for(int x=minX;x<=maxX;x++){
+		  for(int y=minY;y<=maxY;y++){
+			  if(gene.contains(x, y)){
+				  int[] pixel={0,0,0};
+				  raster.getPixel(x, y, pixel);
+				  
+				  red=Math.max(pixel[0]-gene.r,0);
+				  green=Math.max(pixel[1]-gene.g,0);
+				  blue=Math.max(pixel[2]-gene.b,0);
+				  //System.out.println(red+";"+green+";"+blue);
+				  int rgb=new Color(red,green,blue).getRGB();
+				  image.setRGB(x, y, rgb);
+				  
+			  }
+				  
+		  
+		  }
+	  
+	  
+		  }
+	  
+	  
+  }
+  
+  
+  
+  
+  public static int[] getAreaColorAvg(Gene gene,BufferedImage image){
+	  int redCount=0;
+	  int blueCount=0;
+	  int greenCount=0;
+	  int nPixCount=1;
+	  Raster raster=image.getRaster();
+	  
+	  //Find the min and max of the x and y
+	  int minX=Math.min(gene.xpoints[0], Math.min(gene.xpoints[1], gene.xpoints[2]));
+	  int maxX=Math.max(gene.xpoints[0], Math.max(gene.xpoints[1], gene.xpoints[2]));
+	  int minY=Math.min(gene.ypoints[0], Math.min(gene.ypoints[1], gene.ypoints[2]));
+	  int maxY=Math.max(gene.ypoints[0], Math.max(gene.ypoints[1], gene.ypoints[2]));
+	 
+	  
+	  for(int x=minX;x<=maxX;x++){
+		  for(int y=minY;y<=maxY;y++){
+			  if(gene.contains(x, y)){
+				  int[] pixel={0,0,0};
+				  raster.getPixel(x, y, pixel);
+				  
+				  redCount+=pixel[0];
+				  blueCount+=pixel[1];
+				  greenCount+=pixel[2];
+				  nPixCount++;
+				  
+			  }
+				  
+		  
+		  }
+	  
+	  
+		  }
+	  int red=redCount/nPixCount;
+	  int blue=blueCount/nPixCount;
+	  int green=greenCount/nPixCount;
+	  
+	  int[] pixout={red,blue,green};
+	  return pixout;
+	  }
+	
+	  
+	  
+	  
+  
+  
+  
+  
 
   /****************************************************************************
    * drawNTriangles
@@ -118,29 +228,33 @@ public class GenomeUtilities
    * Description:draws triangles in layers 0-200. Is called by the slider on the GUI
    *  to allow us to see the triangles that may be entirely covered up otherwise. TODO correct?
    ****************************************************************************/
-  public static void drawNTriangles(int N,TriangleGenomeGUI.ImagePanel myPic, Genome myGenome)
-  {
-    BufferedImage myIm=myPic.getImage();
-    Graphics myGraphics=myIm.getGraphics();
-    int height=myIm.getHeight();
-    int width=myIm.getWidth();
-    // clear previous genome from display
-    // //////////////////
-    // myGraphics.setColor(new Color(238, 238, 238));
-    // myGraphics.fillRect(0, 0, width, height);
-    // //////////////////
+  public static void drawNTriangles(int N,
+	      TriangleGenomeGUI.ImagePanel myPic, Genome myGenome) {
+	    BufferedImage myIm = myPic.getImage();
+	    Graphics myGraphics = myIm.getGraphics();
+	    int height = TriangleGenomeGUI.imageWindow.image.getHeight();
+	    int width = TriangleGenomeGUI.imageWindow.image.getWidth();
+	    //clear previous geneome from display
+	    ////////////////////
+	    int y = myIm.getHeight();
+	    int x = myIm.getWidth();
+	    myGraphics.setColor(new Color(238, 238, 238));
+	    myGraphics.fillRect(0, 0, x, y);
+	    ////////////////////
 
-    myGraphics.setColor(Color.white);
-    myGraphics.fillRect(0, 0, width, height);
-    for(int i=0;i<N;i++)
-    {
-      myGraphics.setColor(new Color(myGenome.geneList.get(i).r,
-          myGenome.geneList.get(i).g, myGenome.geneList.get(i).b,
-          myGenome.geneList.get(i).a));
-      myGraphics.fillPolygon(myGenome.geneList.get(i));
-    }
-    myPic.repaint();
-  }
+	    myGraphics.setColor(Color.white);
+	    myGraphics.fillRect(0, 0, width, height);
+	    for (int i = 0; i < N; i++) {
+	    	Gene gene=myGenome.geneList.get(i);
+	    	checkColorValues(gene);
+	    	// gene.print();
+	      myGraphics.setColor(new Color(gene.r,
+	    		  gene.g, gene.b,
+	    		  gene.a));
+	      myGraphics.fillPolygon(gene);
+	    }
+	    myPic.repaint();
+	  }
 
   /****************************************************************************
    * getBufferedImage
@@ -160,14 +274,37 @@ public class GenomeUtilities
     myGraphics.fillRect(0, 0, width, height);
     for(int i=0;i<myGenome.NUM_GENES;i++)
     {
-      myGraphics.setColor(new Color(myGenome.geneList.get(i).r,
-          myGenome.geneList.get(i).g, myGenome.geneList.get(i).b,
-          myGenome.geneList.get(i).a));
+    	Gene gene=myGenome.geneList.get(i);
+    	checkColorValues(gene);
+      myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));
+     
       myGraphics.fillPolygon(myGenome.geneList.get(i));
     }
     return myIm;
   }
 
+  
+  public static void checkColorValues(Gene gene){
+	  if(gene.a>255)gene.a=255;
+  	if(gene.a<0)gene.a=0;
+  	if(gene.r>255)gene.r=255;
+	if(gene.r<0)gene.r=0;
+	if(gene.g>255)gene.g=255;
+	if(gene.g<0)gene.g=0;
+	if(gene.b>255)gene.b=255;
+	if(gene.b<0)gene.b=0;
+	
+	  
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
   /****************************************************************************
    * genomeEqual
    * Input:two Genomes to compare

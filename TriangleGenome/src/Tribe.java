@@ -3,56 +3,164 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+public class Tribe extends Thread
+{
+  Random rand=new Random();
+  ArrayList<Genome> genomeList=new ArrayList<>();
+  BufferedImage masterImage;
+  ImageContainer imagecontainer;
+  private final Object GUI_INITIALIZATION_MONITOR=new Object();
+  private boolean pauseThreadFlag=false;
 
-public class Tribe {
-	Random rand=new Random();
-	ArrayList<Genome> genomeList= new ArrayList<>();
-	BufferedImage masterImage;
-	public static final int STARTINGTRIBESIZE=200;
-	public static final int ENDINGTRIBESIZE=500;
-	public Tribe(BufferedImage image){
-		masterImage=image;
-		//populate genome list
-	for(int i=0;i<STARTINGTRIBESIZE;i++){
-		genomeList.add(new Genome(masterImage));
+  private volatile boolean running=true; // Run unless told to pause
+  public static final int STARTINGTRIBESIZE=4;
+  public static final int ENDINGTRIBESIZE=4;
+  TriangleGenomeGUI imagePanel;
 
-	}
-	
-		
-	}
-	
-	public void generateFitscores(){
-	for(Genome genome:genomeList){
-		//creates a fitscore from each image. 
-		//Should we preserve the Buffered Image as a phenotype???
-		genome.fitscore=Statistics.getFitScore(masterImage, GenomeUtilities.getBufferedImage(genome));
-		
-	}
-	}
-	
-	
-	public static void nextGeneration(){
-		//Collections.sort(genomeList);
-		//while(genomeList.size()<ENDINGTRIBESIZE){
-		Random rand =new Random();
-		for(int i=0;i<50;i++){
-		int index=(int) Math.abs(rand.nextGaussian()*66);
+  public Tribe(BufferedImage image,TriangleGenomeGUI tg)
+  {
+    masterImage=image;
+    imagePanel=tg;
+    // populate genome list
+    for(int i=0;i<STARTINGTRIBESIZE;i++)
+    {
+      System.out.println("tribe builder");
+      Genome genome=new Genome(masterImage);
+      GenomeUtilities.averagingGenome(genome, masterImage);
+      genomeList.add(genome);
+    }
+    // imagecontainer.setImage(GenomeUtilities.getBufferedImage(genome));
+  }
 
-		System.out.println(index);
-		}
-		
-		
-		
-		
-		
-		
-	}
-	
-	
-	public static void main(String[] args){
-		//()
-		nextGeneration();
-	}
-	
+  public void run()
+  {
+    int sigma=genomeList.size()/2;
+    generateFitScores();
+    while(true)
+    {      
+    	checkForPaused();      
+      
+      System.out.println("start");
+      goToLocalMax(10000);
+      System.out.println("mutate 1000 times");
 
+//      Genome son=new Genome(masterImage);
+//      Genome daughter=new Genome(masterImage);
+//      sigma=genomeList.size()/2;
+//      int index0=(int) Math.abs(rand.nextGaussian()*sigma);
+//      int index1=(int) Math.abs(rand.nextGaussian()*sigma);
+//      while(index0>=genomeList.size())
+//      {
+//        index0=(int) Math.abs(rand.nextGaussian()*sigma);
+//      }
+//
+//      while(index1>=genomeList.size())
+//      {
+//        index1=(int) Math.abs(rand.nextGaussian()*sigma);
+//      }
+//
+//      CrossOver.breed(genomeList.get(index0), genomeList.get(index1), son, daughter, rand.nextInt(200));
+//      genomeList.add(GenomeUtilities.genomeCopy(son));
+//      genomeList.add(GenomeUtilities.genomeCopy(daughter));
+//      System.out.println("crossover");
+//      if(genomeList.size()>=ENDINGTRIBESIZE)
+//      {
+//        generateFitScores();
+//        Collections.sort(genomeList);
+//        genomeList.clear();
+//        genomeList.addAll(genomeList.subList(0, STARTINGTRIBESIZE));
+//
+//        System.out.println("trimmed");
+//      }
+    }
+  }
+
+  private void checkForPaused()
+  {
+    synchronized (GUI_INITIALIZATION_MONITOR)
+    {
+      while(pauseThreadFlag)
+      {
+        try
+        {
+          GUI_INITIALIZATION_MONITOR.wait();
+        } catch (Exception e)
+        {
+        }
+      }
+    }
+  }
+
+  public void pauseThread() throws InterruptedException
+  {
+    pauseThreadFlag=true;
+  }
+
+  public void resumeThread()
+  {
+    synchronized (GUI_INITIALIZATION_MONITOR)
+    {
+      pauseThreadFlag=false;
+      GUI_INITIALIZATION_MONITOR.notify();
+    }
+  }
+
+  public void generateFitScores()
+  {
+    for(Genome genome:genomeList)
+    {
+      // creates a fitscore from each image.
+      // Should we preserve the Buffered Image as a phenotype???
+//      genome.fitscore=Statistics.getFitScore(masterImage,GenomeUtilities.getBufferedImage(genome));
+      genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
+    }
+  }
+
+  public void goToLocalMax(int N)
+  {
+    HillClimber hc=new HillClimber(masterImage);
+    System.out.println("climber started");
+    
+    for(Genome genome:genomeList)
+    {
+      long startScore=0;//TODO debug
+      long endScore=0;//TODO debug
+      for(int i=0;i<N;i++)
+      {
+        checkForPaused();
+     // long startTime=System.currentTimeMillis();
+      
+      //startScore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
+      hc.climbStep(genome);
+      imagePanel.triangleWindowUpdate();
+//      endScore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);//TODO debug
+//      long mutateResult=endScore-startScore;//TODO debug
+//      if(mutateResult>1)//TODO debug
+//      {
+//        System.out.println("kept bad mutation");//TODO debug//TODO debug
+//      }
+      
+      
+     // long endTime=System.currentTimeMillis();
+      //System.out.println(endTime-startTime);
+      }
+      
+      //genome.image=GenomeUtilities.getBufferedImage(genome);
+     
+    }
+  }
+
+  public static void nextGeneration()
+  {
+    // while(genomeList.size()<ENDINGTRIBESIZE){
+    Random rand=new Random();
+    for(int i=0;i<50;i++)
+    {
+      int index=(int) Math.abs(rand.nextGaussian()*4);
+
+      System.out.println(index);    }
+
+  }
+
+  
 }
