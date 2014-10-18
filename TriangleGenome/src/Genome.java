@@ -26,46 +26,50 @@ public class Genome implements Comparable<Genome> {
 	 * Constructor given diemnsion Input:dimensions of the picture being
 	 * recreated Description:saves global variables and adds 200 new genes
 	 ****************************************************************************/
-	public Genome(int width, int height) {
-		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		IMG_WIDTH = width;
-		IMG_HEIGHT = height;
-		for (int i = 0; i < NUM_GENES; i++) {
-			Gene myGene = new Gene();
-			geneList.add(myGene);
-		}
-	}
+  public Genome(int width, int height)
+  {
+    image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    IMG_WIDTH = width;
+    IMG_HEIGHT = height;
+    for (int i = 0; i < NUM_GENES; i++)
+    {
+      Gene myGene = new Gene();
+      geneList.add(myGene);
+    }
+  }
 
 	/****************************************************************************
 	 * Constructor given BufferedImage Input:image being recreated
 	 * Description:saves global variables and adds 200 new genes
 	 ****************************************************************************/
-	public Genome(BufferedImage image) {
-		image = new BufferedImage(image.getWidth(), image.getHeight(),
-				BufferedImage.TYPE_INT_RGB);
-		IMG_WIDTH = image.getTileWidth();
-		IMG_HEIGHT = image.getHeight();
-		for (int i = 0; i < NUM_GENES; i++) {
-			Gene myGene = new Gene();
-			geneList.add(myGene);
-		}
-	}
+  public Genome(BufferedImage image)
+  {
+    image = new BufferedImage(image.getWidth(), image.getHeight(),
+        BufferedImage.TYPE_INT_RGB);
+    IMG_WIDTH = image.getTileWidth();
+    IMG_HEIGHT = image.getHeight();
+    for (int i = 0; i < NUM_GENES; i++)
+    {
+      Gene myGene = new Gene();
+      geneList.add(myGene);
+    }
+  }
 
 	/****************************************************************************
 	 * compareTo Input:Genome Output:int representing which Genome has better
 	 * fitness score Description:compares 2 genomes, returns negative if passed
 	 * genome is more fit
 	 ****************************************************************************/
-	public int compareTo(Genome genome) {
-		long fitDiff = fitscore - genome.fitscore;
-		if (fitDiff < 0l)
-			return 1;
-		else if (fitDiff == 0l)
-			return 0;
-		else
-			return -1;
-
-	}
+  public int compareTo(Genome genome)
+  {
+    long fitDiff = fitscore - genome.fitscore;
+    if (fitDiff < 0l)
+      return -1;
+    else if (fitDiff == 0l)
+      return 0;
+    else
+      return 1;
+  }
 
 	// @Override
 	// public int compareTo(Object o) {

@@ -1,18 +1,17 @@
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.util.Random;
 
 public class HillClimber extends Thread
 {
-  // repeat supersedes revert
   static Random rand = new Random();
   public BufferedImage image;
   public Genome genome;
   boolean repeat;
   Gene lastGene;
   int maxBound;
-  // I need to to define input parameters based on which allele is which.
   int lastAllele;
   int lastShift;
 
@@ -31,7 +30,6 @@ public class HillClimber extends Thread
     maxBound = getAlleleBounds(myGenome, mutateAlleleIndex);
     int shiftAmount = rand.nextInt(maxBound / 5);// shift by up to 20%
     shiftAmount -= (maxBound / 10);// subtract, to leave shift by +/- 10
-
     
     int mutateAlleleValue = Mutate.getAlleleValue(mutateGene, mutateAlleleIndex);    
    
@@ -59,13 +57,10 @@ public class HillClimber extends Thread
       iStep=1;
     }
     
-//    System.out.println("fitscore="+myGenome.fitscore);
-//    System.out.println("Step size is "+iStep);
     long startScoreLocal =Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
     //long startScoreGlobal =Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);
     Mutate.exposeToRadiation(mutateGene, mutateAlleleIndex, shiftAmount);
     long endScoreLocal =Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
-    //System.out.println(startScore+";"+endScore);
     
     lastGene = mutateGene;
     lastAllele = mutateAlleleIndex;
@@ -119,12 +114,48 @@ public class HillClimber extends Thread
   
   public Gene getGene(Genome myGenome)
   {
-    //how to favor genes closest to the surface?
-    int randomGeneInt=rand.nextInt(myGenome.NUM_GENES);
+    int randomGeneInt;    
+    Gene myGene;
+    randomGeneInt=rand.nextInt(myGenome.NUM_GENES);    
+    myGene=myGenome.geneList.get(randomGeneInt);
+//    do
+//    {
+//      randomGeneInt=rand.nextInt(myGenome.NUM_GENES);    
+//      myGene=myGenome.geneList.get(randomGeneInt);
+//    }while(getGeneHelper(myGene));
     
-    Gene myGene=myGenome.geneList.get(randomGeneInt);
-  
     return myGene;
+  }
+  
+  public boolean getGeneHelper(Gene myGene)
+  {
+    boolean findAnotherGene=true;
+    
+    int xmax=Math.max(myGene.xpoints[0],myGene.xpoints[1]);
+    xmax=Math.max(myGene.xpoints[2], xmax);
+    
+    int xmin=Math.min(myGene.xpoints[0], myGene.xpoints[1]);
+    xmin=Math.min(myGene.xpoints[2], xmin);
+    
+    int ymax=Math.max(myGene.ypoints[0],myGene.ypoints[1]);
+    ymax=Math.max(myGene.ypoints[2], ymax);
+    
+    int ymin=Math.min(myGene.ypoints[0], myGene.ypoints[1]);
+    ymin=Math.min(myGene.ypoints[2], ymin);
+    
+    int[] xsample=new int[5];//change this to a variable amount
+    int[] ysample=new int[5];
+    
+    for(int i=0;i<5;i++)
+    {
+      do
+      {
+        xsample[i]=rand.nextInt(xmax-xmin)+xmin;
+        ysample[i]=rand.nextInt(ymax-ymin)+ymin;
+      }while(myGene.contains(xsample[i], ysample[i]));
+    }
+    
+    return findAnotherGene;
   }
   
   public int getAllele(Gene myGene)

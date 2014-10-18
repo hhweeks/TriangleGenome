@@ -13,8 +13,8 @@ public class Tribe extends Thread
   private boolean pauseThreadFlag=false;
 
   private volatile boolean running=true; // Run unless told to pause
-  public static final int STARTINGTRIBESIZE=1;
-  public static final int ENDINGTRIBESIZE=1;
+  public static final int STARTINGTRIBESIZE=2;
+  public static final int ENDINGTRIBESIZE=3;
   TriangleGenomeGUI imagePanel;
 
   public Tribe(BufferedImage image,TriangleGenomeGUI tg)
@@ -37,44 +37,67 @@ public class Tribe extends Thread
     int sigma=genomeList.size()/2;
     generateFitScores();
     while(true)
-    {
-      
+    {      
     	checkForPaused();
-      
-      
-      
-      System.out.println("start");
-      goToLocalMax(10000);
-      System.out.println("mutate 1000 times");
+    	
+    	climbRoutine();
+    	crossRoutine(sigma);
+    }
+  }
+  
+  public void climbRoutine()
+  {
+    System.out.println("start");
+    goToLocalMax(100);
+    
+//    for(Genome myGenome :genomeList)
+//    {
+//      Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), myGenome.image);
+//    }
+    
+  }
+  
+  public void crossRoutine(int sigma)
+  { 
+    Genome son=new Genome(masterImage);
+    Genome daughter=new Genome(masterImage);
+    
+    generateFitScores();
+    Collections.sort(genomeList);
+//    sigma=genomeList.size()/2;//didn't we initialize sigma to this value?
+    
+    int index0=(int) Math.abs(rand.nextGaussian()*sigma);
+    int index1=(int) Math.abs(rand.nextGaussian()*sigma);
+    
+    while(index0>=genomeList.size())
+    {
+      index0=(int) Math.abs(rand.nextGaussian()*sigma);
+    }
 
-//      Genome son=new Genome(masterImage);
-//      Genome daughter=new Genome(masterImage);
-//      sigma=genomeList.size()/2;
-//      int index0=(int) Math.abs(rand.nextGaussian()*sigma);
-//      int index1=(int) Math.abs(rand.nextGaussian()*sigma);
-//      while(index0>=genomeList.size())
-//      {
-//        index0=(int) Math.abs(rand.nextGaussian()*sigma);
-//      }
-//
-//      while(index1>=genomeList.size())
-//      {
-//        index1=(int) Math.abs(rand.nextGaussian()*sigma);
-//      }
-//
-//      CrossOver.breed(genomeList.get(index0), genomeList.get(index1), son, daughter, rand.nextInt(200));
-//      genomeList.add(GenomeUtilities.genomeCopy(son));
-//      genomeList.add(GenomeUtilities.genomeCopy(daughter));
-//      System.out.println("crossover");
-//      if(genomeList.size()>=ENDINGTRIBESIZE)
-//      {
-//        generateFitScores();
-//        Collections.sort(genomeList);
-//        genomeList.clear();
-//        genomeList.addAll(genomeList.subList(0, STARTINGTRIBESIZE));
-//
-//        System.out.println("trimmed");
-//      }
+    while(index1>=genomeList.size()||index1==index0)
+    {
+      index1=(int) Math.abs(rand.nextGaussian()*sigma);
+    }
+
+    CrossOver.breed(genomeList.get(index0), genomeList.get(index1), son, daughter, rand.nextInt(200));
+    genomeList.add(GenomeUtilities.genomeCopy(son));
+    genomeList.add(GenomeUtilities.genomeCopy(daughter));
+    System.out.println("crossover");
+    if(genomeList.size()>ENDINGTRIBESIZE)
+    {
+      generateFitScores();
+      Collections.sort(genomeList);
+      
+      ArrayList<Genome> fitGenomeHolder=new ArrayList<Genome>();
+      for(int i=0;i<STARTINGTRIBESIZE;i++)
+      {
+        fitGenomeHolder.add(genomeList.get(i));
+      }
+      
+      genomeList.clear();
+      genomeList.addAll(fitGenomeHolder);
+
+      System.out.println("trimmed");
     }
   }
 
@@ -128,8 +151,9 @@ public class Tribe extends Thread
     {
       long startScore=0;//TODO debug
       long endScore=0;//TODO debug
-      for(int i=0;i<N;i++){
-      checkForPaused();
+      for(int i=0;i<N;i++)
+      {
+        checkForPaused();
      // long startTime=System.currentTimeMillis();
       
       //startScore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
@@ -154,15 +178,13 @@ public class Tribe extends Thread
 
   public static void nextGeneration()
   {
-
     // while(genomeList.size()<ENDINGTRIBESIZE){
     Random rand=new Random();
     for(int i=0;i<50;i++)
     {
       int index=(int) Math.abs(rand.nextGaussian()*4);
 
-      System.out.println(index);
-    }
+      System.out.println(index);    }
 
   }
 

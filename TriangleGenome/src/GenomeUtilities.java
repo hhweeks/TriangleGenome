@@ -276,10 +276,7 @@ public class GenomeUtilities
     {
     	Gene gene=myGenome.geneList.get(i);
     	checkColorValues(gene);
-    	// gene.print();
-      myGraphics.setColor(new Color(gene.r,
-    		  gene.g, gene.b,
-    		  gene.a));
+      myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));
      
       myGraphics.fillPolygon(myGenome.geneList.get(i));
     }
