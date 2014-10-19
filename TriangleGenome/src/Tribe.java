@@ -41,7 +41,7 @@ public class Tribe extends Thread
     	checkForPaused();
     	
     	climbRoutine();
-    	crossRoutine(sigma);
+    	interCrossRoutine(sigma);
     }
   }
   
@@ -57,7 +57,7 @@ public class Tribe extends Thread
     
   }
   
-  public void crossRoutine(int sigma)
+  public void interCrossRoutine(int sigma)
   { 
     Genome son=new Genome(masterImage);
     Genome daughter=new Genome(masterImage);
@@ -99,6 +99,11 @@ public class Tribe extends Thread
 
       System.out.println("trimmed");
     }
+  }
+  
+  public void intraCrossRoutin(int sigma)
+  {
+    
   }
 
   private void checkForPaused()

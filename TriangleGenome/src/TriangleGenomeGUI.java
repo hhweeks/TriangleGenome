@@ -167,20 +167,25 @@ public class TriangleGenomeGUI extends JFrame
           runPauseButton.setText("PAUSE");
           toggleButtons(false);
 
-          if(tribeList.get(0).isAlive())
+          for(Tribe myTribe:tribeList)
           {
-            tribeList.get(0).resumeThread();
-          } else
-          {
-            tribeList.get(0).start();
+            if(myTribe.isAlive())
+            {
+              myTribe.resumeThread();
+            }else
+            {
+              myTribe.start();
+            }            
           }
-          triangleWindowUpdate();
-
+          
         } else
         {
           try
           {
-            tribeList.get(0).pauseThread();
+            for(Tribe myTribe:tribeList)
+            {
+              myTribe.pauseThread();
+            }
           } catch (InterruptedException e1)
           {
             // TODO Auto-generated catch block
@@ -190,6 +195,7 @@ public class TriangleGenomeGUI extends JFrame
           toggleButtons(true);
       }
     }});
+    
     tableButton.addActionListener(new ActionListener()
     {
       @Override

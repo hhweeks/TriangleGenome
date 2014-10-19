@@ -31,8 +31,34 @@ public class HillClimber extends Thread
     int shiftAmount = rand.nextInt(maxBound / 5);// shift by up to 20%
     shiftAmount -= (maxBound / 10);// subtract, to leave shift by +/- 10
     
-    int mutateAlleleValue = Mutate.getAlleleValue(mutateGene, mutateAlleleIndex);    
-   
+    //special case for moving all x or all y vertices, we need mutateAlleleValue to be maxX/minX depending on if shiftAmount is + or -
+    int mutateAlleleValue;
+    if(mutateAlleleIndex==10)
+    {
+      if(shiftAmount>0)
+      {
+        mutateAlleleValue=GenomeUtilities.maxGenesDim(mutateGene.xpoints);
+      }
+      else
+      {
+        mutateAlleleValue=GenomeUtilities.minGenesDim(mutateGene.xpoints);
+      }
+    }
+    else if(mutateAlleleIndex==11)
+    {
+      if(shiftAmount>0)
+      {
+        mutateAlleleValue=GenomeUtilities.maxGenesDim(mutateGene.ypoints);
+      }
+      else
+      {
+        mutateAlleleValue=GenomeUtilities.minGenesDim(mutateGene.ypoints);
+      }
+    }
+    else
+    {
+      mutateAlleleValue = Mutate.getAlleleValue(mutateGene, mutateAlleleIndex);
+    }
     
     if (mutateAlleleValue + shiftAmount > maxBound)
     {
@@ -95,7 +121,36 @@ public class HillClimber extends Thread
     
     while(currentScore<previousScore)
     {
-      mutateAlleleValue = Mutate.getAlleleValue(mutateGene, allele);
+      /////////////////////////////////////////////////////////////////////////////////////////
+      //special case for moving all x or all y vertices, we need mutateAlleleValue to be maxX/minX depending on if shiftAmount is + or -
+      if(allele==10)
+      {
+        if(shiftAmount>0)
+        {
+          mutateAlleleValue=GenomeUtilities.maxGenesDim(mutateGene.xpoints);
+        }
+        else
+        {
+          mutateAlleleValue=GenomeUtilities.minGenesDim(mutateGene.xpoints);
+        }
+      }
+      else if(allele==11)
+      {
+        if(shiftAmount>0)
+        {
+          mutateAlleleValue=GenomeUtilities.maxGenesDim(mutateGene.ypoints);
+        }
+        else
+        {
+          mutateAlleleValue=GenomeUtilities.minGenesDim(mutateGene.ypoints);
+        }
+      }
+      else
+      {
+        mutateAlleleValue = Mutate.getAlleleValue(mutateGene, allele);
+      }
+      /////////////////////////////////////////////////////////////////////////////////////////
+      
       if (mutateAlleleValue + shiftAmount > maxBound)
       {
         shiftAmount = maxBound - mutateAlleleValue;// this will set mutateAlleleValue to max when mutate is called
@@ -160,7 +215,7 @@ public class HillClimber extends Thread
   
   public int getAllele(Gene myGene)
   {
-    int myAlleleIndex=rand.nextInt(myGene.NALLELE);// 10 alleles
+    int myAlleleIndex=rand.nextInt(myGene.NALLELE+2);// 10 alleles+2 for move all x and move all y
     return myAlleleIndex;
   }
 
@@ -199,6 +254,12 @@ public class HillClimber extends Thread
       break;
     case 9:
       maxBound = colorMax;
+      break;
+    case 10:
+      maxBound = myGenome.IMG_WIDTH;
+      break;
+    case 11:
+      maxBound = myGenome.IMG_HEIGHT;
       break;
     }
     return maxBound;
