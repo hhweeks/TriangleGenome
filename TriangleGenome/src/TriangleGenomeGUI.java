@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class TriangleGenomeGUI extends JFrame
 {
@@ -54,6 +55,8 @@ public class TriangleGenomeGUI extends JFrame
   public long startTime = Long.MAX_VALUE;
   static int seconds = 1;
   boolean reset = false;
+  final JFileChooser fc = new JFileChooser();
+  FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter("xml files (*.xml)", "xml");
 
   public TriangleGenomeGUI() throws IOException
   {
@@ -200,7 +203,28 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        System.out.println("READ GENOME");
+        fc.setFileFilter(xmlFilter);
+        fc.setDialogTitle("Open Genome");
+        fc.setCurrentDirectory(null);
+        try
+        {
+          int returnVal = fc.showOpenDialog(readButton);
+          if(returnVal == JFileChooser.APPROVE_OPTION)
+          {
+            File file = fc.getSelectedFile();
+            XMLUtil.readXML(file.getName());
+          }
+          //XMLUtil.readXML("1413682511764729000.xml");
+          else
+          {
+            System.out.println("File selection canceled by the user!");
+          }
+        }
+        catch (Exception e1)
+        {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
       }
     });
     writeButton.addActionListener(new ActionListener()
@@ -411,12 +435,18 @@ public class TriangleGenomeGUI extends JFrame
   private String getRunDuration(long start)
   {
     seconds = (int) ((System.nanoTime() - start) * 0.000000001);
-    return seconds/60 + ":" + seconds%60 + "";
+    String time = "";
+    if(seconds/60 < 10) time += "0" + seconds/60;
+    else time += seconds/60;
+    if(seconds%60 < 10) time += ":0" + seconds%60;
+    else time += ":" + seconds%60;
+    return time;
+    //return seconds/60 + ":" + seconds%60 + "";
   }
-  private double getGenPerSec()
+  private String getGenPerSec()
   {
-    try { return (double)numUdates/(double)seconds; }
-    catch(ArithmeticException e) { return -1; }
+    try { return String.format("%.5g%n", (double)numUdates/(double)seconds); }
+    catch(ArithmeticException e) { return ""+-1; }
   }
   public static void main(String[] args) throws IOException
   {

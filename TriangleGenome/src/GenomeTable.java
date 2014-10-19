@@ -50,7 +50,7 @@ public class GenomeTable extends JPanel
         table.setFillsViewportHeight(true);
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane);
-        JFrame frame = new JFrame("Genome Table");
+        JFrame frame = new JFrame("Genome Table\t" + g.IMG_WIDTH + "x" + g.IMG_HEIGHT);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setContentPane(this);
         frame.pack();

@@ -2,7 +2,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -31,14 +34,15 @@ public class XMLUtil
       
       //write the root element      
       myXSW.writeStartElement("genome");
-      
+      myXSW.writeCharacters("\n\t");
       //write genomes variable, width and height
       myXSW.writeStartElement("width");
       myXSW.writeCharacters(Integer.toString(myGenome.IMG_WIDTH));
       myXSW.writeEndElement();
       
+      myXSW.writeCharacters("\n\t");
       myXSW.writeStartElement("height");
-      myXSW.writeCharacters(Integer.toString(myGenome.IMG_WIDTH));
+      myXSW.writeCharacters(Integer.toString(myGenome.IMG_HEIGHT));
       myXSW.writeEndElement();
       
       for(int index=0;index<myGenome.geneList.size();index++)
@@ -58,77 +62,72 @@ public class XMLUtil
         String a=Integer.toString(gene.a);
         
         //write gene index
+        myXSW.writeCharacters("\n\t");
         myXSW.writeStartElement("gene");
-        myXSW.writeStartElement("index" + Integer.toString(index));
+        myXSW.writeCharacters("\n\t\t");
+      //myXSW.writeStartElement("index" + Integer.toString(index));
+        //myXSW.writeEndElement();
+        myXSW.writeStartElement("index");// + Integer.toString(index));
+        myXSW.writeCharacters(Integer.toString(index));
         myXSW.writeEndElement();
         
         //write gene's elements
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters("\n\t\t");
         myXSW.writeStartElement("x1");
-        myXSW.writeCharacters("\n\t\t"+x1);
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters(x1);
         myXSW.writeEndElement();
         
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters("\n\t\t");
         myXSW.writeStartElement("y1");
-        myXSW.writeCharacters("\n\t\t"+y1);
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters(y1);
         myXSW.writeEndElement();
         
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters("\n\t\t");
         myXSW.writeStartElement("x2");
-        myXSW.writeCharacters("\n\t\t"+x2);
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters(x2);
         myXSW.writeEndElement();
         
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters("\n\t\t");
         myXSW.writeStartElement("y2");
-        myXSW.writeCharacters("\n\t\t"+y2);
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters(y2);
         myXSW.writeEndElement();
         
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters("\n\t\t");
         myXSW.writeStartElement("x3");
-        myXSW.writeCharacters("\n\t\t"+x3);
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters(x3);
         myXSW.writeEndElement();
         
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters("\n\t\t");
         myXSW.writeStartElement("y3");
-        myXSW.writeCharacters("\n\t\t"+y3);
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters(y3);
         myXSW.writeEndElement();
         
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters("\n\t\t");
         myXSW.writeStartElement("red");
-        myXSW.writeCharacters("\n\t\t"+r);
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters(r);
         myXSW.writeEndElement();
         
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters("\n\t\t");
         myXSW.writeStartElement("green");
-        myXSW.writeCharacters("\n\t\t"+g);
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters(g);
         myXSW.writeEndElement();
         
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters("\n\t\t");
         myXSW.writeStartElement("blue");
-        myXSW.writeCharacters("\n\t\t"+b);
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters(b);
         myXSW.writeEndElement();
         
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters("\n\t\t");
         myXSW.writeStartElement("alpha");
-        myXSW.writeCharacters("\n\t\t"+a);
-        myXSW.writeCharacters("\n\t");
+        myXSW.writeCharacters(a);
         myXSW.writeEndElement();
         
+        myXSW.writeCharacters("\n\t");
         myXSW.writeEndElement();
       }
+      //write end of document
+      myXSW.writeCharacters("\n");
       myXSW.writeEndElement();
-      
-    //write end of document
-      myXSW.writeEndDocument();
       myXSW.flush();
       myXSW.close();
       
@@ -144,123 +143,73 @@ public class XMLUtil
     }
   }
   
-  public static Genome readXML(String filePath)
+  public static Genome readXML(String filePath) throws Exception
   {
-    Genome myGenome=null;//TODO write xml needs to have a field for width height so this can be initialized TODO actually, should just hand it an image from a file pathname
-    Gene myGene=null;
-    int genWidth=0;
-    int genHeight=0;
-    
-    XMLInputFactory myXIF=XMLInputFactory.newInstance();
-    
-    try
+    String tmp = "";
+    int width = 1;
+    int height = 1;
+    ArrayList<int[]> tmpReadGene = new ArrayList<int[]>();
+    ArrayList<Gene> tmpGenesArray = new ArrayList<Gene>();
+    Scanner in = new Scanner(new FileReader(filePath));
+    while(in.hasNext())
     {
-      XMLEventReader myXER=myXIF.createXMLEventReader(new FileInputStream(filePath));
-      while(myXER.hasNext())
+      tmp = in.next();
+      if(tmp.contains("<height>")) height = Integer.parseInt(tmp.substring(8, tmp.length()-9));
+      if(tmp.contains("<width>")) width = Integer.parseInt(tmp.substring(7, tmp.length()-8));
+      if(tmp.contains("<index>"))
       {
-        XMLEvent myEvent=myXER.nextEvent();
-        if(myEvent.isStartElement())
-        {
-          StartElement mySE=myEvent.asStartElement();
-          if(mySE.getName().getLocalPart().equals("width"))
-          {
-            myEvent=myXER.nextEvent();
-            genWidth=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-          else if(mySE.getName().getLocalPart().equals("height"))
-          {
-            myEvent=myXER.nextEvent();
-            genHeight=Integer.parseInt(myEvent.asCharacters().getData());
-            //if height found, we can now initialize myGenome
-            myGenome=new Genome(genWidth,genHeight);
-          }
-          else if(mySE.getName().getLocalPart().equals("gene"))
-          {
-            myGene=new Gene();
-          }
-          //add gene's alleles
-          //x1
-          else if(mySE.getName().getLocalPart().equals("x1"))
-          {
-            myEvent=myXER.nextEvent();
-            myGene.xpoints[0]=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-          //y1
-          else if(mySE.getName().getLocalPart().equals("y1"))
-          {
-            myEvent=myXER.nextEvent();
-            myGene.ypoints[0]=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-          //x2
-          else if(mySE.getName().getLocalPart().equals("x2"))
-          {
-            myEvent=myXER.nextEvent();
-            myGene.xpoints[1]=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-          //y2
-          else if(mySE.getName().getLocalPart().equals("y2"))
-          {
-            myEvent=myXER.nextEvent();
-            myGene.ypoints[1]=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-          //x3
-          else if(mySE.getName().getLocalPart().equals("x3"))
-          {
-            myEvent=myXER.nextEvent();
-            myGene.xpoints[2]=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-          //y3
-          else if(mySE.getName().getLocalPart().equals("y3"))
-          {
-            myEvent=myXER.nextEvent();
-            myGene.ypoints[2]=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-          //r
-          else if(mySE.getName().getLocalPart().equals("red"))
-          {
-            myEvent=myXER.nextEvent();
-            myGene.r=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-          //g
-          else if(mySE.getName().getLocalPart().equals("green"))
-          {
-            myEvent=myXER.nextEvent();
-            myGene.g=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-          //b
-          else if(mySE.getName().getLocalPart().equals("blue"))
-          {
-            myEvent=myXER.nextEvent();
-            myGene.b=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-          //a
-          else if(mySE.getName().getLocalPart().equals("alpha"))
-          {
-            myEvent=myXER.nextEvent();
-            myGene.a=Integer.parseInt(myEvent.asCharacters().getData());
-          }
-        }
-        if(myEvent.isEndElement())
-        {
-          EndElement myEE=myEvent.asEndElement();
-          if(myEE.getName().getLocalPart().equals("gene"));
-          {
-            myGenome.geneList.add(myGene);
-          }
-        }
+        int[] tmpArr = new int[10];
+        //x1
+        tmp = in.next();
+        tmpArr[0] = Integer.parseInt(tmp.substring(4, tmp.length()-5));
+        //y1
+        tmp = in.next();
+        tmpArr[1] = Integer.parseInt(tmp.substring(4, tmp.length()-5));
+        //x2
+        tmp = in.next();
+        tmpArr[2] = Integer.parseInt(tmp.substring(4, tmp.length()-5));
+        //y2
+        tmp = in.next();
+        tmpArr[3] = Integer.parseInt(tmp.substring(4, tmp.length()-5));
+        //x3
+        tmp = in.next();
+        tmpArr[4] = Integer.parseInt(tmp.substring(4, tmp.length()-5));
+        //y3
+        tmp = in.next();
+        tmpArr[5] = Integer.parseInt(tmp.substring(4, tmp.length()-5));
+        //red
+        tmp = in.next();
+        tmpArr[6] = Integer.parseInt(tmp.substring(5, tmp.length()-6));
+        //green
+        tmp = in.next();
+        tmpArr[7] = Integer.parseInt(tmp.substring(7, tmp.length()-8));
+        //blue
+        tmp = in.next();
+        tmpArr[8] = Integer.parseInt(tmp.substring(6, tmp.length()-7));
+        //alpha
+        tmp = in.next();
+        tmpArr[9] = Integer.parseInt(tmp.substring(7, tmp.length()-8));
+        tmpReadGene.add(tmpArr);
       }
-    } catch (FileNotFoundException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (XMLStreamException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     }
     
-    return myGenome;    
+    for(int[] g : tmpReadGene)
+    {
+      Gene tmpGene = new Gene();
+      tmpGene.r = g[6];
+      tmpGene.g = g[7];
+      tmpGene.b = g[8];
+      tmpGene.a = g[9];
+      tmpGene.xpoints = new int[] {g[0], g[2], g[4]};
+      tmpGene.ypoints = new int[] {g[1], g[3], g[5]};
+      tmpGenesArray.add(tmpGene);
+    }
+    
+    Genome readGenome = new Genome(width, height);
+    readGenome.geneList = new ArrayList<Gene>(tmpGenesArray);
+    //writeXML(System.nanoTime()+".xml", readGenome);
+    new GenomeTable(readGenome);
+    
+    return readGenome;
   }
-  
-
 }
