@@ -69,24 +69,30 @@ public class HillClimber extends Thread
       shiftAmount = -mutateAlleleValue;// will set mutateAlleleValue to 0 when mutate is called
     }
     
-    int iStep=5;
+    
+    int iStep=2;
     if(myGenome.fitscore<10000)
     {
-      iStep=3;
+      iStep=1;
     }
     if(myGenome.fitscore<7500)
     {
-      iStep=2;
+      iStep=1;
     }
     if(myGenome.fitscore<5000)
     {
       iStep=1;
     }
     
-    long startScoreLocal =Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
-    //long startScoreGlobal =Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);
+    int w=image.getWidth();
+    int h=image.getHeight();
+    BufferedImage scaledImage=new BufferedImage((int)(w/1.5), (int)(h/1.5), BufferedImage.TYPE_INT_RGB);
+    
+    
+    long startScoreLocal =Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);    
     Mutate.exposeToRadiation(mutateGene, mutateAlleleIndex, shiftAmount);
-    long endScoreLocal =Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
+    long endScoreLocal =Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);
+    
     
     lastGene = mutateGene;
     lastAllele = mutateAlleleIndex;
@@ -98,12 +104,6 @@ public class HillClimber extends Thread
     }
     else if(endScoreLocal<startScoreLocal)repeatMutation(myGenome, lastGene, lastAllele, lastShift, maxBound, startScoreLocal, endScoreLocal,iStep);
     
-    //long endScoreGlobal=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);//TODO debug
-//    if(endScoreLocal<startScoreLocal&&endScoreGlobal>startScoreGlobal)
-//    {
-//      System.out.println("broken local fit");
-//    }
-    
     return endScoreLocal < startScoreLocal;
   }
   
@@ -114,7 +114,6 @@ public class HillClimber extends Thread
   
   public void repeatMutation(Genome myGenome, Gene mutateGene, int allele, int shiftAmount, int maxBound, long startScore, long endScore,int iStep)
   {
-   // long f0score=startScore;
     long previousScore=startScore;
     long currentScore=endScore;
     int mutateAlleleValue;
@@ -161,8 +160,10 @@ public class HillClimber extends Thread
       }
       Mutate.exposeToRadiation(mutateGene, allele, shiftAmount);      
       previousScore=currentScore;
-      //currentScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
-      currentScore=Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
+      int w=image.getWidth();
+      int h=image.getHeight();
+      BufferedImage scaledImage=new BufferedImage((int)(w/1.5), (int)(h/1.5), BufferedImage.TYPE_INT_RGB);
+      currentScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
     }    
     revertGenome(lastGene, lastAllele, lastShift);
   }

@@ -72,6 +72,7 @@ public class TriangleGenomeGUI extends JFrame
         findFiles.add(listOfFiles[i].getName());
       }
     }
+    
     String[] filenames=findFiles.toArray(new String[findFiles.size()]);
     buttonPanel=new JPanel();
     buttonPanel.setBounds(0, 500, 1500, 300);
@@ -384,17 +385,24 @@ public class TriangleGenomeGUI extends JFrame
       tribeList.add(tribe);
     }
   }
-
+/******************************************************************************
+ *triangleWindowUpdate
+ *input:none
+ *output:none
+ *description:redraws the the triangle window and updates the Buffered image
+ *  of the Genome
+ *****************************************************************************/
   public void triangleWindowUpdate()
   {
     numUdates++;
     drawGenome=getGenome();
-    GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
-    if(numUdates%50==0)
+    
+    if(numUdates%25==0)
     {
+      GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
       stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
       drawGenome.fitscore=stats;
-      System.out.println("50 updates happened");
+      //System.out.println("50 updates happened");
     }
     //genomeStats.setText(tmpGenomeStats+stats);
     genomeStats.setText("min:sec = " + "" +

@@ -356,6 +356,39 @@ public class GenomeUtilities
     }
     return myIm;
   }
+  
+  public static BufferedImage getSmallBufferedImage(Genome myGenome, int iStep)
+  {
+   BufferedImage myIm=new BufferedImage(myGenome.IMG_WIDTH/iStep, myGenome.IMG_HEIGHT/iStep, BufferedImage.TYPE_INT_RGB);
+   Graphics myGraphics=myIm.getGraphics();
+   int height=myIm.getHeight();
+   int width=myIm.getWidth();
+   
+   myGraphics.setColor(Color.white);
+   myGraphics.fillRect(0, 0, width, height);
+   for(int i=0;i<myGenome.NUM_GENES;i++)
+   {
+     Gene gene=myGenome.geneList.get(i);
+     checkColorValues(gene);
+     myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));
+     int[] xptsHold=new int[myGenome.geneList.get(i).xpoints.length];
+     int[] yptsHold=new int[myGenome.geneList.get(i).ypoints.length];
+     for(int j=0;j<xptsHold.length;j++)
+     {
+       xptsHold[j]=myGenome.geneList.get(i).xpoints[j];
+       myGenome.geneList.get(i).xpoints[j]/=iStep;
+       yptsHold[j]=myGenome.geneList.get(i).ypoints[j];
+       myGenome.geneList.get(i).ypoints[j]/=iStep;
+     }     
+     myGraphics.fillPolygon(myGenome.geneList.get(i));
+     for(int j=0;j<xptsHold.length;j++)
+     {
+       myGenome.geneList.get(i).xpoints[j]=xptsHold[j];
+       myGenome.geneList.get(i).ypoints[j]=yptsHold[j];
+     }
+   }
+   return myIm;
+  }
 
   
   public static void checkColorValues(Gene gene){

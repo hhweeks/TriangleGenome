@@ -43,16 +43,25 @@ public class Statistics
     int[] genomePixArray=new int[3];
     int[] masterPixArray=new int[3];
 
+    int smallInc=0;
     for(int i=0;i<Math.min(genomeImage.getWidth(), masterImage.getWidth());i+=iStep)
     {
-      for(int j=0;j<Math.min(genomeImage.getHeight(), masterImage.getHeight());j++)
+      int smallJinx=0;
+      for(int j=0;j<Math.min(genomeImage.getHeight(), masterImage.getHeight());j+=iStep)
       {
+//        genomeRaster.getPixel(smallInc, smallJinx, genomePixArray);
+//        masterRaster.getPixel(i, j, masterPixArray);
+//        redDistance=genomePixArray[0]-masterPixArray[0];
+//        blueDistance=genomePixArray[1]-masterPixArray[1];
+//        greenDistance=genomePixArray[2]-masterPixArray[2];
         redDistance=genomeRaster.getPixel(i, j, genomePixArray)[0]-masterRaster.getPixel(i, j, masterPixArray)[0];
         blueDistance=genomeRaster.getPixel(i, j, genomePixArray)[1]-masterRaster.getPixel(i, j, masterPixArray)[1];
         greenDistance=genomeRaster.getPixel(i, j, genomePixArray)[2]-masterRaster.getPixel(i, j, masterPixArray)[2];
 
         euclidianDistanceSqr+=(redDistance*redDistance)+(blueDistance*blueDistance)+(greenDistance*greenDistance);
+        smallJinx++;
       }
+      smallInc++;
     }
     return euclidianDistanceSqr/(masterImage.getHeight()*masterImage.getWidth());
   }

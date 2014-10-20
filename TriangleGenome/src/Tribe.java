@@ -14,7 +14,7 @@ public class Tribe extends Thread
 
   private volatile boolean running=true; // Run unless told to pause
   public static final int STARTINGTRIBESIZE=2;
-  public static final int ENDINGTRIBESIZE=3;
+  public static final int ENDINGTRIBESIZE=8;
   TriangleGenomeGUI imagePanel;
 
   public Tribe(BufferedImage image,TriangleGenomeGUI tg)
@@ -152,10 +152,13 @@ public class Tribe extends Thread
     HillClimber hc=new HillClimber(masterImage);
     System.out.println("climber started");
     
+    //TODO experimental, generating more Genomes than we're Hillclimbing
+    int topThree=0;
     for(Genome genome:genomeList)
     {
-      long startScore=0;//TODO debug
-      long endScore=0;//TODO debug
+      if(topThree>2)break;
+      System.out.println("updating Genome " + topThree);
+      topThree++;
       for(int i=0;i<N;i++)
       {
         checkForPaused();
