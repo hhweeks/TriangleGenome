@@ -58,4 +58,3 @@ public class GenomeTable extends JPanel
     }
 
 }
-

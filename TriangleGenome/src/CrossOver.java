@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 /****************************************************************************
  *UnitTestMain
  *@author Paige Romero
@@ -18,7 +19,30 @@ public class CrossOver
    * Description:does single point cross over. Clears the genes of the child nodes
    *  before adding parent genes (meaning children can be to-recycle Genomes)
    ****************************************************************************/
-    public static void breed(Genome papaGenome, Genome mamaGenome,
+    
+	
+	public static void multiBreed(Genome papaGenome, Genome mamaGenome,
+		      Genome sonGenome, Genome daughterGenome, int NPoints)
+		  {
+		Random rand=new Random();
+		int crossPoint=rand.nextInt(200)+1600;
+		breed(papaGenome,mamaGenome,
+			      sonGenome,daughterGenome,crossPoint);
+			for(int i=0;i<NPoints;i++){
+				crossPoint=rand.nextInt(2000);
+				breed(GenomeUtilities.genomeCopy(sonGenome),GenomeUtilities.genomeCopy(daughterGenome),
+					      sonGenome,daughterGenome,crossPoint);
+				
+			}
+		
+		
+		
+		  }
+	
+	
+	
+	
+	public static void breed(Genome papaGenome, Genome mamaGenome,
       Genome sonGenome, Genome daughterGenome, int crossPoint)
   {
     int genecross = crossPoint / 10;

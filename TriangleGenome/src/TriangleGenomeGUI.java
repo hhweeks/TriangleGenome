@@ -17,11 +17,12 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
+//TODO measure improvement rate, ie delta score per second
 public class TriangleGenomeGUI extends JFrame
 {
   public static final int NTRIBES=1;
   public static final int DRAWSTEPS=1;
+  public static final int STARTINGTRIBESIZE=2;
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
   static JPanel buttonPanel;
@@ -32,7 +33,7 @@ public class TriangleGenomeGUI extends JFrame
   JSlider tribeSlider=new JSlider(0, NTRIBES, 0);
   JLabel triangleLabel=new JLabel("triangles");
   JLabel tribeLabel=new JLabel("tribes");
-  JSlider genomeSlider=new JSlider(0, NTRIBES, 0);
+  JSlider genomeSlider=new JSlider(0, STARTINGTRIBESIZE, 0);
   JLabel genomeLabel=new JLabel("genome");
   JButton runPauseButton=new JButton("RUN");
   JButton nextButton=new JButton("NEXT");
@@ -146,14 +147,7 @@ public class TriangleGenomeGUI extends JFrame
         reset = true;
     	  makeTribes(triangleWindow.image);
     	  triangleWindowUpdate();
-    	  BufferedImage test=GenomeUtilities.scaleImage(imageWindow.image, 4);
-    	  //imageWindow.getGraphics().setColor(Color.white);
-    	  //imageWindow.getGraphics().fillRect(0, 0, 500, 500);
-    	  triangleWindow.changeImage(test);
-    	  triangleWindow.repaint();
-    	  
-    	  System.out.println("first:"+imageWindow.image.getHeight()+"x"+imageWindow.image.getWidth());
-    	  System.out.println("second:"+test.getHeight()+"x"+test.getWidth());
+    	 
       	
       }
     });

@@ -104,17 +104,23 @@ public class GenomeUtilities
 
     for (Gene myGene : genome.geneList)
     {
-//      int randomAlpha = rand.nextInt(200) + 55;
-//
-//      myGene.a = randomAlpha;
-//
-//      int[] myColors = getAreaColorAvg(myGene, copiedImage);
-//      myGene.r = myColors[0];
-//      myGene.g = myColors[1];
-//      myGene.b = myColors[2];    
+         
       
-      int geneCase=rand.nextInt(10);
-      if(geneCase<9)
+      int geneCase=rand.nextInt(20);
+      if(geneCase>12||true){
+    	  int randomAlpha = rand.nextInt(200) + 55;
+
+          myGene.a = randomAlpha;
+
+          int[] myColors = getAreaColorAvg(myGene, copiedImage);
+          myGene.r = myColors[0];
+          myGene.g = myColors[1];
+          myGene.b = myColors[2]; 
+    	  
+    	  
+      }
+      
+      else if(geneCase<9)
       {
         sampleRanomPixel(myGene,masterRaster);
       }
@@ -453,7 +459,21 @@ public class GenomeUtilities
 //	  
 //  }
   
-  
+  public static void checkValues(Gene gene,int width,int height){
+	  checkColorValues(gene);
+	  for(int i=0;i<gene.xpoints.length;i++){
+		  if(gene.xpoints[i]>width)gene.xpoints[i]=width;
+		  if(gene.xpoints[i]<0)gene.xpoints[i]=0;
+		  
+	  }
+	  for(int i=0;i<gene.ypoints.length;i++){
+		  if(gene.ypoints[i]>height)gene.ypoints[i]=height;
+		  if(gene.ypoints[i]<0)gene.ypoints[i]=0;
+		  
+	  }
+	  
+	  
+  }
   
   public static void checkColorValues(Gene gene){
 	  if(gene.a>255)gene.a=255;
