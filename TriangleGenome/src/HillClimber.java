@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.util.Random;
@@ -69,26 +70,20 @@ public class HillClimber extends Thread
       shiftAmount = -mutateAlleleValue;// will set mutateAlleleValue to 0 when mutate is called
     }
     
+    double scale=1;
     
-    int iStep=2;
-    if(myGenome.fitscore<10000)
-    {
-      iStep=1;
-    }
-    if(myGenome.fitscore<7500)
-    {
-      iStep=1;
-    }
-    if(myGenome.fitscore<5000)
-    {
-      iStep=1;
-    }
+    BufferedImage scaledImage=GenomeUtilities.copyImage(masterImage);
+    int w=(int) (scaledImage.getWidth()*scale);
+    int h=(int) (scaledImage.getHeight()*scale);
+    Image tempIm=scaledImage.getScaledInstance(w, h, 0);
+    myGenome.scaledImage=new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+    myGenome.scaledImage.getGraphics().drawImage(tempIm, 0, 0, null);
         
-//    long startScoreLocal=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);//TODO scoring
-    int startScoreLocal=Statistics.getScaledFitscore(GenomeUtilities.getScaledBufferedImage(genome, masterImage, .7), genome.scaledImage);
+    long startScoreLocal=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);//TODO scoring
+//    long startScoreLocal=Statistics.getFitScore(GenomeUtilities.getScaledBufferedImage(genome, scale), genome.scaledImage);
     Mutate.exposeToRadiation(mutateGene, mutateAlleleIndex, shiftAmount);
-//    long endScoreLocal=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);//TODO scoring
-    int endScoreLocal=Statistics.getScaledFitscore(GenomeUtilities.getScaledBufferedImage(genome, masterImage, .7), genome.scaledImage);
+    long endScoreLocal=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);//TODO scoring
+//    long endScoreLocal=Statistics.getFitScore(GenomeUtilities.getScaledBufferedImage(genome, scale), genome.scaledImage);
     
     
     
@@ -100,7 +95,7 @@ public class HillClimber extends Thread
     {
       revertGenome(lastGene, lastAllele, lastShift);
     }
-    else if(endScoreLocal<startScoreLocal)repeatMutation(myGenome, lastGene, lastAllele, lastShift, maxBound, startScoreLocal, endScoreLocal,iStep);
+    else if(endScoreLocal<startScoreLocal)repeatMutation(myGenome, lastGene, lastAllele, lastShift, maxBound, startScoreLocal, endScoreLocal,scale);
     
     return endScoreLocal < startScoreLocal;
   }
@@ -110,7 +105,7 @@ public class HillClimber extends Thread
     Mutate.exposeToRadiation(lastGene, lastAllele, -lastShift);
   }
   
-  public void repeatMutation(Genome myGenome, Gene mutateGene, int allele, int shiftAmount, int maxBound, long startScore, long endScore,int iStep)
+  public void repeatMutation(Genome myGenome, Gene mutateGene, int allele, int shiftAmount, int maxBound, long startScore, long endScore,double scale)
   {
     long previousScore=startScore;
     long currentScore=endScore;
@@ -161,8 +156,8 @@ public class HillClimber extends Thread
       int w=masterImage.getWidth();
       int h=masterImage.getHeight();
       BufferedImage scaledImage=new BufferedImage((int)(w/1.5), (int)(h/1.5), BufferedImage.TYPE_INT_RGB);
-//      currentScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);//TODO scoring
-      currentScore = Statistics.getScaledFitscore(GenomeUtilities.getScaledBufferedImage(myGenome, masterImage, .7), genome.scaledImage);//TODO scoring
+      currentScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), masterImage);//TODO scoring
+//      currentScore = Statistics.getFitScore(GenomeUtilities.getScaledBufferedImage(myGenome, scale), genome.scaledImage);//TODO scoring
     }    
     revertGenome(lastGene, lastAllele, lastShift);
   }

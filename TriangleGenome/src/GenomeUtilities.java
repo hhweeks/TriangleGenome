@@ -359,34 +359,26 @@ public class GenomeUtilities
     return myIm;
   }
   
-  public static BufferedImage getScaledBufferedImage(Genome myGenome, BufferedImage master, double scale)//this method is setting 2 scaled buffIm, could be 1
+  public static BufferedImage getScaledBufferedImage(Genome myGenome, double scale)//this method is setting 2 scaled buffIm, could be 1
   {
-   BufferedImage myIm=new BufferedImage(myGenome.IMG_WIDTH, myGenome.IMG_HEIGHT, BufferedImage.TYPE_INT_RGB);
+   BufferedImage myIm=new BufferedImage((int)(myGenome.IMG_WIDTH*scale), (int)(myGenome.IMG_HEIGHT*scale), BufferedImage.TYPE_INT_RGB);
+   Graphics2D g2d=myIm.createGraphics();
    int w=myIm.getWidth();
    int h=myIm.getHeight();
-   myGenome.scaledImage=copyImage(master);
-   Graphics2D g2dScaleMaser=myGenome.scaledImage.createGraphics();   
-   Graphics2D g2d=myIm.createGraphics();
-   
-   
-   AffineTransform myAT = new AffineTransform();
-   myAT.scale(scale, scale);
-   g2d.setTransform(myAT);
-   g2d.setBackground(Color.white);
-   g2dScaleMaser.setTransform(myAT);
-   
-   w=myIm.getWidth();
-   h=myIm.getHeight();
-   
-   for(int i=0;i<myGenome.NUM_GENES;i++)
+   Gene scaledGene=new Gene();
+   for(Gene myGene:myGenome.geneList)
    {
-     Gene gene=myGenome.geneList.get(i);
-     g2d.setColor(new Color(gene.r,gene.g,gene.b,gene.a));
-     int[] xptsHold=new int[myGenome.geneList.get(i).xpoints.length];
-     int[] yptsHold=new int[myGenome.geneList.get(i).ypoints.length];
-
-     g2d.fillPolygon(gene);
-   }
+     scaledGene=geneCopy(myGene);
+     for(int yval:scaledGene.ypoints)
+     {
+       yval*=scale;
+     }
+     for(int xval:scaledGene.xpoints)
+     {
+       xval*=scale;
+     }
+     g2d.fillPolygon(myGene);
+   }   
    return myIm;
   }
   

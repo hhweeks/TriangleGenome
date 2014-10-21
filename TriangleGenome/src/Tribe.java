@@ -48,13 +48,7 @@ public class Tribe extends Thread
   public void climbRoutine()
   {
     System.out.println("start");
-    goToLocalMax(100);
-    
-//    for(Genome myGenome :genomeList)
-//    {
-//      Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), myGenome.image);
-//    }
-    
+    goToLocalMax(100);    
   }
   
   public void interCrossRoutine(int sigma)
@@ -103,7 +97,10 @@ public class Tribe extends Thread
   
   public void intraCrossRoutin(int sigma)
   {
-    
+    synchronized (GUI_INITIALIZATION_MONITOR)
+    {
+      
+    }    
   }
 
   private void checkForPaused()
