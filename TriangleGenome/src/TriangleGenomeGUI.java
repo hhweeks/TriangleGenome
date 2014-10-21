@@ -11,15 +11,19 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class TriangleGenomeGUI extends JFrame
 {
-  public static final int NTRIBES=1;
+  public static final int NTRIBES=4;
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
   static JPanel buttonPanel;
@@ -42,7 +46,7 @@ public class TriangleGenomeGUI extends JFrame
   JLabel genomeStats=new JLabel();
   TriangleGenomeGUI tg;
   Genome drawGenome;
-  BufferedImage img;
+  //BufferedImage img;
   String path="images/";
   int numUdates;//used by triangleWindowUpdate
   long stats;
@@ -51,6 +55,12 @@ public class TriangleGenomeGUI extends JFrame
   ArrayList<Tribe> tribeList;
   String tmpGenomeStats="min:sec=0.0   gen=0   gen/sec=NaN   Fitness=";
   String flname;
+  public long startTime = Long.MAX_VALUE;
+  static int seconds = 1;
+  boolean reset = false;
+  final JFileChooser fc = new JFileChooser();
+  FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter("xml files (*.xml)", "xml");
+  Random rand=new Random();
 
   public TriangleGenomeGUI() throws IOException
   {
@@ -66,6 +76,7 @@ public class TriangleGenomeGUI extends JFrame
         findFiles.add(listOfFiles[i].getName());
       }
     }
+    
     String[] filenames=findFiles.toArray(new String[findFiles.size()]);
     buttonPanel=new JPanel();
     buttonPanel.setBounds(0, 500, 1500, 300);
@@ -134,7 +145,10 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        triangleWindowUpdate();
+        //triangleWindowUpdate();
+        reset = true;
+    	  makeTribes(triangleWindow.image);
+    	  triangleWindowUpdate();
       }
     });
     nextButton.addActionListener(new ActionListener()
@@ -151,26 +165,32 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
+        //if(!reset) startTime = System.nanoTime();
         if(runPauseButton.getText().compareTo("RUN")==0)
         {
-
+          if(startTime > System.nanoTime()) startTime = System.nanoTime();
           runPauseButton.setText("PAUSE");
           toggleButtons(false);
 
-          if(tribeList.get(0).isAlive())
+          for(Tribe myTribe:tribeList)
           {
-            tribeList.get(0).resumeThread();
-          } else
-          {
-            tribeList.get(0).start();
+            if(myTribe.isAlive())
+            {
+              myTribe.resumeThread();
+            }else
+            {
+              myTribe.start();
+            }            
           }
-          triangleWindowUpdate();
-
+          
         } else
         {
           try
           {
-            tribeList.get(0).pauseThread();
+            for(Tribe myTribe:tribeList)
+            {
+              myTribe.pauseThread();
+            }
           } catch (InterruptedException e1)
           {
             // TODO Auto-generated catch block
@@ -180,6 +200,7 @@ public class TriangleGenomeGUI extends JFrame
           toggleButtons(true);
       }
     }});
+    
     tableButton.addActionListener(new ActionListener()
     {
       @Override
@@ -193,7 +214,28 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        System.out.println("READ GENOME");
+        fc.setFileFilter(xmlFilter);
+        fc.setDialogTitle("Open Genome");
+        fc.setCurrentDirectory(null);
+        try
+        {
+          int returnVal = fc.showOpenDialog(readButton);
+          if(returnVal == JFileChooser.APPROVE_OPTION)
+          {
+            File file = fc.getSelectedFile();
+            XMLUtil.readXML(file.getName());
+          }
+          //XMLUtil.readXML("1413682511764729000.xml");
+          else
+          {
+            System.out.println("File selection canceled by the user!");
+          }
+        }
+        catch (Exception e1)
+        {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
       }
     });
     writeButton.addActionListener(new ActionListener()
@@ -224,15 +266,17 @@ public class TriangleGenomeGUI extends JFrame
         tribeLabel.setText("Tribe #"+tribeIndex);
       }
     });
-    genomeSlider=new JSlider(0, tribeList.size(), 0);
+    genomeSlider=new JSlider(0, tribeList.size() - 1, 0);
     genomeSlider.addChangeListener(new ChangeListener()
     {
       @Override
       public void stateChanged(ChangeEvent e)
       {
         genomeIndex=genomeSlider.getValue();
-        genomeLabel.setText("Genome #"+genomeIndex);
-        drawGenome = tribeList.get(genomeIndex).genomeList.get(tribeIndex);
+        genomeLabel.setText("Genome #"+genomeIndex + 1);
+        //System.out.println("tribe size " + tribeList.size());
+        drawGenome = tribeList.get(0).genomeList.get(tribeIndex);
+        //System.out.print("genome Index " + genomeIndex + "\ntribeIndex " + tribeIndex);
         //triangleWindowUpdate();
       }
     });
@@ -259,7 +303,13 @@ public class TriangleGenomeGUI extends JFrame
     imagePane.add(triangleWindow);
     imagePane.setSize(600, 800);
 
-    genomeStats.setText(tmpGenomeStats+stats);
+    //genomeStats.setText(tmpGenomeStats+stats);
+    genomeStats.setText("min:sec = " + "" +
+    		"    gen = " + numUdates +
+    		"    gen/sec = " + "" +
+    		"    Fitness = " + stats + 
+    		"    Duration = " + "0"//getRunDuration(startTime)
+    		);
     this.add(genomeStats, BorderLayout.SOUTH);
 
     // buttonPanel.setPreferredSize(new Dimension(1150, 250));
@@ -339,18 +389,107 @@ public class TriangleGenomeGUI extends JFrame
       tribeList.add(tribe);
     }
   }
-
+/******************************************************************************
+ *triangleWindowUpdate
+ *input:none
+ *output:none
+ *description:redraws the the triangle window and updates the Buffered image
+ *  of the Genome
+ *****************************************************************************/
   public void triangleWindowUpdate()
   {
     numUdates++;
     drawGenome=getGenome();
-    GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
-    if(numUdates%50==0)
+    if((numUdates+1)%25==0){crossTribes();}
+    
+    if(numUdates%25==0)
     {
+      GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
       stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
       drawGenome.fitscore=stats;
+      //System.out.println("50 updates happened");
     }
-    genomeStats.setText(tmpGenomeStats+stats);
+    //genomeStats.setText(tmpGenomeStats+stats);
+    genomeStats.setText("min:sec = " + "" +
+        "    Duration = " + getRunDuration(startTime)+
+    		"    gen = " + numUdates +
+    		"    gen/sec = " + getGenPerSec() +
+    		"    Fitness = " + stats
+    		);
+  }
+  
+  public void crossTribes()
+  {    
+    ArrayList<Genome> genomesToCross=new ArrayList<>();
+    ArrayList<Genome> returnList=new ArrayList<>();
+    BufferedImage localMasterImage=null;
+    
+    // call intraCross
+    for(Tribe myTribe:tribeList)
+    {
+      try
+      {
+        myTribe.pauseThread();
+      } catch (InterruptedException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    for(Tribe myTribe:tribeList)
+    {
+      LinkedList<Genome> tempList=myTribe.intraCrossRoutin();
+      for(Genome myGenome:tempList)
+      {
+        genomesToCross.add(myGenome);
+      }
+    }
+    //we now have a list with 2 Genomes from every tribe
+    for(Genome genome:genomesToCross)
+    {
+      genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),genome.masterImage);
+      if(localMasterImage==null){localMasterImage=genome.masterImage;}
+    }
+    Collections.sort(genomesToCross);
+    
+    int sigma=genomesToCross.size()/2;
+    
+    for(int i=0; i<genomesToCross.size()/2;i++)
+    {
+      Genome son=new Genome(localMasterImage);
+      Genome daughter=new Genome(localMasterImage);
+      
+      int index0=(int) Math.abs(rand.nextGaussian()*sigma);
+      int index1=(int) Math.abs(rand.nextGaussian()*sigma);
+      
+      while(index0>=genomesToCross.size())
+      {
+        index0=(int) Math.abs(rand.nextGaussian()*sigma);
+      }
+  
+      while(index1>=genomesToCross.size()||index1==index0)
+      {
+        index1=(int) Math.abs(rand.nextGaussian()*sigma);
+      }
+      
+      CrossOver.breed(genomesToCross.get(index0), genomesToCross.get(index1), son, daughter, rand.nextInt(2000));
+      returnList.add(son);
+      returnList.add(daughter);
+    }
+    Collections.sort(returnList);
+    
+    for(Tribe myTribe:tribeList)
+    {
+      myTribe.genomeList.add(returnList.get(0));
+      returnList.remove(0);
+      myTribe.genomeList.add(returnList.get(0));
+      returnList.remove(0);
+    }
+    
+    for(Tribe myTribe:tribeList)
+    {
+      myTribe.resumeThread();
+    }
   }
 
   public Genome getGenome()
@@ -386,9 +525,25 @@ public class TriangleGenomeGUI extends JFrame
       appendButton.setEnabled(s);
   }
 
+  private String getRunDuration(long start)
+  {
+    seconds = (int) ((System.nanoTime() - start) * 0.000000001);
+    String time = "";
+    if(seconds/60 < 10) time += "0" + seconds/60;
+    else time += seconds/60;
+    if(seconds%60 < 10) time += ":0" + seconds%60;
+    else time += ":" + seconds%60;
+    return time;
+    //return seconds/60 + ":" + seconds%60 + "";
+  }
+  private String getGenPerSec()
+  {
+    try { return String.format("%.5g%n", (double)numUdates/(double)seconds); }
+    catch(ArithmeticException e) { return ""+-1; }
+  }
   public static void main(String[] args) throws IOException
   {
-    TriangleGenomeGUI tg=new TriangleGenomeGUI();
+    TriangleGenomeGUI tg=new TriangleGenomeGUI();    
   }
 
 }

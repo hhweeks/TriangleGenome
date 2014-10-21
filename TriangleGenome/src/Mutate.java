@@ -45,10 +45,24 @@ public class Mutate
     case 9:
       mutateGene.a += shiftAmount;
       break;
+    case 10:
+      for(int i=0;i<mutateGene.npoints;i++)
+      {
+        mutateGene.xpoints[i]+= shiftAmount;
+      }
+      break;
+    case 11:
+      for(int i=0;i<mutateGene.npoints;i++)
+      {
+        mutateGene.ypoints[i]+= shiftAmount;
+      }
+      break;
+      //
     //TODO add 3 cases to 1.) change layer 2.) move all vertices 3.)swap triangles
     }
   }
   
+  //only gets called on cases 0-9
   public static int getAlleleValue(Gene mutateGene, int allele)
   {
     switch (allele)

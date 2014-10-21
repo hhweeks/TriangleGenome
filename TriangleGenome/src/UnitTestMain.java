@@ -328,7 +328,7 @@ public class UnitTestMain
   public void writeTest(Genome gen)
   {
     XMLUtil.writeXML("UnitWriteTest.xml", gen);
-    XMLUtil.readXML("UnitWriteTest.xml");
+    //XMLUtil.readXML("UnitWriteTest.xml");
   }
   
   /****************************************************************************

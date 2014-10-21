@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.util.Random;
@@ -7,18 +8,19 @@ import java.util.Random;
 public class HillClimber extends Thread
 {
   static Random rand = new Random();
-  public BufferedImage image;
+  public BufferedImage masterImage;
   public Genome genome;
   boolean repeat;
   Gene lastGene;
   int maxBound;
   int lastAllele;
   int lastShift;
+  public final int ALLELE_VALUES=12;
 
   public HillClimber(BufferedImage img)
   {
-    image =img;
-    repeat = false;
+    masterImage=img;
+    repeat=false;
   }
 
   public boolean climbStep(Genome myGenome)
@@ -27,58 +29,88 @@ public class HillClimber extends Thread
     // mutate random gene at random allele
     Gene mutateGene = getGene(myGenome);
     int mutateAlleleIndex = getAllele(mutateGene);
-    maxBound = getAlleleBounds(myGenome, mutateAlleleIndex);
-    int shiftAmount = rand.nextInt(maxBound / 5);// shift by up to 20%
-    shiftAmount -= (maxBound / 10);// subtract, to leave shift by +/- 10
-    
-    int mutateAlleleValue = Mutate.getAlleleValue(mutateGene, mutateAlleleIndex);    
-   
-    
-    if (mutateAlleleValue + shiftAmount > maxBound)
+    if(mutateAlleleIndex==ALLELE_VALUES-1)//the change layers index
     {
-      shiftAmount = maxBound - mutateAlleleValue;// this will set mutateAlleleValue to max when mutate is called
+      Gene mutateGene2=getGene(myGenome);
+      long startScore=assignScore(myGenome);
+      switchLayers(mutateGene,mutateGene2);
+      long endScore=assignScore(myGenome);
+      if(startScore<endScore)
+      {
+        switchLayers(mutateGene,mutateGene2);//switch them back if it wasn't an improvement
+      }
+      return endScore < startScore;
+    }else
+    {    
+      maxBound = getAlleleBounds(myGenome, mutateAlleleIndex);
+      int shiftAmount = rand.nextInt(maxBound / 5);// shift by up to 20%
+      shiftAmount -= (maxBound / 10);// subtract, to leave shift by +/- 10
+      
+      //special case for moving all x or all y vertices, we need mutateAlleleValue to be maxX/minX depending on if shiftAmount is + or -
+      int mutateAlleleValue;
+      if(mutateAlleleIndex==10)
+      {
+        if(shiftAmount>0)
+        {
+          mutateAlleleValue=GenomeUtilities.maxGenesDim(mutateGene.xpoints);
+        }
+        else
+        {
+          mutateAlleleValue=GenomeUtilities.minGenesDim(mutateGene.xpoints);
+        }
+      }
+      else if(mutateAlleleIndex==11)
+      {
+        if(shiftAmount>0)
+        {
+          mutateAlleleValue=GenomeUtilities.maxGenesDim(mutateGene.ypoints);
+        }
+        else
+        {
+          mutateAlleleValue=GenomeUtilities.minGenesDim(mutateGene.ypoints);
+        }
+      }
+      else
+      {
+        mutateAlleleValue = Mutate.getAlleleValue(mutateGene, mutateAlleleIndex);
+      }
+      
+      if (mutateAlleleValue + shiftAmount > maxBound)
+      {
+        shiftAmount = maxBound - mutateAlleleValue;// this will set mutateAlleleValue to max when mutate is called
+      }
+      if (mutateAlleleValue + shiftAmount < 0)
+      {
+        shiftAmount = -mutateAlleleValue;// will set mutateAlleleValue to 0 when mutate is called
+      }
+      
+//      double scale=.7;
+//      
+//      BufferedImage scaledImage=GenomeUtilities.copyImage(masterImage);
+//      int w=(int) (scaledImage.getWidth()*scale);
+//      int h=(int) (scaledImage.getHeight()*scale);
+//      Image tempIm=scaledImage.getScaledInstance(w, h, 0);
+//      myGenome.scaledImage=new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+//      myGenome.scaledImage.getGraphics().drawImage(tempIm, 0, 0, null);
+          
+      long startScoreLocal=assignScore(myGenome);
+      Mutate.exposeToRadiation(mutateGene, mutateAlleleIndex, shiftAmount);
+      long endScoreLocal=assignScore(myGenome);
+      
+      
+      
+      lastGene = mutateGene;
+      lastAllele = mutateAlleleIndex;
+      lastShift = shiftAmount;
+  
+      if(endScoreLocal > startScoreLocal)
+      {
+        revertGenome(lastGene, lastAllele, lastShift);
+      }
+      else if(endScoreLocal<startScoreLocal)repeatMutation(myGenome, lastGene, lastAllele, lastShift, maxBound, startScoreLocal, endScoreLocal);    
+      
+      return endScoreLocal < startScoreLocal;
     }
-    if (mutateAlleleValue + shiftAmount < 0)
-    {
-      shiftAmount = -mutateAlleleValue;// will set mutateAlleleValue to 0 when mutate is called
-    }
-    
-    int iStep=5;
-    if(myGenome.fitscore<10000)
-    {
-      iStep=3;
-    }
-    if(myGenome.fitscore<7500)
-    {
-      iStep=2;
-    }
-    if(myGenome.fitscore<5000)
-    {
-      iStep=1;
-    }
-    
-    long startScoreLocal =Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
-    //long startScoreGlobal =Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);
-    Mutate.exposeToRadiation(mutateGene, mutateAlleleIndex, shiftAmount);
-    long endScoreLocal =Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
-    
-    lastGene = mutateGene;
-    lastAllele = mutateAlleleIndex;
-    lastShift = shiftAmount;
-
-    if(endScoreLocal > startScoreLocal)
-    {
-      revertGenome(lastGene, lastAllele, lastShift);
-    }
-    else if(endScoreLocal<startScoreLocal)repeatMutation(myGenome, lastGene, lastAllele, lastShift, maxBound, startScoreLocal, endScoreLocal,iStep);
-    
-    //long endScoreGlobal=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),image);//TODO debug
-//    if(endScoreLocal<startScoreLocal&&endScoreGlobal>startScoreGlobal)
-//    {
-//      System.out.println("broken local fit");
-//    }
-    
-    return endScoreLocal < startScoreLocal;
   }
   
   public void revertGenome(Gene mutateGene, int allele, int shiftAmount)
@@ -86,16 +118,44 @@ public class HillClimber extends Thread
     Mutate.exposeToRadiation(lastGene, lastAllele, -lastShift);
   }
   
-  public void repeatMutation(Genome myGenome, Gene mutateGene, int allele, int shiftAmount, int maxBound, long startScore, long endScore,int iStep)
+  public void repeatMutation(Genome myGenome, Gene mutateGene, int allele, int shiftAmount, int maxBound, long startScore, long endScore)
   {
-   // long f0score=startScore;
     long previousScore=startScore;
     long currentScore=endScore;
     int mutateAlleleValue;
     
     while(currentScore<previousScore)
     {
-      mutateAlleleValue = Mutate.getAlleleValue(mutateGene, allele);
+      /////////////////////////////////////////////////////////////////////////////////////////
+      //special case for moving all x or all y vertices, we need mutateAlleleValue to be maxX/minX depending on if shiftAmount is + or -
+      if(allele==10)
+      {
+        if(shiftAmount>0)
+        {
+          mutateAlleleValue=GenomeUtilities.maxGenesDim(mutateGene.xpoints);
+        }
+        else
+        {
+          mutateAlleleValue=GenomeUtilities.minGenesDim(mutateGene.xpoints);
+        }
+      }
+      else if(allele==11)
+      {
+        if(shiftAmount>0)
+        {
+          mutateAlleleValue=GenomeUtilities.maxGenesDim(mutateGene.ypoints);
+        }
+        else
+        {
+          mutateAlleleValue=GenomeUtilities.minGenesDim(mutateGene.ypoints);
+        }
+      }
+      else
+      {
+        mutateAlleleValue = Mutate.getAlleleValue(mutateGene, allele);
+      }
+      /////////////////////////////////////////////////////////////////////////////////////////
+      
       if (mutateAlleleValue + shiftAmount > maxBound)
       {
         shiftAmount = maxBound - mutateAlleleValue;// this will set mutateAlleleValue to max when mutate is called
@@ -106,8 +166,10 @@ public class HillClimber extends Thread
       }
       Mutate.exposeToRadiation(mutateGene, allele, shiftAmount);      
       previousScore=currentScore;
-      //currentScore = Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), image);
-      currentScore=Statistics.getSmallFitScore(GenomeUtilities.getBufferedImage(genome),image,iStep);
+      int w=masterImage.getWidth();
+      int h=masterImage.getHeight();
+      BufferedImage scaledImage=new BufferedImage((int)(w/1.5), (int)(h/1.5), BufferedImage.TYPE_INT_RGB);
+      currentScore=assignScore(myGenome);
     }    
     revertGenome(lastGene, lastAllele, lastShift);
   }
@@ -160,8 +222,28 @@ public class HillClimber extends Thread
   
   public int getAllele(Gene myGene)
   {
-    int myAlleleIndex=rand.nextInt(myGene.NALLELE);// 10 alleles
+    int myAlleleIndex=rand.nextInt(ALLELE_VALUES);// 10 alleles+2 for move all x and move all y and switch layer
     return myAlleleIndex;
+  }
+  
+  public void switchLayers(Gene gene1, Gene gene2)
+  {
+    Gene holder=GenomeUtilities.geneCopy(gene1);
+    gene1=GenomeUtilities.geneCopy(gene2);
+    gene2=GenomeUtilities.geneCopy(holder);
+  }
+  
+  public long assignScore(Genome myGenome)//calls statistics, program calls this 5 times, and it is frequently rewritten in 5 places if not centralized here//TODO
+  {
+//    BufferedImage genomeImage=GenomeUtilities.getBufferedImage(genome);
+//    long score=Statistics.getFitScore(genomeImage,masterImage);
+   
+    double scale=.7;
+    if(myGenome.scaledImage==null){GenomeUtilities.setScaledImage(myGenome,masterImage,scale);}
+    BufferedImage genomeImage=GenomeUtilities.getScaledBufferedImage(genome, scale);
+    long score=Statistics.getFitScore(genomeImage, genome.scaledImage);
+    
+    return score;
   }
 
   public int getAlleleBounds(Genome myGenome, int allele)
@@ -200,6 +282,12 @@ public class HillClimber extends Thread
     case 9:
       maxBound = colorMax;
       break;
+    case 10:
+      maxBound = myGenome.IMG_WIDTH;
+      break;
+    case 11:
+      maxBound = myGenome.IMG_HEIGHT;
+      break;
     }
     return maxBound;
   }
@@ -209,7 +297,7 @@ public class HillClimber extends Thread
 	  
 	  BufferedImage genomeImage=GenomeUtilities.getBufferedImage(genome);
 	  Raster genomeRaster=genomeImage.getRaster();
-    Raster raster = image.getRaster();
+    Raster raster = masterImage.getRaster();
     int red, blue, green;
     
     long sum = 0;
@@ -228,13 +316,13 @@ public class HillClimber extends Thread
    if(allele<6&&shiftMagnitude>0){
 	   if(allele%2==0) {
 		   minX=Math.max(minX-shiftMagnitude,0);
-		   maxX=Math.min(minX+shiftMagnitude,image.getWidth());
+		   maxX=Math.min(minX+shiftMagnitude,masterImage.getWidth());
 		  // System.out.println("xchange");
 
 	   }
 	   else{
 		   minY=Math.max(minY-shiftMagnitude,0);
-		   maxY=Math.min(maxX+shiftMagnitude,image.getHeight());
+		   maxY=Math.min(maxX+shiftMagnitude,masterImage.getHeight());
 		  // System.out.println("ychange");   
 	   }
 	   

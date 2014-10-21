@@ -1,6 +1,9 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
@@ -19,6 +22,8 @@ public class GenomeUtilities
 {
   public static final int NPOINTS=3;// points of a triangle
   public static final int NCOLORS=4;// r,g,b,a
+  
+  static Random rand=new Random();
 
   /****************************************************************************
    * setRandomGenome
@@ -30,7 +35,7 @@ public class GenomeUtilities
    ****************************************************************************/
   public static void setRandomGenome(Genome genome)
   {
-    Random rand=new Random();
+    
     for(Gene myGene:genome.geneList)
     {
       Point[] myVertices=new Point[NPOINTS];
@@ -58,160 +63,232 @@ public class GenomeUtilities
     //averagingGenome(genome,new BufferedImage(90, 90, BufferedImage.TYPE_INT_RGB));
   }
   
-  public static void  averagingGenome(Genome genome,BufferedImage masterImage){
-	  Random rand=new Random();
-	  BufferedImage copiedImage= deepCopy(masterImage);
-	  int centerx=rand.nextInt(genome.IMG_WIDTH/16)-rand.nextInt(genome.IMG_WIDTH/16)+genome.IMG_WIDTH/2;
-	  int centery=rand.nextInt(genome.IMG_HEIGHT/16)-rand.nextInt(genome.IMG_HEIGHT/16)+genome.IMG_HEIGHT/2;
-	  
-	  
-	  Raster masterRaster=masterImage.getRaster();
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  int[] x0={0,0,centerx};
-	  int[] y0={0,genome.IMG_HEIGHT,centery};
-	  int[] x1={0,centerx,genome.IMG_WIDTH};
-	  int[] y1={0,centery,0};
-	  int[] x2={genome.IMG_WIDTH,genome.IMG_WIDTH,centerx};
-	  int[] y2={0,genome.IMG_HEIGHT,centery};
-	  int[] x3={0,centerx,genome.IMG_WIDTH};
-	  int[] y3={genome.IMG_HEIGHT,centery,genome.IMG_HEIGHT};
-	  genome.geneList.get(0).xpoints=x0;
-	  genome.geneList.get(0).ypoints=y0;
-	  genome.geneList.get(1).xpoints=x1;
-	  genome.geneList.get(1).ypoints=y1;
-	  genome.geneList.get(2).xpoints=x2;
-	  genome.geneList.get(2).ypoints=y2;
-	  genome.geneList.get(3).xpoints=x3;
-	  genome.geneList.get(3).ypoints=y3;
-	  
-	  for(int i=4;i<200;i++){
-		  Point[] myVertices=new Point[NPOINTS];
-		   for(int j=0;j<NPOINTS;j++)
-		      {
-		        myVertices[j]=new Point(0, 0);
-		        myVertices[j].x=rand.nextInt(genome.IMG_WIDTH);
-		        myVertices[j].y=rand.nextInt(genome.IMG_HEIGHT);
-		      }
-		      genome.geneList.get(i).setPoints(myVertices);
-	  }
-	  
-	  
-	  
-	  
-	  
-	 for(Gene myGene:genome.geneList){
+  public static void averagingGenome(Genome genome, BufferedImage masterImage)
+  {
+    BufferedImage copiedImage = deepCopy(masterImage);
+    int centerx = rand.nextInt(genome.IMG_WIDTH / 16) - rand.nextInt(genome.IMG_WIDTH / 16) + genome.IMG_WIDTH / 2;
+    int centery = rand.nextInt(genome.IMG_HEIGHT / 16)- rand.nextInt(genome.IMG_HEIGHT / 16) + genome.IMG_HEIGHT / 2;
 
-      
-      int randomAlpha=rand.nextInt(200)+55;
-     
-   
+    Raster masterRaster = masterImage.getRaster();
+
+    int[] x0 = { 0, 0, centerx };
+    int[] y0 = { 0, genome.IMG_HEIGHT, centery };
+    int[] x1 = { 0, centerx, genome.IMG_WIDTH };
+    int[] y1 = { 0, centery, 0 };
+    int[] x2 = { genome.IMG_WIDTH, genome.IMG_WIDTH, centerx };
+    int[] y2 = { 0, genome.IMG_HEIGHT, centery };
+    int[] x3 = { 0, centerx, genome.IMG_WIDTH };
+    int[] y3 = { genome.IMG_HEIGHT, centery, genome.IMG_HEIGHT };
     
-      myGene.a=randomAlpha;
-      
-      int[] myColors=getAreaColorAvg(myGene,copiedImage);
-      myGene.r=myColors[0];
-      myGene.g=myColors[1];
-      myGene.b=myColors[2];
-     // subtractGene(myGene,copiedImage);
+    genome.geneList.get(0).xpoints = x0;
+    genome.geneList.get(0).ypoints = y0;
+    genome.geneList.get(1).xpoints = x1;
+    genome.geneList.get(1).ypoints = y1;
+    genome.geneList.get(2).xpoints = x2;
+    genome.geneList.get(2).ypoints = y2;
+    genome.geneList.get(3).xpoints = x3;
+    genome.geneList.get(3).ypoints = y3;
+
+    for (int i = 4; i < 200; i++)//bottom 4 triangle?
+    {
+      Point[] myVertices = new Point[NPOINTS];
+      for (int j = 0; j < NPOINTS; j++)
+      {
+        myVertices[j] = new Point(0, 0);
+        myVertices[j].x = rand.nextInt(genome.IMG_WIDTH);
+        myVertices[j].y = rand.nextInt(genome.IMG_HEIGHT);
+      }
+      genome.geneList.get(i).setPoints(myVertices);
     }
+
+    for (Gene myGene : genome.geneList)
+    {
+//      int randomAlpha = rand.nextInt(200) + 55;
+//
+//      myGene.a = randomAlpha;
+//
+//      int[] myColors = getAreaColorAvg(myGene, copiedImage);
+//      myGene.r = myColors[0];
+//      myGene.g = myColors[1];
+//      myGene.b = myColors[2];    
+      
+      int geneCase=rand.nextInt(10);
+      if(geneCase<9)
+      {
+        sampleRanomPixel(myGene,masterRaster);
+      }
+      else if(geneCase<9)//these final 2 cases currently unused, sampling whole pixels seems to be more effective
+      {
+        sampleRandomChannel(myGene,masterRaster);
+      }
+      else
+      {
+        ranomGene(myGene);//
+      }      
+    }
+  }  
   
-	  
+  static BufferedImage deepCopy(BufferedImage bi)
+  {
+    ColorModel cm = bi.getColorModel();
+    boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+    WritableRaster raster = bi.copyData(null);
+    return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+  }
+  
+  static void sampleRanomPixel(Gene myGene,Raster masterRaster)
+  {
+    int genesMaxX=maxGenesDim(myGene.xpoints);
+    int genesMaxY=maxGenesDim(myGene.ypoints);
+    int genesMinX=minGenesDim(myGene.xpoints);
+    int genesMinY=minGenesDim(myGene.ypoints);
+    int x=-1;
+    int y=-1;
+    
+    while(!myGene.contains(x, y))
+    {
+      x=rand.nextInt(genesMaxX-genesMinX)+genesMinX;
+      y=rand.nextInt(genesMaxY-genesMinY)+genesMinY;
+    }
+    
+    int[] samplePixel=new int[4];
+    masterRaster.getPixel(x, y, samplePixel);
+    myGene.r=samplePixel[0];
+    myGene.g=samplePixel[1];
+    myGene.b=samplePixel[2];
+    int randomAlpha = rand.nextInt(200) + 55;
+    myGene.a=randomAlpha;
+  }
+  
+  static void sampleRandomChannel(Gene myGene,Raster masterRaster)
+  {
+    int x0=rand.nextInt(masterRaster.getWidth());
+    int y0=rand.nextInt(masterRaster.getHeight());
+    int x1=rand.nextInt(masterRaster.getWidth());
+    int y1=rand.nextInt(masterRaster.getHeight());
+    int x2=rand.nextInt(masterRaster.getWidth());
+    int y2=rand.nextInt(masterRaster.getHeight());
+    int[] samplePixel0=new int[4];
+    int[] samplePixel1=new int[4];
+    int[] samplePixel2=new int[4];
+    masterRaster.getPixel(x0, y0, samplePixel0);
+    myGene.r=samplePixel0[0];
+    masterRaster.getPixel(x1, y1, samplePixel1);
+    myGene.g=samplePixel1[1];
+    masterRaster.getPixel(x2, y1, samplePixel2);
+    myGene.b=samplePixel2[2];
+    int randomAlpha = rand.nextInt(200) + 55;
+    myGene.a=randomAlpha;    
+  }
+  
+  static void ranomGene(Gene myGene)
+  {
+    int randomRed=rand.nextInt(254);
+    int randomGreen=rand.nextInt(254);
+    int randomBlue=rand.nextInt(254);
+    int randomAlpha = rand.nextInt(200) + 55;
+    myGene.r=randomRed;
+    myGene.g=randomGreen;
+    myGene.b=randomBlue;
+    myGene.a=randomAlpha;
+  }
+  
+  static int maxGenesDim(int[] dim)
+  {
+    int max=0;
+    for(int dimension:dim)
+    {
+      if(dimension>max){max=dimension;}
+    }
+    return max;
+  }
+  
+  static int minGenesDim(int[] dim)
+  {
+    int min=Integer.MAX_VALUE;
+    for(int dimension:dim)
+    {
+      if(dimension<min){min=dimension;}      
+    }
+    return min;
+  }
+
+  // subtracts a drawn gene from an image.
+  // this will edit the input image.
+  public static void subtractGene(Gene gene, BufferedImage image)
+  {
+    Raster raster = image.getRaster();
+    int red, blue, green;
+
+    int minX = Math.min(gene.xpoints[0], Math.min(gene.xpoints[1], gene.xpoints[2]));
+    int maxX = Math.max(gene.xpoints[0], Math.max(gene.xpoints[1], gene.xpoints[2]));
+    int minY = Math.min(gene.ypoints[0], Math.min(gene.ypoints[1], gene.ypoints[2]));
+    int maxY = Math.max(gene.ypoints[0], Math.max(gene.ypoints[1], gene.ypoints[2]));
+
+    for (int x = minX; x <= maxX; x++)
+    {
+      for (int y = minY; y <= maxY; y++)
+      {
+        if (gene.contains(x, y))
+        {
+          int[] pixel =
+          { 0, 0, 0 };
+          raster.getPixel(x, y, pixel);
+
+          red = Math.max(pixel[0] - gene.r, 0);
+          green = Math.max(pixel[1] - gene.g, 0);
+          blue = Math.max(pixel[2] - gene.b, 0);
+          // System.out.println(red+";"+green+";"+blue);
+          int rgb = new Color(red, green, blue).getRGB();
+          image.setRGB(x, y, rgb);
+
+        }
+      }
+    }
   }
   
   
-  static BufferedImage deepCopy(BufferedImage bi) {
-	  ColorModel cm = bi.getColorModel();
-	  boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-	  WritableRaster raster = bi.copyData(null);
-	  return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-	 }
   
   
-  //subtracts a drawn gene from an image.
-  //this will edit the input image.
-  public static void subtractGene(Gene gene,BufferedImage image){
-	  
-	  Raster raster=image.getRaster();
-	  int red,blue,green;
-	  
-	  int minX=Math.min(gene.xpoints[0], Math.min(gene.xpoints[1], gene.xpoints[2]));
-	  int maxX=Math.max(gene.xpoints[0], Math.max(gene.xpoints[1], gene.xpoints[2]));
-	  int minY=Math.min(gene.ypoints[0], Math.min(gene.ypoints[1], gene.ypoints[2]));
-	  int maxY=Math.max(gene.ypoints[0], Math.max(gene.ypoints[1], gene.ypoints[2]));
-	 
-	  
-	  for(int x=minX;x<=maxX;x++){
-		  for(int y=minY;y<=maxY;y++){
-			  if(gene.contains(x, y)){
-				  int[] pixel={0,0,0};
-				  raster.getPixel(x, y, pixel);
-				  
-				  red=Math.max(pixel[0]-gene.r,0);
-				  green=Math.max(pixel[1]-gene.g,0);
-				  blue=Math.max(pixel[2]-gene.b,0);
-				  //System.out.println(red+";"+green+";"+blue);
-				  int rgb=new Color(red,green,blue).getRGB();
-				  image.setRGB(x, y, rgb);
-				  
-			  }
-				  
-		  
-		  }
-	  
-	  
-		  }
-	  
-	  
+  public static int[] getAreaColorAvg(Gene gene, BufferedImage image)
+  {
+    int redCount = 0;
+    int blueCount = 0;
+    int greenCount = 0;
+    int nPixCount = 1;
+    Raster raster = image.getRaster();
+
+    // Find the min and max of the x and y
+    int minX = Math.min(gene.xpoints[0], Math.min(gene.xpoints[1], gene.xpoints[2]));
+    int maxX = Math.max(gene.xpoints[0], Math.max(gene.xpoints[1], gene.xpoints[2]));
+    int minY = Math.min(gene.ypoints[0], Math.min(gene.ypoints[1], gene.ypoints[2]));
+    int maxY = Math.max(gene.ypoints[0], Math.max(gene.ypoints[1], gene.ypoints[2]));
+
+    for (int x = minX; x <= maxX; x++)
+    {
+      for (int y = minY; y <= maxY; y++)
+      {
+        if (gene.contains(x, y))
+        {
+          int[] pixel =
+          { 0, 0, 0 };
+          raster.getPixel(x, y, pixel);
+
+          redCount += pixel[0];
+          blueCount += pixel[1];
+          greenCount += pixel[2];
+          nPixCount++;
+        }
+      }
+    }
+    
+    int red = redCount / nPixCount;
+    int blue = blueCount / nPixCount;
+    int green = greenCount / nPixCount;
+
+    int[] pixout = {red,blue,green};
+    return pixout;
   }
-  
-  
-  
-  
-  public static int[] getAreaColorAvg(Gene gene,BufferedImage image){
-	  int redCount=0;
-	  int blueCount=0;
-	  int greenCount=0;
-	  int nPixCount=1;
-	  Raster raster=image.getRaster();
-	  
-	  //Find the min and max of the x and y
-	  int minX=Math.min(gene.xpoints[0], Math.min(gene.xpoints[1], gene.xpoints[2]));
-	  int maxX=Math.max(gene.xpoints[0], Math.max(gene.xpoints[1], gene.xpoints[2]));
-	  int minY=Math.min(gene.ypoints[0], Math.min(gene.ypoints[1], gene.ypoints[2]));
-	  int maxY=Math.max(gene.ypoints[0], Math.max(gene.ypoints[1], gene.ypoints[2]));
-	 
-	  
-	  for(int x=minX;x<=maxX;x++){
-		  for(int y=minY;y<=maxY;y++){
-			  if(gene.contains(x, y)){
-				  int[] pixel={0,0,0};
-				  raster.getPixel(x, y, pixel);
-				  
-				  redCount+=pixel[0];
-				  blueCount+=pixel[1];
-				  greenCount+=pixel[2];
-				  nPixCount++;
-				  
-			  }
-				  
-		  
-		  }
-	  
-	  
-		  }
-	  int red=redCount/nPixCount;
-	  int blue=blueCount/nPixCount;
-	  int green=greenCount/nPixCount;
-	  
-	  int[] pixout={red,blue,green};
-	  return pixout;
-	  }
 	
 	  
 	  
@@ -275,13 +352,76 @@ public class GenomeUtilities
     for(int i=0;i<myGenome.NUM_GENES;i++)
     {
     	Gene gene=myGenome.geneList.get(i);
-    	checkColorValues(gene);
+    	//checkColorValues(gene);
       myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));
      
       myGraphics.fillPolygon(myGenome.geneList.get(i));
     }
     return myIm;
   }
+  
+  public static BufferedImage getScaledBufferedImage(Genome myGenome, double scale)//this method is setting 2 scaled buffIm, could be 1
+  {
+//   BufferedImage myIm=new BufferedImage((int)(myGenome.IMG_WIDTH*scale), (int)(myGenome.IMG_HEIGHT*scale), BufferedImage.TYPE_INT_RGB);
+//   Graphics2D g2d=myIm.createGraphics();
+//   int w=myIm.getWidth();
+//   int h=myIm.getHeight();
+//   Gene scaledGene=new Gene();
+//   for(Gene myGene:myGenome.geneList)
+//   {
+//     scaledGene=geneCopy(myGene);
+//     for(int yval:scaledGene.ypoints)
+//     {
+//       yval*=scale;
+//     }
+//     for(int xval:scaledGene.xpoints)
+//     {
+//       xval*=scale;
+//     }
+//     g2d.fillPolygon(myGene);
+//   }
+//    return myIm;
+    
+    BufferedImage triangleImage=new BufferedImage((int)(myGenome.IMG_WIDTH), (int)(myGenome.IMG_HEIGHT), BufferedImage.TYPE_INT_RGB);
+//    //Graphics myGraphics=triangleImage.getGraphics();
+    Graphics2D myGraphics=triangleImage.createGraphics();
+    
+    for(int i=0;i<myGenome.NUM_GENES;i++)
+    {
+      Gene gene=myGenome.geneList.get(i);
+      myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));     
+      myGraphics.fillPolygon(myGenome.geneList.get(i));
+    }
+    
+    BufferedImage scaledImage=copyImage(triangleImage);
+    
+    int w=(int) (scaledImage.getWidth()*scale);
+    int h=(int) (scaledImage.getHeight()*scale);
+    Image tempIm=scaledImage.getScaledInstance(w, h, 0);
+    triangleImage=new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+    triangleImage.getGraphics().drawImage(tempIm, 0, 0, null);
+    
+   return triangleImage;
+  }
+  
+  public static void setScaledImage(Genome myGenome, BufferedImage masterImage, double scale)
+  { 
+    BufferedImage scaledImage=GenomeUtilities.copyImage(masterImage);
+    int w=(int) (scaledImage.getWidth()*scale);
+    int h=(int) (scaledImage.getHeight()*scale);
+    Image tempIm=scaledImage.getScaledInstance(w, h, 0);
+    myGenome.scaledImage=new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+    myGenome.scaledImage.getGraphics().drawImage(tempIm, 0, 0, null);
+  }
+  
+  public static BufferedImage copyImage(BufferedImage source)
+  {
+    BufferedImage myBuffIm=new BufferedImage(source.getWidth(), source.getHeight(),source.getType());
+    Graphics myGraphics=myBuffIm.getGraphics();
+    myGraphics.drawImage(source, 0, 0, null);
+    myGraphics.dispose();
+    return myBuffIm;
+}
 
   
   public static void checkColorValues(Gene gene){
