@@ -465,6 +465,19 @@ public class TriangleGenomeGUI extends JFrame
   public static void main(String[] args) throws IOException
   {
     TriangleGenomeGUI tg=new TriangleGenomeGUI();
+    
+    while(true)
+    {
+      try
+      {
+        Thread.sleep(20000);
+      } catch (InterruptedException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      //for()//select a random (weighted towards fit) genome from each Tribe, cross those genomes over and add them to the tribe's genome list
+    }
   }
 
 }

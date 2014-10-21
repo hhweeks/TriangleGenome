@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -361,25 +362,56 @@ public class GenomeUtilities
   
   public static BufferedImage getScaledBufferedImage(Genome myGenome, double scale)//this method is setting 2 scaled buffIm, could be 1
   {
-   BufferedImage myIm=new BufferedImage((int)(myGenome.IMG_WIDTH*scale), (int)(myGenome.IMG_HEIGHT*scale), BufferedImage.TYPE_INT_RGB);
-   Graphics2D g2d=myIm.createGraphics();
-   int w=myIm.getWidth();
-   int h=myIm.getHeight();
-   Gene scaledGene=new Gene();
-   for(Gene myGene:myGenome.geneList)
-   {
-     scaledGene=geneCopy(myGene);
-     for(int yval:scaledGene.ypoints)
-     {
-       yval*=scale;
-     }
-     for(int xval:scaledGene.xpoints)
-     {
-       xval*=scale;
-     }
-     g2d.fillPolygon(myGene);
-   }   
-   return myIm;
+//   BufferedImage myIm=new BufferedImage((int)(myGenome.IMG_WIDTH*scale), (int)(myGenome.IMG_HEIGHT*scale), BufferedImage.TYPE_INT_RGB);
+//   Graphics2D g2d=myIm.createGraphics();
+//   int w=myIm.getWidth();
+//   int h=myIm.getHeight();
+//   Gene scaledGene=new Gene();
+//   for(Gene myGene:myGenome.geneList)
+//   {
+//     scaledGene=geneCopy(myGene);
+//     for(int yval:scaledGene.ypoints)
+//     {
+//       yval*=scale;
+//     }
+//     for(int xval:scaledGene.xpoints)
+//     {
+//       xval*=scale;
+//     }
+//     g2d.fillPolygon(myGene);
+//   }
+//    return myIm;
+    
+    BufferedImage triangleImage=new BufferedImage((int)(myGenome.IMG_WIDTH), (int)(myGenome.IMG_HEIGHT), BufferedImage.TYPE_INT_RGB);
+//    //Graphics myGraphics=triangleImage.getGraphics();
+    Graphics2D myGraphics=triangleImage.createGraphics();
+    
+    for(int i=0;i<myGenome.NUM_GENES;i++)
+    {
+      Gene gene=myGenome.geneList.get(i);
+      myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));     
+      myGraphics.fillPolygon(myGenome.geneList.get(i));
+    }
+    
+    BufferedImage scaledImage=copyImage(triangleImage);
+    
+    int w=(int) (scaledImage.getWidth()*scale);
+    int h=(int) (scaledImage.getHeight()*scale);
+    Image tempIm=scaledImage.getScaledInstance(w, h, 0);
+    triangleImage=new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+    triangleImage.getGraphics().drawImage(tempIm, 0, 0, null);
+    
+   return triangleImage;
+  }
+  
+  public static void setScaledImage(Genome myGenome, BufferedImage masterImage, double scale)
+  { 
+    BufferedImage scaledImage=GenomeUtilities.copyImage(masterImage);
+    int w=(int) (scaledImage.getWidth()*scale);
+    int h=(int) (scaledImage.getHeight()*scale);
+    Image tempIm=scaledImage.getScaledInstance(w, h, 0);
+    myGenome.scaledImage=new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+    myGenome.scaledImage.getGraphics().drawImage(tempIm, 0, 0, null);
   }
   
   public static BufferedImage copyImage(BufferedImage source)
