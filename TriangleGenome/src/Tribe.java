@@ -14,7 +14,7 @@ public class Tribe extends Thread
 
   private volatile boolean running=true; // Run unless told to pause
   public static final int STARTINGTRIBESIZE=2;
-  public static final int ENDINGTRIBESIZE=8;
+  public static final int ENDINGTRIBESIZE=3;
   TriangleGenomeGUI imagePanel;
 
   public Tribe(BufferedImage image,TriangleGenomeGUI tg)
@@ -48,7 +48,13 @@ public class Tribe extends Thread
   public void climbRoutine()
   {
     System.out.println("start");
-    goToLocalMax(100);    
+    goToLocalMax(100);
+    
+//    for(Genome myGenome :genomeList)
+//    {
+//      Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), myGenome.image);
+//    }
+    
   }
   
   public void interCrossRoutine(int sigma)
@@ -97,10 +103,7 @@ public class Tribe extends Thread
   
   public void intraCrossRoutin(int sigma)
   {
-    synchronized (GUI_INITIALIZATION_MONITOR)
-    {
-      
-    }    
+    
   }
 
   private void checkForPaused()
@@ -149,13 +152,10 @@ public class Tribe extends Thread
     HillClimber hc=new HillClimber(masterImage);
     System.out.println("climber started");
     
-    //TODO experimental, generating more Genomes than we're Hillclimbing
-    int topThree=0;
     for(Genome genome:genomeList)
     {
-      if(topThree>2)break;
-      System.out.println("updating Genome " + topThree);
-      topThree++;
+      long startScore=0;//TODO debug
+      long endScore=0;//TODO debug
       for(int i=0;i<N;i++)
       {
         checkForPaused();

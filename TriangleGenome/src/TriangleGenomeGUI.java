@@ -21,6 +21,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class TriangleGenomeGUI extends JFrame
 {
   public static final int NTRIBES=1;
+  public static final int DRAWSTEPS=1;
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
   static JPanel buttonPanel;
@@ -72,7 +73,6 @@ public class TriangleGenomeGUI extends JFrame
         findFiles.add(listOfFiles[i].getName());
       }
     }
-    
     String[] filenames=findFiles.toArray(new String[findFiles.size()]);
     buttonPanel=new JPanel();
     buttonPanel.setBounds(0, 500, 1500, 300);
@@ -385,24 +385,17 @@ public class TriangleGenomeGUI extends JFrame
       tribeList.add(tribe);
     }
   }
-/******************************************************************************
- *triangleWindowUpdate
- *input:none
- *output:none
- *description:redraws the the triangle window and updates the Buffered image
- *  of the Genome
- *****************************************************************************/
+
   public void triangleWindowUpdate()
   {
     numUdates++;
     drawGenome=getGenome();
-    
-    if(numUdates%25==0)
+    GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
+    if(numUdates%DRAWSTEPS==0)
     {
-      GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
       stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
       drawGenome.fitscore=stats;
-      //System.out.println("50 updates happened");
+      System.out.println("50 updates happened");
     }
     //genomeStats.setText(tmpGenomeStats+stats);
     genomeStats.setText("min:sec = " + "" +
@@ -465,19 +458,6 @@ public class TriangleGenomeGUI extends JFrame
   public static void main(String[] args) throws IOException
   {
     TriangleGenomeGUI tg=new TriangleGenomeGUI();
-    
-    while(true)
-    {
-      try
-      {
-        Thread.sleep(20000);
-      } catch (InterruptedException e)
-      {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      //for()//select a random (weighted towards fit) genome from each Tribe, cross those genomes over and add them to the tribe's genome list
-    }
   }
 
 }

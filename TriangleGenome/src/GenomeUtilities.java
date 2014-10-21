@@ -1,9 +1,10 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
@@ -341,6 +342,7 @@ public class GenomeUtilities
    ****************************************************************************/
   public static BufferedImage getBufferedImage(Genome myGenome)
   {
+	  long startTime=System.currentTimeMillis();
     BufferedImage myIm=new BufferedImage(myGenome.IMG_WIDTH,
         myGenome.IMG_HEIGHT, BufferedImage.TYPE_INT_RGB);
     Graphics myGraphics=myIm.getGraphics();
@@ -349,80 +351,107 @@ public class GenomeUtilities
 
     myGraphics.setColor(Color.white);
     myGraphics.fillRect(0, 0, width, height);
+   // Color polyColor=new Color(0,0,0);
     for(int i=0;i<myGenome.NUM_GENES;i++)
     {
     	Gene gene=myGenome.geneList.get(i);
-    	//checkColorValues(gene);
+    	checkColorValues(gene);
+    	// gene.print();
+    	
+      myGraphics.setColor(new Color(gene.r,
+    		  gene.g, gene.b,
+    		  gene.a));
+      myGraphics.fillPolygon(gene);
+         
+  //  System.out.println(System.currentTimeMillis()-startTime);
+    
       myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));
      
       myGraphics.fillPolygon(myGenome.geneList.get(i));
     }
     return myIm;
   }
-  
-  public static BufferedImage getScaledBufferedImage(Genome myGenome, double scale)//this method is setting 2 scaled buffIm, could be 1
+
+  public static BufferedImage getScaledBufferedImage(Genome myGenome,int scale)
   {
-//   BufferedImage myIm=new BufferedImage((int)(myGenome.IMG_WIDTH*scale), (int)(myGenome.IMG_HEIGHT*scale), BufferedImage.TYPE_INT_RGB);
-//   Graphics2D g2d=myIm.createGraphics();
-//   int w=myIm.getWidth();
-//   int h=myIm.getHeight();
-//   Gene scaledGene=new Gene();
-//   for(Gene myGene:myGenome.geneList)
-//   {
-//     scaledGene=geneCopy(myGene);
-//     for(int yval:scaledGene.ypoints)
-//     {
-//       yval*=scale;
-//     }
-//     for(int xval:scaledGene.xpoints)
-//     {
-//       xval*=scale;
-//     }
-//     g2d.fillPolygon(myGene);
-//   }
-//    return myIm;
-    
-    BufferedImage triangleImage=new BufferedImage((int)(myGenome.IMG_WIDTH), (int)(myGenome.IMG_HEIGHT), BufferedImage.TYPE_INT_RGB);
-//    //Graphics myGraphics=triangleImage.getGraphics();
-    Graphics2D myGraphics=triangleImage.createGraphics();
-    
+	  long startTime=System.currentTimeMillis();
+    BufferedImage myIm=new BufferedImage(myGenome.IMG_WIDTH,
+        myGenome.IMG_HEIGHT, BufferedImage.TYPE_INT_RGB);
+    Graphics myGraphics=myIm.getGraphics();
+    int height=myIm.getHeight()/scale;
+    int width=myIm.getWidth()/scale;
+
+    myGraphics.setColor(Color.white);
+    myGraphics.fillRect(0, 0, width, height);
+   // Color polyColor=new Color(0,0,0);
     for(int i=0;i<myGenome.NUM_GENES;i++)
     {
-      Gene gene=myGenome.geneList.get(i);
-      myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));     
-      myGraphics.fillPolygon(myGenome.geneList.get(i));
+    	Gene gene=myGenome.geneList.get(i);
+    	checkColorValues(gene);
+    	// gene.print();
+    	
+      myGraphics.setColor(new Color(gene.r,
+    		  gene.g, gene.b,
+    		  gene.a));
+     // myGraphics.fillPolygon(gene);
+         
+  //  System.out.println(System.currentTimeMillis()-startTime);
+    
+      myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));
+     
+      for(int x:gene.xpoints){
+    	  x/=2;  
+      }
+      for(int y:gene.ypoints){
+    	  y/=2;  
+      }      
+      
+      
+      
+      myGraphics.fillPolygon(gene);
     }
-    
-    BufferedImage scaledImage=copyImage(triangleImage);
-    
-    int w=(int) (scaledImage.getWidth()*scale);
-    int h=(int) (scaledImage.getHeight()*scale);
-    Image tempIm=scaledImage.getScaledInstance(w, h, 0);
-    triangleImage=new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-    triangleImage.getGraphics().drawImage(tempIm, 0, 0, null);
-    
-   return triangleImage;
+    return myIm;
   }
   
-  public static void setScaledImage(Genome myGenome, BufferedImage masterImage, double scale)
-  { 
-    BufferedImage scaledImage=GenomeUtilities.copyImage(masterImage);
-    int w=(int) (scaledImage.getWidth()*scale);
-    int h=(int) (scaledImage.getHeight()*scale);
-    Image tempIm=scaledImage.getScaledInstance(w, h, 0);
-    myGenome.scaledImage=new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-    myGenome.scaledImage.getGraphics().drawImage(tempIm, 0, 0, null);
-  }
   
-  public static BufferedImage copyImage(BufferedImage source)
-  {
-    BufferedImage myBuffIm=new BufferedImage(source.getWidth(), source.getHeight(),source.getType());
-    Graphics myGraphics=myBuffIm.getGraphics();
-    myGraphics.drawImage(source, 0, 0, null);
-    myGraphics.dispose();
-    return myBuffIm;
-}
-
+  
+  public static BufferedImage scaleImage(BufferedImage inImage, int scale){
+	  	
+	  BufferedImage image=deepCopy(inImage);
+	  
+	  
+	  	int w=image.getWidth()/scale;
+	  	int h=image.getHeight()/scale;
+	  
+	  
+	    BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+	    Graphics2D g2 = image.createGraphics();
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.drawImage(image, 0, 0, w, h, null);
+	    
+	    g2.dispose();
+	    return resizedImg;
+	}
+  
+  
+  
+//  public static BufferedImage scaleImage(BufferedImage image, int scale){
+//
+//		  int w = image.getWidth();
+//		  int h = image.getHeight();
+//		  BufferedImage after = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+//		  AffineTransform at = new AffineTransform();
+//		  at.scale(scale, scale);
+//		  AffineTransformOp scaleOp = 
+//		     new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+//		  return scaleOp.filter(image, after);
+//		      
+//		      
+//	  
+//	  
+//  }
+  
+  
   
   public static void checkColorValues(Gene gene){
 	  if(gene.a>255)gene.a=255;
