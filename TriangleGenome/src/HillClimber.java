@@ -199,11 +199,17 @@ public class HillClimber extends Thread {
 
 	public void gradientClimb(Genome myGenome) {
 		BufferedImage scaledImage = GenomeUtilities.scaleImage(image, 4);
+		
+		
 		long startScore = Statistics.getFitScore(
 				GenomeUtilities.getBufferedImage(myGenome), image);
+		
+		
 		long startScaleScore = Statistics.getFitScore(
 				GenomeUtilities.getScaledBufferedImage(myGenome, 4),
 				scaledImage);
+		
+		
 		// gradient vector
 		int[] gradient = new int[2000];
 		Gene currentGene = new Gene();
@@ -218,31 +224,34 @@ public class HillClimber extends Thread {
 			}
 
 			allele = i % 10;
+			
 			shiftGene(currentGene, allele, 1);
-			// long startTime=System.currentTimeMillis();
-			long endScore = Statistics.getFitScore(
+			long endScaleScore = Statistics.getFitScore(
 					GenomeUtilities.getScaledBufferedImage(myGenome, 4),
 					scaledImage);
-			// System.out.println(System.currentTimeMillis()-startTime);
-			if (endScore < startScaleScore) {
+			if (endScaleScore < startScaleScore) {
 				gradient[i] = 1;
 				continue;
 			}
 			// if(endScore>startScore){gradient[i];}
 			// System.out.println(gradient[i]);
 			shiftGene(currentGene, allele, -2);
-			endScore = Statistics.getFitScore(
+			endScaleScore = Statistics.getFitScore(
 					GenomeUtilities.getScaledBufferedImage(myGenome, 4),
 					scaledImage);
-			if (endScore < startScaleScore) {
+			if (endScaleScore < startScaleScore) {
 				gradient[i] = -1;
 			}
 			shiftGene(currentGene, allele, 1);
 		}
-		long startStepScore = -1;
+		
+		
+		//after the gradient has been measured for the scaled Image we 
+		//move the image along the gradient until no more benefit is gained
+		startScore = -1;
 		long endScore = -1;
-		while (startStepScore < endScore || startStepScore == -1) {
-			startStepScore = Statistics.getFitScore(
+		while (startScore > endScore || startScore == -1) {
+			startScore = Statistics.getFitScore(
 					GenomeUtilities.getBufferedImage(myGenome), image);
 
 			for (int i = 0; i < 2000; i++) {
@@ -250,15 +259,15 @@ public class HillClimber extends Thread {
 				allele = i % 10;
 				shiftGene(currentGene, allele, gradient[i]);
 			}
-			long startTime = System.currentTimeMillis();
+			//long startTime = System.currentTimeMillis();
 			endScore = Statistics.getFitScore(
 					GenomeUtilities.getBufferedImage(myGenome), image);
-			System.out.println(System.currentTimeMillis() - startTime);
+			//System.out.println(System.currentTimeMillis() - startTime);
 
-			System.out.println(startStepScore - endScore);
+			System.out.println(startScore - endScore);
 
 		}
-		if (startStepScore != -1) {
+		if (startScore != -1) {
 			for (int i = 0; i < 2000; i++) {
 				currentGene = myGenome.geneList.get(i / 10);
 				allele = i % 10;
