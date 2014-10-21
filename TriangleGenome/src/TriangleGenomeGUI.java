@@ -146,8 +146,15 @@ public class TriangleGenomeGUI extends JFrame
         reset = true;
     	  makeTribes(triangleWindow.image);
     	  triangleWindowUpdate();
-//    	  imageWindow.changeImage(GenomeUtilities.getScaledBufferedImage(drawGenome, 4));
-//    	  imageWindow.repaint();
+    	  BufferedImage test=GenomeUtilities.scaleImage(imageWindow.image, 4);
+    	  //imageWindow.getGraphics().setColor(Color.white);
+    	  //imageWindow.getGraphics().fillRect(0, 0, 500, 500);
+    	  triangleWindow.changeImage(test);
+    	  triangleWindow.repaint();
+    	  
+    	  System.out.println("first:"+imageWindow.image.getHeight()+"x"+imageWindow.image.getWidth());
+    	  System.out.println("second:"+test.getHeight()+"x"+test.getWidth());
+      	
       }
     });
     nextButton.addActionListener(new ActionListener()

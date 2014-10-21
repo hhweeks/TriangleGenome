@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.util.Random;
 
-public class HillClimber extends Thread {
+public class HillClimber{
 	static Random rand = new Random();
 	public BufferedImage image;
 	public Genome genome;
@@ -219,31 +219,34 @@ public class HillClimber extends Thread {
 
 		for (int i = 0; i < 2000; i++) {
 
-			if (i / 10 == 0) {
+			
 				currentGene = myGenome.geneList.get(i / 10);
-			}
+			
 
 			allele = i % 10;
 			
 			shiftGene(currentGene, allele, 1);
-			long endScaleScore = Statistics.getFitScore(
-					GenomeUtilities.getScaledBufferedImage(myGenome, 4),
+			//todo randomly choose up or down first.
+			long endupScaleScore = Statistics.getFitScore(
+					GenomeUtilities.getScaledBufferedImage(myGenome,4),
 					scaledImage);
-			if (endScaleScore < startScaleScore) {
+			if (endupScaleScore < startScaleScore) {
 				gradient[i] = 1;
 				//continue;
 			}
-			//System.out.println("shiftUp"+i+"->end:"+endScaleScore+" start:"+startScaleScore+" gradient:"+gradient[i]);
+			//else{gradient[i]=0;}
+			
+			System.out.println("shiftUp  "+i+"->end:"+endupScaleScore+" start:"+startScaleScore+" gradient:"+gradient[i]);
 			
 			shiftGene(currentGene, allele, -2);
-			endScaleScore = Statistics.getFitScore(
+			long endScaleScore = Statistics.getFitScore(
 					GenomeUtilities.getScaledBufferedImage(myGenome, 4),
 					scaledImage);
 			if (endScaleScore < startScaleScore) {
 				gradient[i] = -1;
 			}
 			shiftGene(currentGene, allele, 1);
-			//System.out.println("shiftDown"+i+"->end:"+endScaleScore+" start:"+startScaleScore+" gradient:"+gradient[i]);
+			System.out.println("shiftDown"+i+"->end:"+endScaleScore+" start:"+startScaleScore+" gradient:"+gradient[i]);
 		}
 		
 		

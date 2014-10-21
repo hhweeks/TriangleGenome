@@ -10,9 +10,9 @@ public class Tribe extends Thread
   BufferedImage masterImage;
   ImageContainer imagecontainer;
   private final Object GUI_INITIALIZATION_MONITOR=new Object();
-  private boolean pauseThreadFlag=false;
+  private volatile boolean pauseThreadFlag=false;
 
-  private volatile boolean running=true; // Run unless told to pause
+  //private volatile boolean running=true; // Run unless told to pause
   public static final int STARTINGTRIBESIZE=2;
   public static final int ENDINGTRIBESIZE=3;
   TriangleGenomeGUI imagePanel;
