@@ -97,6 +97,7 @@ public class TriangleGenomeGUI extends JFrame
         {
           imageWindow.changeImage(ImageIO.read(imageFile));
           BufferedImage img=imageWindow.image;
+          
           // make one genome for random display
           makeTribes(img);
           drawGenome=getGenome();
@@ -145,6 +146,8 @@ public class TriangleGenomeGUI extends JFrame
         reset = true;
     	  makeTribes(triangleWindow.image);
     	  triangleWindowUpdate();
+//    	  imageWindow.changeImage(GenomeUtilities.getScaledBufferedImage(drawGenome, 4));
+//    	  imageWindow.repaint();
       }
     });
     nextButton.addActionListener(new ActionListener()
@@ -395,7 +398,6 @@ public class TriangleGenomeGUI extends JFrame
     {
       stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
       drawGenome.fitscore=stats;
-      System.out.println("50 updates happened");
     }
     //genomeStats.setText(tmpGenomeStats+stats);
     genomeStats.setText("min:sec = " + "" +

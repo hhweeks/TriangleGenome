@@ -231,10 +231,10 @@ public class HillClimber extends Thread {
 					scaledImage);
 			if (endScaleScore < startScaleScore) {
 				gradient[i] = 1;
-				continue;
+				//continue;
 			}
-			// if(endScore>startScore){gradient[i];}
-			// System.out.println(gradient[i]);
+			//System.out.println("shiftUp"+i+"->end:"+endScaleScore+" start:"+startScaleScore+" gradient:"+gradient[i]);
+			
 			shiftGene(currentGene, allele, -2);
 			endScaleScore = Statistics.getFitScore(
 					GenomeUtilities.getScaledBufferedImage(myGenome, 4),
@@ -243,6 +243,7 @@ public class HillClimber extends Thread {
 				gradient[i] = -1;
 			}
 			shiftGene(currentGene, allele, 1);
+			//System.out.println("shiftDown"+i+"->end:"+endScaleScore+" start:"+startScaleScore+" gradient:"+gradient[i]);
 		}
 		
 		
@@ -251,27 +252,31 @@ public class HillClimber extends Thread {
 		startScore = -1;
 		long endScore = -1;
 		while (startScore > endScore || startScore == -1) {
-			startScore = Statistics.getFitScore(
-					GenomeUtilities.getBufferedImage(myGenome), image);
+			if(endScore==-1){startScore = Statistics.getFitScore(
+					GenomeUtilities.getBufferedImage(myGenome), image);}
+			else{startScore=endScore;}
 
 			for (int i = 0; i < 2000; i++) {
 				currentGene = myGenome.geneList.get(i / 10);
 				allele = i % 10;
-				shiftGene(currentGene, allele, gradient[i]);
+				
+				if(gradient[i]!=0){shiftGene(currentGene, allele, gradient[i]);}
+				
 			}
 			//long startTime = System.currentTimeMillis();
 			endScore = Statistics.getFitScore(
 					GenomeUtilities.getBufferedImage(myGenome), image);
 			//System.out.println(System.currentTimeMillis() - startTime);
 
-			System.out.println(startScore - endScore);
+			System.out.println("gradient step improvment:"+(startScore - endScore));
 
 		}
 		if (startScore != -1) {
+			System.out.println("shift correct");
 			for (int i = 0; i < 2000; i++) {
 				currentGene = myGenome.geneList.get(i / 10);
 				allele = i % 10;
-				shiftGene(currentGene, allele, -gradient[i]);
+				if(gradient[i]!=0){shiftGene(currentGene, allele, -gradient[i]);}
 			}
 		}
 	}

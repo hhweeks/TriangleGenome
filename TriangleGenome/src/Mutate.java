@@ -57,8 +57,12 @@ public class Mutate
         mutateGene.ypoints[i]+= shiftAmount;
       }
       break;
-      //
-    //TODO add 3 cases to 1.) change layer 2.) move all vertices 3.)swap triangles
+    case 12:
+        for(int i=0;i<mutateGene.npoints;i++)
+        {
+          mutateGene.ypoints[i]+= shiftAmount;
+        }
+        break;
     }
   }
   

@@ -374,7 +374,7 @@ public class GenomeUtilities
 
   public static BufferedImage getScaledBufferedImage(Genome myGenome,int scale)
   {
-	  long startTime=System.currentTimeMillis();
+	  //long startTime=System.currentTimeMillis();
     BufferedImage myIm=new BufferedImage(myGenome.IMG_WIDTH,
         myGenome.IMG_HEIGHT, BufferedImage.TYPE_INT_RGB);
     Graphics myGraphics=myIm.getGraphics();
@@ -386,7 +386,8 @@ public class GenomeUtilities
    // Color polyColor=new Color(0,0,0);
     for(int i=0;i<myGenome.NUM_GENES;i++)
     {
-    	Gene gene=myGenome.geneList.get(i);
+    	Gene gene=GenomeUtilities.geneCopy(myGenome.geneList.get(i));
+    
     	checkColorValues(gene);
     	// gene.print();
     	
@@ -395,18 +396,18 @@ public class GenomeUtilities
     		  gene.a));
      // myGraphics.fillPolygon(gene);
          
-  //  System.out.println(System.currentTimeMillis()-startTime);
+   // System.out.println(System.currentTimeMillis()-startTime);
     
       myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));
-     
-      for(int x:gene.xpoints){
-    	  x/=2;  
+      //System.out.println(gene);
+      for(int xi=0;xi<gene.xpoints.length;xi++){
+    	  gene.xpoints[xi]/=scale;  
       }
-      for(int y:gene.ypoints){
-    	  y/=2;  
-      }      
+      for(int yi=0;yi<gene.ypoints.length;yi++){
+    	  gene.ypoints[yi]/=scale;  
+      }     
       
-      
+      //System.out.println(gene);
       
       myGraphics.fillPolygon(gene);
     }
