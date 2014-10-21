@@ -30,7 +30,7 @@ public class Statistics
     return euclidianDistanceSqr/(masterImage.getHeight()*masterImage.getWidth());
   }
   
-  public static long getSmallFitScore(BufferedImage genomeImage,BufferedImage masterImage, int iStep)
+  public static int getScaledFitscore(BufferedImage genomeImage,BufferedImage masterImage)
   {
     Raster masterRaster=masterImage.getRaster();
     Raster genomeRaster=genomeImage.getRaster();
@@ -38,30 +38,23 @@ public class Statistics
     int redDistance;
     int blueDistance;
     int greenDistance;
-    long euclidianDistanceSqr=0;
+    int euclidianDistanceSqr=0;
 
     int[] genomePixArray=new int[3];
     int[] masterPixArray=new int[3];
 
-    int smallInc=0;
-    for(int i=0;i<Math.min(genomeImage.getWidth(), masterImage.getWidth());i+=iStep)
+    for(int i=0;i<Math.min(genomeImage.getWidth(), masterImage.getWidth());i++)
     {
-      int smallJinx=0;
-      for(int j=0;j<Math.min(genomeImage.getHeight(), masterImage.getHeight());j+=iStep)
+      for(int j=0;j<Math.min(genomeImage.getHeight(), masterImage.getHeight());j++)
       {
-//        genomeRaster.getPixel(smallInc, smallJinx, genomePixArray);
-//        masterRaster.getPixel(i, j, masterPixArray);
-//        redDistance=genomePixArray[0]-masterPixArray[0];
-//        blueDistance=genomePixArray[1]-masterPixArray[1];
-//        greenDistance=genomePixArray[2]-masterPixArray[2];
-        redDistance=genomeRaster.getPixel(i, j, genomePixArray)[0]-masterRaster.getPixel(i, j, masterPixArray)[0];
-        blueDistance=genomeRaster.getPixel(i, j, genomePixArray)[1]-masterRaster.getPixel(i, j, masterPixArray)[1];
-        greenDistance=genomeRaster.getPixel(i, j, genomePixArray)[2]-masterRaster.getPixel(i, j, masterPixArray)[2];
+        genomeRaster.getPixel(i, j, genomePixArray);
+        masterRaster.getPixel(i, j, masterPixArray);
+        redDistance=genomePixArray[0]-masterPixArray[0];
+        blueDistance=genomePixArray[1]-masterPixArray[1];
+        greenDistance=genomePixArray[2]-masterPixArray[2];
 
         euclidianDistanceSqr+=(redDistance*redDistance)+(blueDistance*blueDistance)+(greenDistance*greenDistance);
-        smallJinx++;
       }
-      smallInc++;
     }
     return euclidianDistanceSqr/(masterImage.getHeight()*masterImage.getWidth());
   }

@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
@@ -349,7 +351,7 @@ public class GenomeUtilities
     for(int i=0;i<myGenome.NUM_GENES;i++)
     {
     	Gene gene=myGenome.geneList.get(i);
-    	checkColorValues(gene);
+    	//checkColorValues(gene);
       myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));
      
       myGraphics.fillPolygon(myGenome.geneList.get(i));
@@ -357,38 +359,45 @@ public class GenomeUtilities
     return myIm;
   }
   
-  public static BufferedImage getSmallBufferedImage(Genome myGenome, int iStep)
+  public static BufferedImage getScaledBufferedImage(Genome myGenome, BufferedImage master, double scale)//this method is setting 2 scaled buffIm, could be 1
   {
-   BufferedImage myIm=new BufferedImage(myGenome.IMG_WIDTH/iStep, myGenome.IMG_HEIGHT/iStep, BufferedImage.TYPE_INT_RGB);
-   Graphics myGraphics=myIm.getGraphics();
-   int height=myIm.getHeight();
-   int width=myIm.getWidth();
+   BufferedImage myIm=new BufferedImage(myGenome.IMG_WIDTH, myGenome.IMG_HEIGHT, BufferedImage.TYPE_INT_RGB);
+   int w=myIm.getWidth();
+   int h=myIm.getHeight();
+   myGenome.scaledImage=copyImage(master);
+   Graphics2D g2dScaleMaser=myGenome.scaledImage.createGraphics();   
+   Graphics2D g2d=myIm.createGraphics();
    
-   myGraphics.setColor(Color.white);
-   myGraphics.fillRect(0, 0, width, height);
+   
+   AffineTransform myAT = new AffineTransform();
+   myAT.scale(scale, scale);
+   g2d.setTransform(myAT);
+   g2d.setBackground(Color.white);
+   g2dScaleMaser.setTransform(myAT);
+   
+   w=myIm.getWidth();
+   h=myIm.getHeight();
+   
    for(int i=0;i<myGenome.NUM_GENES;i++)
    {
      Gene gene=myGenome.geneList.get(i);
-     checkColorValues(gene);
-     myGraphics.setColor(new Color(gene.r,gene.g, gene.b,gene.a));
+     g2d.setColor(new Color(gene.r,gene.g,gene.b,gene.a));
      int[] xptsHold=new int[myGenome.geneList.get(i).xpoints.length];
      int[] yptsHold=new int[myGenome.geneList.get(i).ypoints.length];
-     for(int j=0;j<xptsHold.length;j++)
-     {
-       xptsHold[j]=myGenome.geneList.get(i).xpoints[j];
-       myGenome.geneList.get(i).xpoints[j]/=iStep;
-       yptsHold[j]=myGenome.geneList.get(i).ypoints[j];
-       myGenome.geneList.get(i).ypoints[j]/=iStep;
-     }     
-     myGraphics.fillPolygon(myGenome.geneList.get(i));
-     for(int j=0;j<xptsHold.length;j++)
-     {
-       myGenome.geneList.get(i).xpoints[j]=xptsHold[j];
-       myGenome.geneList.get(i).ypoints[j]=yptsHold[j];
-     }
+
+     g2d.fillPolygon(gene);
    }
    return myIm;
   }
+  
+  public static BufferedImage copyImage(BufferedImage source)
+  {
+    BufferedImage myBuffIm=new BufferedImage(source.getWidth(), source.getHeight(),source.getType());
+    Graphics myGraphics=myBuffIm.getGraphics();
+    myGraphics.drawImage(source, 0, 0, null);
+    myGraphics.dispose();
+    return myBuffIm;
+}
 
   
   public static void checkColorValues(Gene gene){
