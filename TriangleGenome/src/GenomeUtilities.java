@@ -23,7 +23,7 @@ public class GenomeUtilities
 {
   public static final int NPOINTS=3;// points of a triangle
   public static final int NCOLORS=4;// r,g,b,a
-  
+  public static final int NSEEDING=3;
   static Random rand=new Random();
 
   /****************************************************************************
@@ -64,7 +64,7 @@ public class GenomeUtilities
     //averagingGenome(genome,new BufferedImage(90, 90, BufferedImage.TYPE_INT_RGB));
   }
   
-  public static void averagingGenome(Genome genome, BufferedImage masterImage)
+  public static void mixedSampleGenome(Genome genome, BufferedImage masterImage)
   {
     BufferedImage copiedImage = deepCopy(masterImage);
     int centerx = rand.nextInt(genome.IMG_WIDTH / 16) - rand.nextInt(genome.IMG_WIDTH / 16) + genome.IMG_WIDTH / 2;
@@ -106,21 +106,8 @@ public class GenomeUtilities
     {
          
       
-      int geneCase=rand.nextInt(20);
-      if(geneCase>12||true){
-    	  int randomAlpha = rand.nextInt(200) + 55;
-
-          myGene.a = randomAlpha;
-
-          int[] myColors = getAreaColorAvg(myGene, copiedImage);
-          myGene.r = myColors[0];
-          myGene.g = myColors[1];
-          myGene.b = myColors[2]; 
-    	  
-    	  
-      }
-      
-      else if(geneCase<9)
+      int geneCase=rand.nextInt(10);
+      if(geneCase<9)
       {
         sampleRanomPixel(myGene,masterRaster);
       }
@@ -133,7 +120,73 @@ public class GenomeUtilities
         ranomGene(myGene);//
       }      
     }
+    genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), genome.masterImage);
+    
   }  
+  public static void averagingGenome(Genome genome, BufferedImage masterImage)
+  {
+    BufferedImage copiedImage = deepCopy(masterImage);
+    int centerx = rand.nextInt(genome.IMG_WIDTH / 16) - rand.nextInt(genome.IMG_WIDTH / 16) + genome.IMG_WIDTH / 2;
+    int centery = rand.nextInt(genome.IMG_HEIGHT / 16)- rand.nextInt(genome.IMG_HEIGHT / 16) + genome.IMG_HEIGHT / 2;
+
+    Raster masterRaster = masterImage.getRaster();
+
+    int[] x0 = { 0, 0, centerx };
+    int[] y0 = { 0, genome.IMG_HEIGHT, centery };
+    int[] x1 = { 0, centerx, genome.IMG_WIDTH };
+    int[] y1 = { 0, centery, 0 };
+    int[] x2 = { genome.IMG_WIDTH, genome.IMG_WIDTH, centerx };
+    int[] y2 = { 0, genome.IMG_HEIGHT, centery };
+    int[] x3 = { 0, centerx, genome.IMG_WIDTH };
+    int[] y3 = { genome.IMG_HEIGHT, centery, genome.IMG_HEIGHT };
+    
+    genome.geneList.get(0).xpoints = x0;
+    genome.geneList.get(0).ypoints = y0;
+    genome.geneList.get(1).xpoints = x1;
+    genome.geneList.get(1).ypoints = y1;
+    genome.geneList.get(2).xpoints = x2;
+    genome.geneList.get(2).ypoints = y2;
+    genome.geneList.get(3).xpoints = x3;
+    genome.geneList.get(3).ypoints = y3;
+
+    for (int i = 4; i < 200; i++)//bottom 4 triangle?
+    {
+      Point[] myVertices = new Point[NPOINTS];
+      for (int j = 0; j < NPOINTS; j++)
+      {
+        myVertices[j] = new Point(0, 0);
+        myVertices[j].x = rand.nextInt(genome.IMG_WIDTH);
+        myVertices[j].y = rand.nextInt(genome.IMG_HEIGHT);
+      }
+      genome.geneList.get(i).setPoints(myVertices);
+    }
+
+    for (Gene myGene : genome.geneList)
+    {
+    		  int randomAlpha = rand.nextInt(200) + 55;
+
+    	      myGene.a = randomAlpha;
+
+    	      int[] myColors = getAreaColorAvg(myGene, copiedImage);
+    	      myGene.r = myColors[0];
+    	      myGene.g = myColors[1];
+    	      myGene.b = myColors[2]; 
+
+    	  
+    }
+    genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), genome.masterImage);
+    
+  }  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   static BufferedImage deepCopy(BufferedImage bi)
   {

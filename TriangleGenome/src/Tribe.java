@@ -13,7 +13,7 @@ public class Tribe extends Thread
   private final Object GUI_INITIALIZATION_MONITOR=new Object();
   private volatile boolean pauseThreadFlag=false;
   private static final int HILLSTEPS=10;
-
+  long timeStamp;
   //private volatile boolean running=true; // Run unless told to pause
   //public static final int STARTINGTRIBESIZE=8;
   public static final int ENDINGTRIBESIZE=16;
@@ -31,8 +31,23 @@ public class Tribe extends Thread
     {
       System.out.println("tribe builder");
       Genome genome=new Genome(masterImage);
-      GenomeUtilities.averagingGenome(genome, masterImage);
-      genomeList.add(genome);
+      int seed=rand.nextInt(GenomeUtilities.NSEEDING);
+      switch(seed){
+      case 0: GenomeUtilities.mixedSampleGenome(genome, masterImage);
+      break;
+      
+      case 1:GenomeUtilities.averagingGenome(genome, masterImage);
+      break;
+      
+      case 2:GenomeUtilities.setRandomGenome(genome);
+      break;
+      
+     
+      
+      }
+       genomeList.add(genome);
+     	  genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), masterImage);	  
+       
     }
     // imagecontainer.setImage(GenomeUtilities.getBufferedImage(genome));
   }
@@ -53,10 +68,7 @@ public class Tribe extends Thread
     System.out.println("start");
     goToLocalMax(imagePanel.NBREEDSTEPS);
     
-//    for(Genome myGenome :genomeList)
-//    {
-//      Statistics.getFitScore(GenomeUtilities.getBufferedImage(myGenome), myGenome.image);
-//    }
+
     
   }
   
@@ -152,7 +164,9 @@ public class Tribe extends Thread
       
       toCrossList.add(genome0);
       toCrossList.add(genome1);
-      
+      for(Genome genome:genomeList){
+    	  genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), masterImage);	  
+      }
       
  
       
@@ -216,10 +230,16 @@ public class Tribe extends Thread
   {
     for(Genome genome:genomeList)
     {
-      // creates a fitscore from each image.
-      // Should we preserve the Buffered Image as a phenotype???
-//      genome.fitscore=Statistics.getFitScore(masterImage,GenomeUtilities.getBufferedImage(genome));
-      genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
+    	long deltaTime=timeStamp-System.currentTimeMillis();
+//    	timeStamp=System.currentTimeMillis();
+//      // creates a fitscore from each image.
+//      // Should we preserve the Buffered Image as a phenotype???
+////      genome.fitscore=Statistics.getFitScore(masterImage,GenomeUtilities.getBufferedImage(genome));
+//      genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
+//      genome.improvmentRate=genome.fitscore-genome.lastFitscore;
+//      
+//      genome.lastFitscore=genome.fitscore;
+//      System.out.println(genome.improvmentRate);
     }
   }
 

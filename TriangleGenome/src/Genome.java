@@ -18,6 +18,8 @@ public class Genome implements Comparable<Genome> {
 	public BufferedImage scaledImage;//this gets set in hill climb
 	public static final int NUM_GENES = 200;
 	public long fitscore;
+	public long startFitscore;
+	public double improvmentRate;
 	public final int IMG_WIDTH;
 	public final int IMG_HEIGHT;
 	public ArrayList<Gene> geneList = new ArrayList<>();
