@@ -16,7 +16,8 @@ public class Tribe extends Thread
 
   //private volatile boolean running=true; // Run unless told to pause
   //public static final int STARTINGTRIBESIZE=8;
-  public static final int ENDINGTRIBESIZE=3;
+  public static final int ENDINGTRIBESIZE=16;
+  public volatile boolean climbLoop=true;
   int startingTribeSize;
   TriangleGenomeGUI imagePanel;
 
@@ -38,21 +39,19 @@ public class Tribe extends Thread
 
   public void run()
   {
-    int sigma=genomeList.size()/2;
-    generateFitScores();
-    while(true)
-    {      
-    	checkForPaused();
+    
+    climbLoop=true;      
+    	
     	
     	climbRoutine();
-    	interCrossRoutine(sigma);
-    }
+    	
+    
   }
   
   public void climbRoutine()
   {
     System.out.println("start");
-    goToLocalMax(50);
+    goToLocalMax(imagePanel.NBREEDSTEPS);
     
 //    for(Genome myGenome :genomeList)
 //    {
@@ -63,6 +62,12 @@ public class Tribe extends Thread
   
   public void interCrossRoutine(int sigma)
   { 
+	  System.out.println("inerCross Begins");
+
+	  for(Genome genome: genomeList){
+		  genome.hc.interrupt();//resumeThread();
+	  }
+
     Genome son=new Genome(masterImage);
     Genome daughter=new Genome(masterImage);
     
@@ -100,15 +105,23 @@ public class Tribe extends Thread
       
       genomeList.clear();
       genomeList.addAll(fitGenomeHolder);
-
-      System.out.println("trimmed");
     }
+    
+    climbLoop=true;
+	  
+	  		
+	  //System.out.println("threads resume");
+    imagePanel.drawGenome=imagePanel.tribeList.get(imagePanel.tribeSlider.getValue()).genomeList.get(imagePanel.genomeSlider.getValue());
+	  goToLocalMax(imagePanel.NBREEDSTEPS);
+	  
+	  System.out.println("inerCross ends");
   }
   
   public LinkedList<Genome> intraCrossRoutin()
   {
     synchronized (GUI_INITIALIZATION_MONITOR)
     {
+    	
       int sigma=genomeList.size()/2;
       LinkedList<Genome> toCrossList=new LinkedList<>();
       
@@ -140,11 +153,18 @@ public class Tribe extends Thread
       toCrossList.add(genome0);
       toCrossList.add(genome1);
       
+      
+ 
+      
+     
+      
+      
+      
       return toCrossList;
     }    
   }
 
-  private void checkForPaused()
+  public void checkForPaused()
   {
     synchronized (GUI_INITIALIZATION_MONITOR)
     {
@@ -153,6 +173,19 @@ public class Tribe extends Thread
         try
         {
           GUI_INITIALIZATION_MONITOR.wait();
+          
+          
+          
+          for(Genome genome: genomeList){
+      		
+      		try {
+  				genome.hc.pauseThread();
+  			} catch (InterruptedException e) {
+  				e.printStackTrace();
+  			}
+      		
+      	}
+
         } catch (Exception e)
         {
         }
@@ -171,8 +204,13 @@ public class Tribe extends Thread
     {
       pauseThreadFlag=false;
       GUI_INITIALIZATION_MONITOR.notify();
-    }
+      for(Genome genome: genomeList){
+    	
+				genome.hc.resumeThread();
+      }	
+    
   }
+    }
 
   public void generateFitScores()
   {
@@ -185,50 +223,28 @@ public class Tribe extends Thread
     }
   }
 
-  public void goToLocalMax(int N)
-  {
-    HillClimber hc=new HillClimber(masterImage);
-    System.out.println("climber started");
-    //hc.gradientClimb=false;//TODO delete?
-    for(int i=0;i<HILLSTEPS;i++)
-    {
-    for(Genome genome:genomeList)
-    {
-        checkForPaused();
-      hc.climbStep(genome);
-      imagePanel.triangleWindowUpdate();
+  public void goToLocalMax(int N) {
+		
+		System.out.println("climber started");
+		// hc.gradientClimb=false;//TODO delete?
+		//for (int i = 0; i < N; i++) {
+		
+			checkForPaused();
+			for (int i=0;i<genomeList.size();i++) {
+				Genome genome=genomeList.get(i);
+				genome.hc = new HillClimber(masterImage,genome,N);
+				genome.hc.tribe=this;
+				if(!genome.hc.isAlive()){
+				genome.hc.run();}
 
-      }
-    }
-    
-    
-    hc.gradientClimb=false;
-    for(Genome genome:genomeList)
-    {
-        checkForPaused();
-        
-        for(int i=0;i<N;i++)
-        {
-      hc.climbStep(genome);
-      imagePanel.triangleWindowUpdate();
-        }
-      }
-    
-    
-    
-  }
+				
 
-  public static void nextGeneration()
-  {
-    // while(genomeList.size()<ENDINGTRIBESIZE){
-    Random rand=new Random();
-    for(int i=0;i<50;i++)
-    {
-      int index=(int) Math.abs(rand.nextGaussian()*4);
 
-      System.out.println(index);    }
+			
+		}
 
-  }
+		}
+
 
   
 }

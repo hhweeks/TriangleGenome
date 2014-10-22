@@ -11,6 +11,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -20,9 +23,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 //TODO measure improvement rate, ie delta score per second
 public class TriangleGenomeGUI extends JFrame
 {
-  public static final int NTRIBES=1;
+  public static final int NBREEDSTEPS=1000;
+  public static final int NTRIBES=3;
   public static final int DRAWSTEPS=1;
   public static final int STARTINGTRIBESIZE=2;
+  public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*NTRIBES;
+  public Tribe displayTribe;
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
   static JPanel buttonPanel;
@@ -59,7 +65,8 @@ public class TriangleGenomeGUI extends JFrame
   boolean reset = false;
   final JFileChooser fc = new JFileChooser();
   FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter("xml files (*.xml)", "xml");
-
+  Random rand=new Random();
+  
   public TriangleGenomeGUI() throws IOException
   {
     tg=this;
@@ -394,11 +401,14 @@ public class TriangleGenomeGUI extends JFrame
   {
     numUdates++;
     drawGenome=getGenome();
-    GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
-    if(numUdates%DRAWSTEPS==0)
+    if((numUdates)%GEN_BETWEEN_CROSS==0){crossTribes();}
+    
+    if(numUdates%25==0)
     {
+      GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
       stats=Statistics.getFitScore(triangleWindow.image, imageWindow.image);
       drawGenome.fitscore=stats;
+      //System.out.println("50 updates happened");
     }
     //genomeStats.setText(tmpGenomeStats+stats);
     genomeStats.setText("min:sec = " + "" +
@@ -408,7 +418,94 @@ public class TriangleGenomeGUI extends JFrame
     		"    Fitness = " + stats
     		);
   }
-
+  
+  /****************************************************************************
+   * 
+   ***************************************************************************/
+  
+  ///TODO delselecting or removing threads that are being displayed. should reasign drawgenome
+  public void crossTribes()
+  {    
+    System.out.println("intraCross begins");
+    ArrayList<Genome> genomesToCross=new ArrayList<>();
+    ArrayList<Genome> returnList=new ArrayList<>();
+    BufferedImage localMasterImage=null;
+    
+    // call intraCross
+    for (Tribe myTribe : tribeList)
+    {      
+      synchronized(myTribe)
+      {
+        try
+        {
+          myTribe.pauseThread();
+        } catch (InterruptedException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
+    for(Tribe myTribe:tribeList)
+    {
+      LinkedList<Genome> tempList=myTribe.intraCrossRoutin();
+      for(Genome myGenome:tempList)
+      {
+        genomesToCross.add(myGenome);
+      }
+    }
+    //we now have a list with 2 Genomes from every tribe
+    for(Genome genome:genomesToCross)
+    {
+      genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),genome.masterImage);
+      if(localMasterImage==null){localMasterImage=genome.masterImage;}
+    }
+    Collections.sort(genomesToCross);
+    
+    int sigma=genomesToCross.size()/2;
+    
+//    for(int i=0; i<genomesToCross.size()/2;i++)
+    for(int i=0; i<50/2;i++)//breed 50 times
+    {
+      Genome son=new Genome(localMasterImage);
+      Genome daughter=new Genome(localMasterImage);
+      
+      int index0=(int) Math.abs(rand.nextGaussian()*sigma);
+      int index1=(int) Math.abs(rand.nextGaussian()*sigma);
+      
+      while(index0>=genomesToCross.size())
+      {
+        index0=(int) Math.abs(rand.nextGaussian()*sigma);
+      }
+  
+      while(index1>=genomesToCross.size()||index1==index0)
+      {
+        index1=(int) Math.abs(rand.nextGaussian()*sigma);
+      }
+      
+      CrossOver.breed(genomesToCross.get(index0), genomesToCross.get(index1), son, daughter, rand.nextInt(2000));
+      returnList.add(son);
+      returnList.add(daughter);
+    }
+    Collections.sort(returnList);//order genomes by fitness
+    
+    for(Tribe myTribe:tribeList)//then have tribes pop the top Genomes
+    {
+      myTribe.genomeList.add(returnList.get(0));
+      returnList.remove(0);
+      myTribe.genomeList.add(returnList.get(0));
+      returnList.remove(0);
+    }
+    if(tribeSlider.getValue()>tribeList.size())tribeSlider.setValue(0);
+    if(genomeSlider.getValue()>tribeList.get(0).genomeList.size())genomeSlider.setValue(0);
+    drawGenome=tribeList.get(tribeSlider.getValue()).genomeList.get(genomeSlider.getValue());
+    for(Tribe myTribe:tribeList)
+    {
+    	System.out.println(myTribe);
+      myTribe.resumeThread();
+    }
+    System.out.println("intraCross ends");
+  }
   public Genome getGenome()
   {
     return tribeList.get(0).genomeList.get(tribeIndex);

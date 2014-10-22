@@ -21,15 +21,16 @@ public class Genome implements Comparable<Genome> {
 	public final int IMG_WIDTH;
 	public final int IMG_HEIGHT;
 	public ArrayList<Gene> geneList = new ArrayList<>();
-
+	public HillClimber hc;
 	/****************************************************************************
 	 * Constructor given diemnsion Input:dimensions of the picture being
 	 * recreated Description:saves global variables and adds 200 new genes
 	 ****************************************************************************/
   public Genome(int width, int height)
   {
+	  
     masterImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-    
+    hc=new HillClimber(masterImage,this,50);
     IMG_WIDTH = width;
     IMG_HEIGHT = height;
     for (int i = 0; i < NUM_GENES; i++)
@@ -45,8 +46,9 @@ public class Genome implements Comparable<Genome> {
 	 ****************************************************************************/
   public Genome(BufferedImage image)
   {
-    image = new BufferedImage(image.getWidth(), image.getHeight(),
+    masterImage = new BufferedImage(image.getWidth(), image.getHeight(),
         BufferedImage.TYPE_INT_RGB);
+    hc=new HillClimber(masterImage,this,50);
     IMG_WIDTH = image.getTileWidth();
     IMG_HEIGHT = image.getHeight();
     for (int i = 0; i < NUM_GENES; i++)
