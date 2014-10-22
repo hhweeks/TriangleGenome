@@ -235,13 +235,13 @@ public class HillClimber extends Thread
   
   public long assignScore(Genome myGenome)//calls statistics, program calls this 5 times, and it is frequently rewritten in 5 places if not centralized here//TODO
   {
-//    BufferedImage genomeImage=GenomeUtilities.getBufferedImage(genome);
-//    long score=Statistics.getFitScore(genomeImage,masterImage);
+    BufferedImage genomeImage=GenomeUtilities.getBufferedImage(genome);
+    long score=Statistics.getFitScore(genomeImage,masterImage);
    
-    double scale=.7;
-    if(myGenome.scaledImage==null){GenomeUtilities.setScaledImage(myGenome,masterImage,scale);}
-    BufferedImage genomeImage=GenomeUtilities.getScaledBufferedImage(genome, scale);
-    long score=Statistics.getFitScore(genomeImage, genome.scaledImage);
+//    double scale=.7;
+//    if(myGenome.scaledImage==null){GenomeUtilities.setScaledImage(myGenome,masterImage,scale);}
+//    BufferedImage genomeImage=GenomeUtilities.getScaledBufferedImage(genome, scale);
+//    long score=Statistics.getFitScore(genomeImage, genome.scaledImage);
     
     return score;
   }

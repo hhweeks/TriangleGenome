@@ -24,6 +24,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class TriangleGenomeGUI extends JFrame
 {
   public static final int NTRIBES=4;
+  public static final int GEN_BETWEEN_CROSS=50*NTRIBES;
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
   static JPanel buttonPanel;
@@ -400,7 +401,7 @@ public class TriangleGenomeGUI extends JFrame
   {
     numUdates++;
     drawGenome=getGenome();
-    if((numUdates+1)%25==0){crossTribes();}
+    //if((numUdates)%GEN_BETWEEN_CROSS==0){crossTribes();}
     
     if(numUdates%25==0)
     {
@@ -418,22 +419,29 @@ public class TriangleGenomeGUI extends JFrame
     		);
   }
   
+  /****************************************************************************
+   * 
+   ***************************************************************************/
   public void crossTribes()
   {    
+    System.out.println("intraCross begins");
     ArrayList<Genome> genomesToCross=new ArrayList<>();
     ArrayList<Genome> returnList=new ArrayList<>();
     BufferedImage localMasterImage=null;
     
     // call intraCross
-    for(Tribe myTribe:tribeList)
-    {
-      try
+    for (Tribe myTribe : tribeList)
+    {      
+      synchronized(myTribe)
       {
-        myTribe.pauseThread();
-      } catch (InterruptedException e)
-      {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        try
+        {
+          myTribe.pauseThread();
+        } catch (InterruptedException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
     }
     for(Tribe myTribe:tribeList)
@@ -454,7 +462,8 @@ public class TriangleGenomeGUI extends JFrame
     
     int sigma=genomesToCross.size()/2;
     
-    for(int i=0; i<genomesToCross.size()/2;i++)
+//    for(int i=0; i<genomesToCross.size()/2;i++)
+    for(int i=0; i<50/2;i++)//breed 50 times
     {
       Genome son=new Genome(localMasterImage);
       Genome daughter=new Genome(localMasterImage);
@@ -476,9 +485,9 @@ public class TriangleGenomeGUI extends JFrame
       returnList.add(son);
       returnList.add(daughter);
     }
-    Collections.sort(returnList);
+    Collections.sort(returnList);//order genomes by fitness
     
-    for(Tribe myTribe:tribeList)
+    for(Tribe myTribe:tribeList)//then have tribes pop the top Genomes
     {
       myTribe.genomeList.add(returnList.get(0));
       returnList.remove(0);
@@ -490,6 +499,7 @@ public class TriangleGenomeGUI extends JFrame
     {
       myTribe.resumeThread();
     }
+    System.out.println("intraCross ends");
   }
 
   public Genome getGenome()
