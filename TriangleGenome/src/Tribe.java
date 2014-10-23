@@ -28,7 +28,7 @@ public class Tribe extends Thread {
 		for (int i = 0; i < startingTribeSize; i++) {
 			
 			Genome genome = new Genome(masterImage);
-			int seed = rand.nextInt(GenomeUtilities.NSEEDING-1);
+			int seed = rand.nextInt(GenomeUtilities.NSEEDING);
 			System.out.println("tribe builder   "+seed);
 			switch (seed) {
 			case 0:
