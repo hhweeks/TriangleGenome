@@ -23,7 +23,7 @@ public class GenomeUtilities
 {
   public static final int NPOINTS=3;// points of a triangle
   public static final int NCOLORS=4;// r,g,b,a
-  public static final int NSEEDING=3;
+  public static final int NSEEDING=2;
   static Random rand=new Random();
 
   /****************************************************************************

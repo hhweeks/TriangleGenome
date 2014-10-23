@@ -42,17 +42,20 @@ public class HillClimber extends Thread {
 		// climbStep(genome);
 		gradientClimb = false;
 		for (int i = 0; i < nSteps; i++) {
+			System.out.println("stepped"+tribe.tribeId+";"+genome.genomeId);
 			climbStep(genome);
 			if (tribe != null) {
 				if(tribe.imagePanel.drawGenome==genome)tribe.imagePanel.triangleWindowUpdate();
-				tribe.checkForPaused();
+				checkForPaused();
+				if(this.isInterrupted())i=nSteps;
 			}
 		}
-		if (tribe != null) {
+		if (tribe != null&&!this.isInterrupted()) {
 			int sigma=tribe.genomeList.size()/2;
 	        tribe.generateFitScores();
 			tribe.interCrossRoutine(sigma);
 		}
+		System.out.println("ended:"+tribe.tribeId+";"+genome.genomeId);
 	}
 
 	public boolean climbStep(Genome myGenome) {
@@ -588,11 +591,15 @@ public class HillClimber extends Thread {
 	}
 
 	public void pauseThread() throws InterruptedException {
+		synchronized (PAUSE_MONITOR) {
+		System.out.println("paused    "+tribe.tribeId+";"+genome.genomeId);
 		pauseThreadFlag = true;
+		}
 	}
 
 	public void resumeThread() {
 		synchronized (PAUSE_MONITOR) {
+			System.out.println("resumed "+tribe.tribeId+";"+genome.genomeId);
 			pauseThreadFlag = false;
 			PAUSE_MONITOR.notify();
 		}

@@ -25,9 +25,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class TriangleGenomeGUI extends JFrame
 {
   public static final int NBREEDSTEPS=50000;
-  public static final int NTRIBES=8;
+  public static final int NTRIBES=2;
   public static final int DRAWSTEPS=1;
-  public static final int STARTINGTRIBESIZE=2;
+  public static final int STARTINGTRIBESIZE=5;
   public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*NTRIBES;
   public static final int TRIANGLECOUNT= 200;
   public Tribe displayTribe;
@@ -191,21 +191,18 @@ public class TriangleGenomeGUI extends JFrame
 
           for(Tribe myTribe:tribeList)
           {
+        	  synchronized(myTribe){
             if(myTribe.pauseThreadFlag)
             {
               myTribe.resumeThread();
             }else
             {
               myTribe.start();
-            }            
+            }  
+            }          
           }
           
-          try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+          
           
         } else
         {
@@ -214,7 +211,9 @@ public class TriangleGenomeGUI extends JFrame
         	  
             for(Tribe myTribe:tribeList)
             {
+            	synchronized(myTribe){
               myTribe.pauseThread();
+            	}
             }
           } catch (InterruptedException e1)
           {

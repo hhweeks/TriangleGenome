@@ -11,7 +11,6 @@ public class Tribe extends Thread {
 	ImageContainer imagecontainer;
 	private final Object GUI_INITIALIZATION_MONITOR = new Object();
 	public volatile boolean pauseThreadFlag = false;
-	private static final int HILLSTEPS = 10;
 	long timeStamp;
 	public int tribeId;
 	// private volatile boolean running=true; // Run unless told to pause
@@ -22,14 +21,15 @@ public class Tribe extends Thread {
 	TriangleGenomeGUI imagePanel;
 
 	public Tribe(BufferedImage image, TriangleGenomeGUI tg) {
-		startingTribeSize = tg.STARTINGTRIBESIZE;
+		startingTribeSize = TriangleGenomeGUI.STARTINGTRIBESIZE;
 		masterImage = image;
 		imagePanel = tg;
 		// populate genome list
 		for (int i = 0; i < startingTribeSize; i++) {
-			System.out.println("tribe builder");
+			
 			Genome genome = new Genome(masterImage);
-			int seed = rand.nextInt(GenomeUtilities.NSEEDING);
+			int seed = rand.nextInt(GenomeUtilities.NSEEDING-1);
+			System.out.println("tribe builder   "+seed);
 			switch (seed) {
 			case 0:
 				GenomeUtilities.mixedSampleGenome(genome, masterImage);
@@ -39,9 +39,7 @@ public class Tribe extends Thread {
 				GenomeUtilities.averagingGenome(genome, masterImage);
 				break;
 
-			case 2:
-				GenomeUtilities.setRandomGenome(genome);
-				break;
+			
 
 			}
 			genomeList.add(genome);
@@ -62,7 +60,7 @@ public class Tribe extends Thread {
 
 	public void climbRoutine() {
 		System.out.println("start");
-		goToLocalMax(imagePanel.NBREEDSTEPS);
+		goToLocalMax(TriangleGenomeGUI.NBREEDSTEPS);
 
 	}
 
@@ -70,7 +68,7 @@ public class Tribe extends Thread {
 		System.out.println("inerCross Begins");
 
 		for (Genome genome : genomeList) {
-			genome.hc.interrupt();// resumeThread();
+			genome.hc.interrupt();
 		}
 
 		Genome son = new Genome(masterImage);
@@ -78,7 +76,6 @@ public class Tribe extends Thread {
 
 		generateFitScores();
 		Collections.sort(genomeList);
-		// sigma=genomeList.size()/2;//didn't we initialize sigma to this value?
 
 		int index0 = (int) Math.abs(rand.nextGaussian() * sigma);
 		int index1 = (int) Math.abs(rand.nextGaussian() * sigma);
@@ -114,7 +111,7 @@ public class Tribe extends Thread {
 		// System.out.println("threads resume");
 		imagePanel.drawGenome = imagePanel.tribeList.get(imagePanel.tribeSlider
 				.getValue()).genomeList.get(imagePanel.genomeSlider.getValue());
-		goToLocalMax(imagePanel.NBREEDSTEPS);
+		goToLocalMax(TriangleGenomeGUI.NBREEDSTEPS);
 
 		System.out.println("inerCross ends");
 	}
@@ -125,8 +122,8 @@ public class Tribe extends Thread {
 			int sigma = genomeList.size() / 2;
 			LinkedList<Genome> toCrossList = new LinkedList<>();
 
-			Genome son = new Genome(masterImage);
-			Genome daughter = new Genome(masterImage);
+//			Genome son = new Genome(masterImage);
+//			Genome daughter = new Genome(masterImage);
 
 			generateFitScores();
 			Collections.sort(genomeList);
@@ -166,15 +163,7 @@ public class Tribe extends Thread {
 				try {
 					GUI_INITIALIZATION_MONITOR.wait();
 
-					for (Genome genome : genomeList) {
-
-						try {
-							genome.hc.pauseThread();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-
-					}
+					
 
 				} catch (Exception e) {
 				}
@@ -183,7 +172,15 @@ public class Tribe extends Thread {
 	}
 
 	public void pauseThread() throws InterruptedException {
+		synchronized (GUI_INITIALIZATION_MONITOR) {
 		pauseThreadFlag = true;
+		for (Genome genome : genomeList) {
+			//synchronized (genome){
+			//genome.hc.interrupt();
+			genome.hc.pauseThread();
+		
+			}
+	}
 	}
 
 	public void resumeThread() {
@@ -191,8 +188,10 @@ public class Tribe extends Thread {
 			pauseThreadFlag = false;
 			GUI_INITIALIZATION_MONITOR.notify();
 			for (Genome genome : genomeList) {
-
+				//synchronized (genome){
+				//genome.hc.start();
 				genome.hc.resumeThread();
+				//}
 			}
 
 		}
@@ -200,37 +199,28 @@ public class Tribe extends Thread {
 
 	public void generateFitScores() {
 		for (Genome genome : genomeList) {
-			long deltaTime = timeStamp - System.currentTimeMillis();
-			// timeStamp=System.currentTimeMillis();
-			// // creates a fitscore from each image.
-			// // Should we preserve the Buffered Image as a phenotype???
-			// //
-			// genome.fitscore=Statistics.getFitScore(masterImage,GenomeUtilities.getBufferedImage(genome));
-			// genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
-			// genome.improvmentRate=genome.fitscore-genome.lastFitscore;
-			//
-			// genome.lastFitscore=genome.fitscore;
-			// System.out.println(genome.improvmentRate);
+
+			// creates a fitscore from each image.
+
+
+			 genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
+
 		}
 	}
 
 	public void goToLocalMax(int N) {
 
 		System.out.println("climber started");
-		// hc.gradientClimb=false;//TODO delete?
-		// for (int i = 0; i < N; i++) {
+	
 
 		checkForPaused();
-		//for (int i = 0; i < genomeList.size(); i++) {
-			for (Genome genome: genomeList) {
-			System.out.println("begin loop call");
-			//Genome genome = genomeList.get(i);
+		for (int i = 0; i < genomeList.size(); i++) {
+			Genome genome = genomeList.get(i);
 			genome.hc = new HillClimber(masterImage,genome, N);
 			genome.hc.tribe = this;
 			if (!genome.hc.isAlive()) {
 				genome.hc.start();
 			}
-			System.out.println("end loop call");
 		}
 
 	}
