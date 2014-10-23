@@ -15,7 +15,7 @@ public class Tribe extends Thread {
 	public int tribeId;
 	// private volatile boolean running=true; // Run unless told to pause
 	// public static final int STARTINGTRIBESIZE=8;
-	public static final int ENDINGTRIBESIZE = 16;
+	public static final int ENDINGTRIBESIZE = 200;
 	public volatile boolean climbLoop = true;
 	int startingTribeSize;
 	TriangleGenomeGUI imagePanel;
@@ -29,7 +29,7 @@ public class Tribe extends Thread {
 			
 			Genome genome = new Genome(masterImage);
 			int seed = rand.nextInt(GenomeUtilities.NSEEDING);
-			System.out.println("tribe builder   "+seed);
+			//System.out.println("tribe builder   "+seed);
 			switch (seed) {
 			case 0:
 				GenomeUtilities.mixedSampleGenome(genome, masterImage);
@@ -59,7 +59,6 @@ public class Tribe extends Thread {
 	}
 
 	public void climbRoutine() {
-		System.out.println("start");
 		goToLocalMax(TriangleGenomeGUI.NBREEDSTEPS);
 
 	}
@@ -197,23 +196,29 @@ public class Tribe extends Thread {
 		}
 	}
 
-  public void generateFitScores()
-  {
-    for(int i=0;i<genomeList.size();i++)
-    {
-      genomeList.get(i).fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genomeList.get(i)), masterImage);
-    }
-  }
+	public void generateFitScores() {
+		//for (Genome genome : genomeList) {
+			for (int i=0;i<genomeList.size();i++) {
+				Genome genome=genomeList.get(i);
+			
+			// creates a fitscore from each image.
+
+
+			 genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
+			}
+		}
+	
 
 	public void goToLocalMax(int N) {
 
-		System.out.println("climber started");
 	
 
 		checkForPaused();
 		for (int i = 0; i < genomeList.size(); i++) {
 			Genome genome = genomeList.get(i);
 			genome.hc = new HillClimber(masterImage,genome, N);
+
+			if(N>1)genome.hc.doBreed=true;
 			genome.hc.tribe = this;
 			if (!genome.hc.isAlive()) {
 				genome.hc.start();

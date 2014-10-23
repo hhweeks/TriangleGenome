@@ -1,5 +1,3 @@
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.util.Random;
@@ -12,6 +10,7 @@ public class HillClimber extends Thread {
 	public BufferedImage image;
 	public Genome genome;
 	boolean repeat;
+	boolean doBreed;
 	Gene lastGene;
 	int maxBound;
 	boolean gradientClimb;
@@ -40,6 +39,9 @@ public class HillClimber extends Thread {
 	public void run() {
 		// gradientClimb=true;
 		// climbStep(genome);
+		
+		
+		
 		gradientClimb = false;
 		for (int i = 0; i < nSteps; i++) {climbStep(genome);
 			if (tribe != null) {
@@ -47,7 +49,7 @@ public class HillClimber extends Thread {
 				checkForPaused();
 			}
 		}
-		if (tribe != null) {
+		if (tribe != null&&doBreed) {
 			int sigma=tribe.genomeList.size()/2;
 	        tribe.generateFitScores();
 			tribe.interCrossRoutine(sigma);
@@ -219,10 +221,6 @@ public class HillClimber extends Thread {
 			}
 			Mutate.exposeToRadiation(mutateGene, allele, shiftAmount);
 			previousScore = currentScore;
-			int w = image.getWidth();
-			int h = image.getHeight();
-			BufferedImage scaledImage = new BufferedImage((int) (w / 1.5),
-					(int) (h / 1.5), BufferedImage.TYPE_INT_RGB);
 			currentScore = assignScore(myGenome);
 		}
 		revertGenome(lastGene, lastAllele, lastShift);
@@ -384,7 +382,7 @@ public class HillClimber extends Thread {
 	public Gene getGene(Genome myGenome) {
 		int randomGeneInt;
 		Gene myGene;
-		randomGeneInt = rand.nextInt(myGenome.NUM_GENES);
+		randomGeneInt = rand.nextInt(Genome.NUM_GENES);
 		myGene = myGenome.geneList.get(randomGeneInt);
 		// do
 		// {
@@ -424,7 +422,7 @@ public class HillClimber extends Thread {
 	}
 
 	public int getAllele(Gene myGene) {
-		int myAlleleIndex = rand.nextInt(myGene.NALLELE + 2);// 10 alleles+2 for
+		int myAlleleIndex = rand.nextInt(Gene.NALLELE + 2);// 10 alleles+2 for
 																// move all x
 																// and move all
 																// y
