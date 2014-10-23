@@ -23,8 +23,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 //TODO ensure genetic diversity
 public class TriangleGenomeGUI extends JFrame
 {
-  public static final int NBREEDSTEPS=50;
-  public static /*final*/ int NTRIBES=2;
+  public static final int NBREEDSTEPS=200;
+  public static /*final*/ int NTRIBES=5;
   public static final int DRAWSTEPS=1;
   public static final int STARTINGTRIBESIZE=4;
   public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*NTRIBES;

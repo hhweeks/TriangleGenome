@@ -23,7 +23,7 @@ public class GenomeUtilities
 {
   public static final int NPOINTS=3;// points of a triangle
   public static final int NCOLORS=4;// r,g,b,a
-  public static final int NSEEDING=2;
+  public static final int NSEEDING=3;
   static Random rand=new Random();
 
   /****************************************************************************
@@ -191,23 +191,46 @@ public class GenomeUtilities
   
   public static void averageGridGenome(Genome genome, BufferedImage masterImage)
   {
+	  int h=masterImage.getHeight();
+	  int w=masterImage.getWidth();
+	  int xScale=(w/10);
+	  int yScale=(h/10);
+	 // System.out.println(xScale+";"+yScale);
 	  BufferedImage copiedImage = deepCopy(masterImage);
-    for (int i = 0; i < 200; i++)
+	  for(int k=0; k<2;k++){
+		
+    for (int i = 0; i < 100; i++)
     {
+    	
       Point[] myVertices = new Point[NPOINTS];
       for (int j = 0; j < NPOINTS; j++)
       {
         myVertices[j] = new Point(0, 0);
-        myVertices[j].x = rand.nextInt(genome.IMG_WIDTH);
-        myVertices[j].y = rand.nextInt(genome.IMG_HEIGHT);
+        if(j==2){
+        	if(k%2==0){
+                myVertices[j].x = (i%10)*(xScale);
+                myVertices[j].y = (i/10+1)*yScale;
+        		
+        	}
+        	else{
+                myVertices[j].x = (i%10+1)*xScale;
+                myVertices[j].y = (i/10)*(yScale);
+       		
+        	}
+        	
+        }
+        else{
+        myVertices[j].x = (i%10+j)*(xScale);
+        myVertices[j].y = (i/10+j)*(yScale);
+        }
       }
-      genome.geneList.get(i).setPoints(myVertices);
+     
+      genome.geneList.get(100*k+i).setPoints(myVertices);}
     }
     for(int i=0;i<genome.geneList.size();i++){
     		 Gene myGene =genome.geneList.get(i);
     		  int randomAlpha =5;
-    		  if(i<8){randomAlpha=rand.nextInt(50)+10;}
-    		  else{randomAlpha=rand.nextInt(50)+100;}
+    		  randomAlpha=rand.nextInt(150)+100;
 
     	      myGene.a = randomAlpha;
 
@@ -375,7 +398,9 @@ public class GenomeUtilities
         {
           int[] pixel =
           { 0, 0, 0 };
-          raster.getPixel(x, y, pixel);
+          
+          try{raster.getPixel(x, y, pixel);}
+          catch(IndexOutOfBoundsException e){System.out.println(gene+";"+x+";"+y);}
 
           redCount += pixel[0];
           blueCount += pixel[1];

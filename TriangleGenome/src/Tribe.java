@@ -15,7 +15,7 @@ public class Tribe extends Thread {
 	public int tribeId;
 	// private volatile boolean running=true; // Run unless told to pause
 	// public static final int STARTINGTRIBESIZE=8;
-	public static final int ENDINGTRIBESIZE = 8;
+	public static final int ENDINGTRIBESIZE = 4;
 	public volatile boolean climbLoop = true;
 	int startingTribeSize;
 	TriangleGenomeGUI imagePanel;
@@ -28,7 +28,7 @@ public class Tribe extends Thread {
 		for (int i = 0; i < startingTribeSize; i++) {
 			
 			Genome genome = new Genome(masterImage);
-			int seed = rand.nextInt(GenomeUtilities.NSEEDING-1);
+			int seed = rand.nextInt(GenomeUtilities.NSEEDING);
 			//System.out.println("tribe builder   "+seed);
 			switch (seed) {
 			case 0:
@@ -38,7 +38,10 @@ public class Tribe extends Thread {
 			case 1:
 				GenomeUtilities.averagingGenome(genome, masterImage);
 				break;
-
+				
+			case 2:
+				GenomeUtilities.averageGridGenome(genome, masterImage);
+				break;
 			
 
 			}
@@ -65,9 +68,14 @@ public class Tribe extends Thread {
 
 	public void interCrossRoutine(int sigma) {
 		System.out.println("inerCross Begins");
-
-		for (Genome genome : genomeList) {
-			genome.hc.interrupt();
+		for (int i=0;i<genomeList.size();i++){ 
+		Genome genome = genomeList.get(i);
+			try {
+				genome.hc.pauseThread();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		Genome son = new Genome(masterImage);
@@ -174,7 +182,8 @@ public class Tribe extends Thread {
 	public void pauseThread() throws InterruptedException {
 		synchronized (GUI_INITIALIZATION_MONITOR) {
 		pauseThreadFlag = true;
-		for (Genome genome : genomeList) {
+		for (int i=0;i<genomeList.size();i++){ 
+			Genome genome = genomeList.get(i);
 			//synchronized (genome){
 			//genome.hc.interrupt();
 			genome.hc.pauseThread();
@@ -187,7 +196,8 @@ public class Tribe extends Thread {
 		synchronized (GUI_INITIALIZATION_MONITOR) {
 			pauseThreadFlag = false;
 			GUI_INITIALIZATION_MONITOR.notify();
-			for (Genome genome : genomeList) {
+			for (int i=0;i<genomeList.size();i++){ 
+				Genome genome = genomeList.get(i);
 				//synchronized (genome){
 				//genome.hc.start();
 				genome.hc.resumeThread();
