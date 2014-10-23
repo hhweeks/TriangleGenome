@@ -188,6 +188,7 @@ public class TriangleGenomeGUI extends JFrame
         //if(!reset) startTime = System.nanoTime();
         if(runPauseButton.getText().compareTo("RUN")==0)
         {
+        	startTime = System.nanoTime();
         //	System.out.println(buildCheck);
         if(buildCheck) {
         	tribeList.clear();
@@ -355,11 +356,11 @@ public class TriangleGenomeGUI extends JFrame
     imagePane.setSize(600, 800);
 
     //genomeStats.setText(tmpGenomeStats+stats);
-    genomeStats.setText("min:sec = " + "" +
+    genomeStats.setText("Duration = " + getRunDuration(startTime)+
     		"    gen = " + numUdates +
-    		"    gen/sec = " + "" +
-    		"    Fitness = " + stats + 
-    		"    Duration = " + "0"//getRunDuration(startTime)
+    		"    gen/sec = " + getGenPerSec() +
+    		"    Fitness = " + stats+
+    		"    Improvment/Time = " + ((0/(System.nanoTime()-startTime)*1E9))
     		);
     this.add(genomeStats, BorderLayout.SOUTH);
 
@@ -456,8 +457,7 @@ public class TriangleGenomeGUI extends JFrame
     //genomeStats.setText(tmpGenomeStats+stats);
     //System.out.println(drawGenome.startFitscore+";"+stats+";"+System.nanoTime()+";"+startTime);
     double improvement=(drawGenome.startFitscore-stats);
-    genomeStats.setText("min:sec = " + "" +
-        "    Duration = " + getRunDuration(startTime)+
+    genomeStats.setText("Duration = " + getRunDuration(startTime)+
     		"    gen = " + numUdates +
     		"    gen/sec = " + getGenPerSec() +
     		"    Fitness = " + stats+
