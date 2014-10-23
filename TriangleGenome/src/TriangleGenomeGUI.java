@@ -25,10 +25,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class TriangleGenomeGUI extends JFrame
 {
   public static final int NBREEDSTEPS=50000;
-  public static final int NTRIBES=3;
+  public static final int NTRIBES=8;
   public static final int DRAWSTEPS=1;
   public static final int STARTINGTRIBESIZE=2;
   public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*NTRIBES;
+  public static final int TRIANGLECOUNT= 200;
   public Tribe displayTribe;
   static ImagePanel imageWindow;
   static ImagePanel triangleWindow;
@@ -36,7 +37,7 @@ public class TriangleGenomeGUI extends JFrame
   static JPanel sliderPanel=new JPanel();
   static JPanel controlPanel=new JPanel();
   JComboBox<String> imageSelect;
-  JSlider triangleSlider=new JSlider(0, 200, 0);
+  JSlider triangleSlider=new JSlider(0, TRIANGLECOUNT, 0);
   JSlider tribeSlider=new JSlider(0, NTRIBES-1, 0);
   JLabel triangleLabel=new JLabel("triangles");
   JLabel tribeLabel=new JLabel("tribes");
@@ -114,9 +115,9 @@ public class TriangleGenomeGUI extends JFrame
           // drawGenome=new Genome(img.getWidth(), img.getHeight());
           // GenomeUtilities
           // .averagingGenome(drawGenome,img);
-          GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
+          GenomeUtilities.drawNTriangles(TRIANGLECOUNT, triangleWindow, drawGenome);
           // triangleWindow.image=GenomeUtilities.getBufferedImage(myGenome);
-          triangleSlider.setValue(200);
+          triangleSlider.setValue(TRIANGLECOUNT);
         } catch (IOException ec)
         {
           System.out.println("Image "+path+flname+" not Found");
@@ -136,7 +137,7 @@ public class TriangleGenomeGUI extends JFrame
     makeTribes(imageWindow.getImage());
     // make one genome for display
     drawGenome=getGenome();
-    GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
+    GenomeUtilities.drawNTriangles(TRIANGLECOUNT, triangleWindow, drawGenome);
 
     // generate statistics
     stats=Statistics.getFitScore(GenomeUtilities.getBufferedImage(drawGenome), drawGenome.masterImage);
@@ -278,7 +279,7 @@ public class TriangleGenomeGUI extends JFrame
       {
         tribeIndex=tribeSlider.getValue();
         drawGenome = getGenome();
-        GenomeUtilities.drawNTriangles(200,
+        GenomeUtilities.drawNTriangles(TRIANGLECOUNT,
                 triangleWindow, drawGenome);
         tribeLabel.setText("Tribe #"+tribeIndex);
       }
@@ -293,7 +294,7 @@ public class TriangleGenomeGUI extends JFrame
         genomeLabel.setText("Genome #"+(genomeIndex + 1));
         //System.out.println("tribe size " + tribeList.size());
         drawGenome = getGenome();
-        GenomeUtilities.drawNTriangles(200,
+        GenomeUtilities.drawNTriangles(TRIANGLECOUNT,
                 triangleWindow, drawGenome);
         //System.out.print("genome Index " + genomeIndex + "\ntribeIndex " + tribeIndex);
        // triangleWindowUpdate();
@@ -303,7 +304,7 @@ public class TriangleGenomeGUI extends JFrame
     buttonPanel.add(runPauseButton);
     buttonPanel.add(nextButton);
     buttonPanel.add(nextButton);
-    triangleSlider.setValue(200);
+    triangleSlider.setValue(TRIANGLECOUNT);
     buttonPanel.add(triangleSlider);
     buttonPanel.add(tableButton);
     buttonPanel.add(readButton);
@@ -418,7 +419,7 @@ public class TriangleGenomeGUI extends JFrame
     
     if(numUdates%25==0&&numUdates!=0)
     {
-      GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
+      GenomeUtilities.drawNTriangles(TRIANGLECOUNT, triangleWindow, drawGenome);
       stats=Statistics.getFitScore(GenomeUtilities.getBufferedImage(drawGenome), imageWindow.image);
       drawGenome.fitscore=stats;
       System.out.println("50 updates happened");
@@ -499,7 +500,7 @@ public class TriangleGenomeGUI extends JFrame
         index1=(int) Math.abs(rand.nextGaussian()*sigma);
       }
       
-      CrossOver.multiBreed(genomesToCross.get(index0), genomesToCross.get(index1), son, daughter, rand.nextInt(2000));
+      CrossOver.multiBreed(genomesToCross.get(index0), genomesToCross.get(index1), son, daughter, rand.nextInt(TRIANGLECOUNT*10));
       returnList.add(son);
       returnList.add(daughter);
     }
