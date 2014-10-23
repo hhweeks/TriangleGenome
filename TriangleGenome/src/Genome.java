@@ -24,6 +24,7 @@ public class Genome implements Comparable<Genome> {
 	public final int IMG_HEIGHT;
 	public ArrayList<Gene> geneList = new ArrayList<>();
 	public HillClimber hc;
+	public int tribeId, genomeId;
 	/****************************************************************************
 	 * Constructor given diemnsion Input:dimensions of the picture being
 	 * recreated Description:saves global variables and adds 200 new genes

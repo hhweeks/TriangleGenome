@@ -21,10 +21,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 //TODO measure improvement rate, ie delta score per second
+//TODO ensure genetic diversity
 public class TriangleGenomeGUI extends JFrame
 {
   public static final int NBREEDSTEPS=50000;
-  public static final int NTRIBES=6;
+  public static final int NTRIBES=3;
   public static final int DRAWSTEPS=1;
   public static final int STARTINGTRIBESIZE=2;
   public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*NTRIBES;
@@ -154,7 +155,9 @@ public class TriangleGenomeGUI extends JFrame
         //triangleWindowUpdate();
         reset = true;
         tribeSlider.setValue(0);
+        tribeIndex=0;
         genomeSlider.setValue(0);
+        genomeIndex=0;
     	  makeTribes(imageWindow.image);
     	  triangleWindowUpdate();
     	 
@@ -184,7 +187,7 @@ public class TriangleGenomeGUI extends JFrame
 
           for(Tribe myTribe:tribeList)
           {
-            if(myTribe.isAlive())
+            if(myTribe.isAlive()||myTribe.pauseThreadFlag)
             {
               myTribe.resumeThread();
             }else
@@ -401,6 +404,7 @@ public class TriangleGenomeGUI extends JFrame
     for(int i=0;i<NTRIBES;i++)
     {
       Tribe tribe=new Tribe(image,tg);
+      tribe.tribeId=i;
       System.out.println("makeTribes");
       tribeList.add(tribe);
     }
@@ -417,7 +421,7 @@ public class TriangleGenomeGUI extends JFrame
       GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
       stats=Statistics.getFitScore(GenomeUtilities.getBufferedImage(drawGenome), imageWindow.image);
       drawGenome.fitscore=stats;
-      //System.out.println("50 updates happened");
+      System.out.println("50 updates happened");
     }
     //genomeStats.setText(tmpGenomeStats+stats);
     //System.out.println(drawGenome.startFitscore+";"+stats+";"+System.nanoTime()+";"+startTime);
@@ -514,7 +518,7 @@ public class TriangleGenomeGUI extends JFrame
       returnList.remove(0);
     }
     if(tribeSlider.getValue()>tribeList.size())tribeSlider.setValue(0);
-    if(genomeSlider.getValue()>tribeList.get(0).genomeList.size())genomeSlider.setValue(0);
+    //if(genomeSlider.getValue()>tribeList.get(0).genomeList.size())genomeSlider.setValue(0);
     drawGenome=tribeList.get(tribeSlider.getValue()).genomeList.get(genomeSlider.getValue());
     for(Tribe myTribe:tribeList)
     {
