@@ -367,17 +367,13 @@ public class GenomeUtilities
    ****************************************************************************/
   public static void drawNTriangles(int N,
 	      TriangleGenomeGUI.ImagePanel myPic, Genome myGenome) {
-	    BufferedImage myIm = myPic.getImage();
+	  BufferedImage myIm = new BufferedImage(TriangleGenomeGUI.imageWindow.image.getWidth(),
+              								TriangleGenomeGUI.imageWindow.image.getHeight(),
+              								BufferedImage.TYPE_INT_RGB);
 	    Graphics myGraphics = myIm.getGraphics();
-	    int height = TriangleGenomeGUI.imageWindow.image.getHeight();
-	    int width = TriangleGenomeGUI.imageWindow.image.getWidth();
-	    //clear previous geneome from display
-	    ////////////////////
-	    int y = myIm.getHeight();
-	    int x = myIm.getWidth();
-	    myGraphics.setColor(new Color(238, 238, 238));
-	    myGraphics.fillRect(0, 0, x, y);
-	    ////////////////////
+	    int height = myIm.getHeight();
+	    int width = myIm.getWidth();
+
 
 	    myGraphics.setColor(Color.white);
 	    myGraphics.fillRect(0, 0, width, height);
@@ -390,6 +386,7 @@ public class GenomeUtilities
 	    		  gene.a));
 	      myGraphics.fillPolygon(gene);
 	    }
+	    myPic.image = myIm;
 	    myPic.repaint();
 	  }
 
