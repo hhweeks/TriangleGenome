@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -23,7 +24,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class TriangleGenomeGUI extends JFrame
 {
   public static final int NBREEDSTEPS=500;
-  public static final int NTRIBES=2;
+  public static /*final*/ int NTRIBES=2;
   public static final int DRAWSTEPS=1;
   public static final int STARTINGTRIBESIZE=10;
   public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*NTRIBES;
@@ -49,6 +50,7 @@ public class TriangleGenomeGUI extends JFrame
   JButton writeButton=new JButton("WRITE");
   JButton appendButton=new JButton("APPEND STATS TO FILE");
   JLabel genomeStats=new JLabel();
+  JTextField userNoTribesField = new JTextField();
   TriangleGenomeGUI tg;
   Genome drawGenome;
   BufferedImage img;
@@ -365,12 +367,37 @@ public class TriangleGenomeGUI extends JFrame
     this.add(genomeStats, BorderLayout.SOUTH);
 
     // buttonPanel.setPreferredSize(new Dimension(1150, 250));
-    controlPanel.setPreferredSize(new Dimension(1150, 175));
+    controlPanel.setPreferredSize(new Dimension(1150, 195));
     this.add(imagePane, BorderLayout.CENTER);
-    sliderPanel.setLayout(new GridLayout(7, 0));
+    sliderPanel.setLayout(new GridLayout(8, 0));
     sliderPanel.add(triangleLabel);
     sliderPanel.add(triangleSlider);
-    sliderPanel.add(genomeLabel);
+    JPanel genomePanel = new JPanel();
+    genomePanel.setLayout(new GridLayout(0, 2));
+    userNoTribesField.setColumns(5);
+    userNoTribesField.addActionListener(new ActionListener(){
+    	public void actionPerformed(ActionEvent e)
+    	{
+    		try
+    		{
+    			int value = Integer.parseInt(userNoTribesField.getText());
+    			if(value >= 0 && value <= 1000)
+    			{
+    				NTRIBES = value;
+    				tribeSlider.setMaximum(NTRIBES - 1);
+    				makeTribes(imageWindow.image);
+    				//tribeSlider=new JSlider(0, NTRIBES-1, 0);
+    				System.out.println("NTRIBE value = " + NTRIBES);
+    			}
+    		}
+    		catch(Exception x){}
+    	}
+    });
+    genomePanel.add(genomeLabel);
+    genomePanel.add(userNoTribesField);
+    sliderPanel.add(genomePanel);
+    //sliderPanel.add(genomeLabel);
+    //sliderPanel.add(userNoTribesField);
     
     sliderPanel.add(genomeSlider);
     sliderPanel.add(tribeLabel);
