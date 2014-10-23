@@ -197,16 +197,13 @@ public class Tribe extends Thread {
 		}
 	}
 
-	public void generateFitScores() {
-		for (Genome genome : genomeList) {
-
-			// creates a fitscore from each image.
-
-
-			 genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),masterImage);
-
-		}
-	}
+  public void generateFitScores()
+  {
+    for(int i=0;i<genomeList.size();i++)
+    {
+      genomeList.get(i).fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genomeList.get(i)), masterImage);
+    }
+  }
 
 	public void goToLocalMax(int N) {
 
