@@ -251,8 +251,13 @@ public class TriangleGenomeGUI extends JFrame
           e1.printStackTrace();
         }
         int numTribes=tribeList.size();
-        if(numTribes>0){tribeList.get(0).genomeList.add(0,readInGenome);}
-        drawGenome=readInGenome;
+        if(numTribes>0&&readInGenome!=null){
+        	
+        	tribeList.get(tribeIndex).genomeList.set(genomeIndex,readInGenome);
+        	
+        	
+        }
+        drawGenome=tribeList.get(tribeIndex).genomeList.get(genomeIndex);
         GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
         stats=Statistics.getFitScore(GenomeUtilities.getBufferedImage(drawGenome), imageWindow.image);
         drawGenome.fitscore=stats;
