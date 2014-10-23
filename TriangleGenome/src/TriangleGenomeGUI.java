@@ -184,13 +184,14 @@ public class TriangleGenomeGUI extends JFrame
         //if(!reset) startTime = System.nanoTime();
         if(runPauseButton.getText().compareTo("RUN")==0)
         {
+        	
           if(startTime > System.nanoTime()) startTime = System.nanoTime();
           runPauseButton.setText("PAUSE");
           toggleButtons(false);
 
           for(Tribe myTribe:tribeList)
           {
-            if(myTribe.isAlive()||myTribe.pauseThreadFlag)
+            if(myTribe.pauseThreadFlag)
             {
               myTribe.resumeThread();
             }else
@@ -199,10 +200,18 @@ public class TriangleGenomeGUI extends JFrame
             }            
           }
           
+          try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+          
         } else
         {
           try
           {
+        	  
             for(Tribe myTribe:tribeList)
             {
               myTribe.pauseThread();
@@ -227,42 +236,42 @@ public class TriangleGenomeGUI extends JFrame
     });
     readButton.addActionListener(new ActionListener()
     {
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        fc.setFileFilter(xmlFilter);
-        fc.setDialogTitle("Open Genome");
-        fc.setCurrentDirectory(null);
-        try
-        {
-          int returnVal = fc.showOpenDialog(readButton);
-          if(returnVal == JFileChooser.APPROVE_OPTION)
-          {            
-            File file = fc.getSelectedFile();
-            readInGenome=XMLUtil.readXML(file.getName());
-          }
-          else
-          {
-            System.out.println("File selection canceled by the user!");
-          }
-        }
-        catch (Exception e1)
-        {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
-        }
-        int numTribes=tribeList.size();
-        if(numTribes>0&&readInGenome!=null){
-        	
-        	tribeList.get(tribeIndex).genomeList.set(genomeIndex,readInGenome);
-        	
-        	
-        }
-        drawGenome=tribeList.get(tribeIndex).genomeList.get(genomeIndex);
-        GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
-        stats=Statistics.getFitScore(GenomeUtilities.getBufferedImage(drawGenome), imageWindow.image);
-        drawGenome.fitscore=stats;
-      }
+    	 @Override
+	      public void actionPerformed(ActionEvent e)
+	      {
+	        fc.setFileFilter(xmlFilter);
+	        fc.setDialogTitle("Open Genome");
+	        fc.setCurrentDirectory(null);
+	        try
+	        {
+	          int returnVal = fc.showOpenDialog(readButton);
+	          if(returnVal == JFileChooser.APPROVE_OPTION)
+	          {            
+	            File file = fc.getSelectedFile();
+	            readInGenome=XMLUtil.readXML(file.getName());
+	          }
+	          else
+	          {
+	            System.out.println("File selection canceled by the user!");
+	          }
+	        }
+	        catch (Exception e1)
+	        {
+	          // TODO Auto-generated catch block
+	          e1.printStackTrace();
+	        }
+	        int numTribes=tribeList.size();
+	        if(numTribes>0&&readInGenome!=null){
+	        	
+	        	tribeList.get(tribeIndex).genomeList.set(genomeIndex,readInGenome);
+	        	
+	        	
+	        }
+	        drawGenome=tribeList.get(tribeIndex).genomeList.get(genomeIndex);
+	        GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
+	        stats=Statistics.getFitScore(GenomeUtilities.getBufferedImage(drawGenome), imageWindow.image);
+	        drawGenome.fitscore=stats;
+	      }
     });
     writeButton.addActionListener(new ActionListener()
     {
