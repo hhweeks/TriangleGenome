@@ -55,6 +55,7 @@ public class TriangleGenomeGUI extends JFrame
   Genome drawGenome;
   BufferedImage img;
   String path="images/";
+  Genome readInGenome;
   
   int numUdates;//used by triangleWindowUpdate
   long stats;
@@ -235,11 +236,10 @@ public class TriangleGenomeGUI extends JFrame
         {
           int returnVal = fc.showOpenDialog(readButton);
           if(returnVal == JFileChooser.APPROVE_OPTION)
-          {
+          {            
             File file = fc.getSelectedFile();
-            XMLUtil.readXML(file.getName());
+            readInGenome=XMLUtil.readXML(file.getName());
           }
-          //XMLUtil.readXML("1413682511764729000.xml");
           else
           {
             System.out.println("File selection canceled by the user!");
@@ -250,6 +250,12 @@ public class TriangleGenomeGUI extends JFrame
           // TODO Auto-generated catch block
           e1.printStackTrace();
         }
+        int numTribes=tribeList.size();
+        if(numTribes>0){tribeList.get(0).genomeList.add(0,readInGenome);}
+        drawGenome=readInGenome;
+        GenomeUtilities.drawNTriangles(200, triangleWindow, drawGenome);
+        stats=Statistics.getFitScore(GenomeUtilities.getBufferedImage(drawGenome), imageWindow.image);
+        drawGenome.fitscore=stats;
       }
     });
     writeButton.addActionListener(new ActionListener()
@@ -422,7 +428,6 @@ public class TriangleGenomeGUI extends JFrame
       GenomeUtilities.drawNTriangles(TRIANGLECOUNT, triangleWindow, drawGenome);
       stats=Statistics.getFitScore(GenomeUtilities.getBufferedImage(drawGenome), imageWindow.image);
       drawGenome.fitscore=stats;
-      System.out.println("50 updates happened");
     }
     //genomeStats.setText(tmpGenomeStats+stats);
     //System.out.println(drawGenome.startFitscore+";"+stats+";"+System.nanoTime()+";"+startTime);
