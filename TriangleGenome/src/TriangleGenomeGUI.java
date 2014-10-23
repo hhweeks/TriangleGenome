@@ -23,10 +23,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 //TODO ensure genetic diversity
 public class TriangleGenomeGUI extends JFrame
 {
-  public static final int NBREEDSTEPS=500;
+  public static final int NBREEDSTEPS=50;
   public static /*final*/ int NTRIBES=2;
   public static final int DRAWSTEPS=1;
-  public static final int STARTINGTRIBESIZE=10;
+  public static final int STARTINGTRIBESIZE=4;
   public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*NTRIBES;
   public static final int TRIANGLECOUNT= 200;
   public Tribe displayTribe;
@@ -594,7 +594,8 @@ public class TriangleGenomeGUI extends JFrame
     for(Tribe myTribe:tribeList)//then have tribes pop the top Genomes
     {
     	for(Tribe tribe:tribeList){
-        for(Genome genome:tribe.genomeList){
+    	for(int i=0;i<tribe.genomeList.size();i++){
+        Genome genome=tribe.genomeList.get(i);
       	  genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), genome.masterImage);	  
         }
     	}

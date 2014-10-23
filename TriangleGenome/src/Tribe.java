@@ -15,7 +15,7 @@ public class Tribe extends Thread {
 	public int tribeId;
 	// private volatile boolean running=true; // Run unless told to pause
 	// public static final int STARTINGTRIBESIZE=8;
-	public static final int ENDINGTRIBESIZE = 200;
+	public static final int ENDINGTRIBESIZE = 8;
 	public volatile boolean climbLoop = true;
 	int startingTribeSize;
 	TriangleGenomeGUI imagePanel;
@@ -28,7 +28,7 @@ public class Tribe extends Thread {
 		for (int i = 0; i < startingTribeSize; i++) {
 			
 			Genome genome = new Genome(masterImage);
-			int seed = rand.nextInt(GenomeUtilities.NSEEDING);
+			int seed = rand.nextInt(GenomeUtilities.NSEEDING-1);
 			//System.out.println("tribe builder   "+seed);
 			switch (seed) {
 			case 0:
@@ -147,7 +147,8 @@ public class Tribe extends Thread {
 
 			toCrossList.add(genome0);
 			toCrossList.add(genome1);
-			for (Genome genome : genomeList) {
+			for (int i=0;i<genomeList.size();i++) {
+			Genome genome = genomeList.get(i);
 				genome.startFitscore = Statistics.getFitScore(
 						GenomeUtilities.getBufferedImage(genome), masterImage);
 			}

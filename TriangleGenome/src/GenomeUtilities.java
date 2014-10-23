@@ -160,10 +160,11 @@ public class GenomeUtilities
       }
       genome.geneList.get(i).setPoints(myVertices);
     }
-
-    for (Gene myGene : genome.geneList)
-    {
-    		  int randomAlpha = rand.nextInt(200) + 55;
+    for(int i=0;i<genome.geneList.size();i++){
+    		 Gene myGene =genome.geneList.get(i);
+    		  int randomAlpha =5;
+    		  if(i<8){randomAlpha=rand.nextInt(50)+10;}
+    		  else{randomAlpha=rand.nextInt(50)+100;}
 
     	      myGene.a = randomAlpha;
 
@@ -178,6 +179,48 @@ public class GenomeUtilities
     
   }  
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  public static void averageGridGenome(Genome genome, BufferedImage masterImage)
+  {
+	  BufferedImage copiedImage = deepCopy(masterImage);
+    for (int i = 0; i < 200; i++)
+    {
+      Point[] myVertices = new Point[NPOINTS];
+      for (int j = 0; j < NPOINTS; j++)
+      {
+        myVertices[j] = new Point(0, 0);
+        myVertices[j].x = rand.nextInt(genome.IMG_WIDTH);
+        myVertices[j].y = rand.nextInt(genome.IMG_HEIGHT);
+      }
+      genome.geneList.get(i).setPoints(myVertices);
+    }
+    for(int i=0;i<genome.geneList.size();i++){
+    		 Gene myGene =genome.geneList.get(i);
+    		  int randomAlpha =5;
+    		  if(i<8){randomAlpha=rand.nextInt(50)+10;}
+    		  else{randomAlpha=rand.nextInt(50)+100;}
+
+    	      myGene.a = randomAlpha;
+
+    	      int[] myColors = getAreaColorAvg(myGene, copiedImage);
+    	      myGene.r = myColors[0];
+    	      myGene.g = myColors[1];
+    	      myGene.b = myColors[2]; 
+
+    	  
+    }
+    genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), genome.masterImage);
+    
+  }  
   
   
   
@@ -216,7 +259,7 @@ public class GenomeUtilities
     myGene.r=samplePixel[0];
     myGene.g=samplePixel[1];
     myGene.b=samplePixel[2];
-    int randomAlpha = rand.nextInt(200) + 55;
+    int randomAlpha = rand.nextInt(50) + 55;
     myGene.a=randomAlpha;
   }
   
@@ -237,7 +280,7 @@ public class GenomeUtilities
     myGene.g=samplePixel1[1];
     masterRaster.getPixel(x2, y1, samplePixel2);
     myGene.b=samplePixel2[2];
-    int randomAlpha = rand.nextInt(200) + 55;
+    int randomAlpha = rand.nextInt(50) + 55;
     myGene.a=randomAlpha;    
   }
   
@@ -246,7 +289,7 @@ public class GenomeUtilities
     int randomRed=rand.nextInt(254);
     int randomGreen=rand.nextInt(254);
     int randomBlue=rand.nextInt(254);
-    int randomAlpha = rand.nextInt(200) + 55;
+    int randomAlpha = rand.nextInt(50) + 55;
     myGene.r=randomRed;
     myGene.g=randomGreen;
     myGene.b=randomBlue;
