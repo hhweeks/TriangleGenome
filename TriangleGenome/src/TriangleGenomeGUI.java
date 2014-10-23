@@ -56,6 +56,7 @@ public class TriangleGenomeGUI extends JFrame
   BufferedImage img;
   String path="images/";
   Genome readInGenome;
+  String saveToXmlName;
   
   int numUdates;//used by triangleWindowUpdate
   long stats;
@@ -268,7 +269,8 @@ public class TriangleGenomeGUI extends JFrame
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        XMLUtil.writeXML(System.nanoTime() + ".xml", drawGenome);
+        saveToXmlName=JOptionPane.showInputDialog("file name");
+        if(saveToXmlName!=null)XMLUtil.writeXML(saveToXmlName + ".xml", drawGenome);
         //XMLUtil.writeXML(System.nanoTime() + ".xml", drawGenome, path+flname);
       }
     });
