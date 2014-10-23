@@ -89,6 +89,7 @@ public class TriangleGenomeGUI extends JFrame
     String[] filenames=findFiles.toArray(new String[findFiles.size()]);
     buttonPanel=new JPanel();
     buttonPanel.setBounds(0, 500, 1500, 300);
+    
 
     imageSelect=new JComboBox<String>(filenames);
     imageSelect.setSelectedIndex(0);
@@ -313,12 +314,11 @@ public class TriangleGenomeGUI extends JFrame
       {
         genomeIndex=genomeSlider.getValue();
         genomeLabel.setText("Genome #"+(genomeIndex + 1));
-        //System.out.println("tribe size " + tribeList.size());
         drawGenome = getGenome();
-        GenomeUtilities.drawNTriangles(TRIANGLECOUNT,
-                triangleWindow, drawGenome);
-        //System.out.print("genome Index " + genomeIndex + "\ntribeIndex " + tribeIndex);
-       // triangleWindowUpdate();
+//        GenomeUtilities.drawNTriangles(TRIANGLECOUNT,
+//                triangleWindow, drawGenome);
+        
+       tg.triangleWindowUpdate();
       }
     });
 
