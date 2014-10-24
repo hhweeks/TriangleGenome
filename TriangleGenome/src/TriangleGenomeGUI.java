@@ -68,6 +68,7 @@ public class TriangleGenomeGUI extends JFrame
   public long startTime = System.nanoTime();
   static int seconds = 1;
   boolean reset = false;
+  public boolean paused=false;
   final JFileChooser fc = new JFileChooser();
   FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter("xml files (*.xml)", "xml");
   Random rand=new Random();
@@ -190,6 +191,7 @@ public class TriangleGenomeGUI extends JFrame
         //if(!reset) startTime = System.nanoTime();
         if(runPauseButton.getText().compareTo("RUN")==0)
         {
+        	
         	startTime = System.nanoTime();
         //	System.out.println(buildCheck);
         if(buildCheck) {
@@ -200,7 +202,11 @@ public class TriangleGenomeGUI extends JFrame
         }
           if(startTime > System.nanoTime()) startTime = System.nanoTime();
           runPauseButton.setText("PAUSE");
-          toggleButtons(false);
+          tg.paused=false;
+
+
+          
+           toggleButtons(false);
 
           for(Tribe myTribe:tribeList)
           {
@@ -234,6 +240,7 @@ public class TriangleGenomeGUI extends JFrame
             e1.printStackTrace();
           }
           runPauseButton.setText("RUN");
+          tg.paused=true;
           toggleButtons(true);
       }
     }});
@@ -609,7 +616,7 @@ public class TriangleGenomeGUI extends JFrame
     if(tribeSlider.getValue()>tribeList.size())tribeSlider.setValue(0);
     //if(genomeSlider.getValue()>tribeList.get(0).genomeList.size())genomeSlider.setValue(0);
     drawGenome=tribeList.get(tribeSlider.getValue()).genomeList.get(genomeSlider.getValue());
-   if(runPauseButton.getText().compareTo("RUN")==0){
+   if(!paused){
     for(Tribe myTribe:tribeList)
     {
     	 System.out.println(4);
@@ -617,7 +624,7 @@ public class TriangleGenomeGUI extends JFrame
     }
     
    }
-   tribeList.get(0).checkForPaused();
+   
     }
     
     System.out.println("intraCross ends");
