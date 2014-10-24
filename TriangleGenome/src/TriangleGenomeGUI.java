@@ -26,8 +26,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-//TODO measure improvement rate, ie delta score per second
-//TODO ensure genetic diversity
 public class TriangleGenomeGUI extends JFrame
 {
   public static final int NBREEDSTEPS=50;
@@ -252,7 +250,6 @@ public class TriangleGenomeGUI extends JFrame
             }
           } catch (InterruptedException e1)
           {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
           }
           runPauseButton.setText("RUN");
@@ -296,7 +293,6 @@ public class TriangleGenomeGUI extends JFrame
 	        }
 	        catch (Exception e1)
 	        {
-	          // TODO Auto-generated catch block
 	          e1.printStackTrace();
 	        }
 	        int numTribes=tribeList.size();
