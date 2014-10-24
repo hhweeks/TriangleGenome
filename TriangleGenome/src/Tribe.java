@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Tribe extends Thread {
 	Random rand = new Random();
-	ArrayList<Genome> genomeList = new ArrayList<>();
+	volatile ArrayList<Genome> genomeList = new ArrayList<>();
 	BufferedImage masterImage;
 	ImageContainer imagecontainer;
 	private final Object GUI_INITIALIZATION_MONITOR = new Object();
@@ -24,12 +24,14 @@ public class Tribe extends Thread {
 		startingTribeSize = TriangleGenomeGUI.STARTINGTRIBESIZE;
 		masterImage = image;
 		imagePanel = tg;
+		boolean haveGrid=false;
 		// populate genome list
 		for (int i = 0; i < startingTribeSize; i++) {
 			
 			Genome genome = new Genome(masterImage);
-			int seed = rand.nextInt(GenomeUtilities.NSEEDING);
-			//System.out.println("tribe builder   "+seed);
+			int seed = rand.nextInt(GenomeUtilities.NSEEDING-1);
+			if(!haveGrid)seed++;
+			System.out.println("tribe builder   "+seed);
 			switch (seed) {
 			case 0:
 				GenomeUtilities.mixedSampleGenome(genome, masterImage);
@@ -41,6 +43,7 @@ public class Tribe extends Thread {
 				
 			case 2:
 				GenomeUtilities.averageGridGenome(genome, masterImage);
+				haveGrid=true;
 				break;
 			
 
@@ -56,9 +59,7 @@ public class Tribe extends Thread {
 	public void run() {
 
 		climbLoop = true;
-
 		climbRoutine();
-
 	}
 
 	public void climbRoutine() {
@@ -67,9 +68,10 @@ public class Tribe extends Thread {
 	}
 
 	public void interCrossRoutine(int sigma) {
-		System.out.println("inerCross Begins");
+		System.out.println("inerCross Begins   :"+sigma+this);
 		for (int i=0;i<genomeList.size();i++){ 
-		Genome genome = genomeList.get(i);
+			checkForPaused();
+			Genome genome = genomeList.get(i);
 			try {
 				genome.hc.pauseThread();
 			} catch (InterruptedException e) {
@@ -77,13 +79,14 @@ public class Tribe extends Thread {
 				e.printStackTrace();
 			}
 		}
-
+		System.out.println("threads paused   :"+this);
+		
 		Genome son = new Genome(masterImage);
 		Genome daughter = new Genome(masterImage);
 
 		generateFitScores();
 		Collections.sort(genomeList);
-
+		System.out.println("sorted   :"+this);
 		int index0 = (int) Math.abs(rand.nextGaussian() * sigma);
 		int index1 = (int) Math.abs(rand.nextGaussian() * sigma);
 
@@ -94,15 +97,20 @@ public class Tribe extends Thread {
 		while (index1 >= genomeList.size() || index1 == index0) {
 			index1 = (int) Math.abs(rand.nextGaussian() * sigma);
 		}
-
-		CrossOver.multiBreed(genomeList.get(index0), genomeList.get(index1),
-				son, daughter, 6);
+		
+		checkForPaused();
+		System.out.println(index0+";"+index1);
+		CrossOver.multiBreed(genomeList.get(index0), genomeList.get(index1),son, daughter, 3);
 		genomeList.add(GenomeUtilities.genomeCopy(son));
 		genomeList.add(GenomeUtilities.genomeCopy(daughter));
 		System.out.println("crossover");
 		if (genomeList.size() > ENDINGTRIBESIZE) {
 			generateFitScores();
-			Collections.sort(genomeList);
+			try{
+			Collections.sort(genomeList);}
+			catch(java.util.ConcurrentModificationException e){
+				
+			}
 
 			ArrayList<Genome> fitGenomeHolder = new ArrayList<Genome>();
 			for (int i = 0; i < startingTribeSize; i++) {
@@ -125,7 +133,6 @@ public class Tribe extends Thread {
 
 	public LinkedList<Genome> intraCrossRoutin() {
 		synchronized (GUI_INITIALIZATION_MONITOR) {
-
 			int sigma = genomeList.size() / 2;
 			LinkedList<Genome> toCrossList = new LinkedList<>();
 

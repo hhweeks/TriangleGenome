@@ -23,10 +23,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 //TODO ensure genetic diversity
 public class TriangleGenomeGUI extends JFrame
 {
-  public static final int NBREEDSTEPS=200;
-  public static /*final*/ int NTRIBES=5;
+  public static final int NBREEDSTEPS=50;
+  public static /*final*/ int NTRIBES=2;
   public static final int DRAWSTEPS=1;
-  public static final int STARTINGTRIBESIZE=4;
+  public static final int STARTINGTRIBESIZE=2;
   public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*NTRIBES;
   public static final int TRIANGLECOUNT= 200;
   public Tribe displayTribe;
@@ -534,6 +534,7 @@ public class TriangleGenomeGUI extends JFrame
     BufferedImage localMasterImage=null;
     
     // call intraCross
+    if(NTRIBES>1){
     for (Tribe myTribe : tribeList)
     {      
       synchronized(myTribe)
@@ -567,14 +568,14 @@ public class TriangleGenomeGUI extends JFrame
     int sigma=genomesToCross.size()/2;
     
 //    for(int i=0; i<genomesToCross.size()/2;i++)
-    for(int i=0; i<50/2;i++)//breed 50 times
+    for(int i=0; i<2;i++)//breed 50 times
     {
       Genome son=new Genome(localMasterImage);
       Genome daughter=new Genome(localMasterImage);
       
       int index0=(int) Math.abs(rand.nextGaussian()*sigma);
       int index1=(int) Math.abs(rand.nextGaussian()*sigma);
-      
+     
       while(index0>=genomesToCross.size())
       {
         index0=(int) Math.abs(rand.nextGaussian()*sigma);
@@ -584,7 +585,7 @@ public class TriangleGenomeGUI extends JFrame
       {
         index1=(int) Math.abs(rand.nextGaussian()*sigma);
       }
-      
+      System.out.println(1);
       CrossOver.multiBreed(genomesToCross.get(index0), genomesToCross.get(index1), son, daughter, rand.nextInt(TRIANGLECOUNT*10));
       returnList.add(son);
       returnList.add(daughter);
@@ -593,6 +594,7 @@ public class TriangleGenomeGUI extends JFrame
     
     for(Tribe myTribe:tribeList)//then have tribes pop the top Genomes
     {
+    	 System.out.println(2);
     	for(Tribe tribe:tribeList){
     	for(int i=0;i<tribe.genomeList.size();i++){
         Genome genome=tribe.genomeList.get(i);
@@ -607,10 +609,17 @@ public class TriangleGenomeGUI extends JFrame
     if(tribeSlider.getValue()>tribeList.size())tribeSlider.setValue(0);
     //if(genomeSlider.getValue()>tribeList.get(0).genomeList.size())genomeSlider.setValue(0);
     drawGenome=tribeList.get(tribeSlider.getValue()).genomeList.get(genomeSlider.getValue());
+   if(runPauseButton.getText().compareTo("RUN")==0){
     for(Tribe myTribe:tribeList)
     {
+    	 System.out.println(4);
       myTribe.resumeThread();
     }
+    
+   }
+   tribeList.get(0).checkForPaused();
+    }
+    
     System.out.println("intraCross ends");
   }
   public Genome getGenome()
