@@ -40,8 +40,8 @@ public class TriangleGenomeGUI extends JFrame
   Genome drawGenome;
   Genome readInGenome;
   
-  ImagePanel imageWindow;
-  ImagePanel triangleWindow;
+  static ImagePanel imageWindow;
+  static ImagePanel triangleWindow;
   JPanel buttonPanel;
   JPanel sliderPanel=new JPanel();
   JPanel controlPanel=new JPanel();
@@ -547,7 +547,10 @@ public class TriangleGenomeGUI extends JFrame
     		"    Improvment/Time = " + ((improvement/(System.nanoTime()-startTime)*1E9))
     		);
   }
-  
+  /****************************************************************************
+   *  triangeWindowUpdate override refreshes triangleWindow with the updated Genome
+   *  without checking numUpdates
+  ****************************************************************************/
   public void triangleWindowUpdate(boolean drawNow)
   {
 	
@@ -578,13 +581,11 @@ public class TriangleGenomeGUI extends JFrame
   
   
   /****************************************************************************
-   * 
+   * breedBetween tribes
    ***************************************************************************/
   
-  ///TODO delselecting or removing threads that are being displayed. should reasign drawgenome
   public void crossTribes()
   {    
-   // System.out.println("intraCross begins");
     ArrayList<Genome> genomesToCross=new ArrayList<>();
     ArrayList<Genome> returnList=new ArrayList<>();
     BufferedImage localMasterImage=null;
@@ -600,7 +601,6 @@ public class TriangleGenomeGUI extends JFrame
           myTribe.pauseThread();
         } catch (InterruptedException e)
         {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         }
       }
@@ -613,7 +613,6 @@ public class TriangleGenomeGUI extends JFrame
         genomesToCross.add(myGenome);
       }
     }
-    //we now have a list with 2 Genomes from every tribe
     for(Genome genome:genomesToCross)
     {
       genome.fitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome),genome.masterImage);
@@ -622,13 +621,12 @@ public class TriangleGenomeGUI extends JFrame
     Collections.sort(genomesToCross);
     
     int sigma=genomesToCross.size()/2;
-    
-//    for(int i=0; i<genomesToCross.size()/2;i++)
     for(int i=0; i<nTribes;i++)//breed 50 times
     {
       Genome son=new Genome(localMasterImage);
       Genome daughter=new Genome(localMasterImage);
       
+      //use a gausian with STD sigma to select which genomes will breed.
       int index0=(int) Math.abs(rand.nextGaussian()*sigma);
       int index1=(int) Math.abs(rand.nextGaussian()*sigma);
      
@@ -641,7 +639,7 @@ public class TriangleGenomeGUI extends JFrame
       {
         index1=(int) Math.abs(rand.nextGaussian()*sigma);
       }
-      CrossOver.multiBreed(genomesToCross.get(index0), genomesToCross.get(index1), son, daughter, rand.nextInt(TRIANGLECOUNT*10));
+      CrossOver.multiBreed(genomesToCross.get(index0), genomesToCross.get(index1), son, daughter, 6);
       returnList.add(son);
       returnList.add(daughter);
     }
@@ -662,7 +660,6 @@ public class TriangleGenomeGUI extends JFrame
       returnList.remove(0);
     }
     if(tribeSlider.getValue()>tribeList.size())tribeSlider.setValue(0);
-    //if(genomeSlider.getValue()>tribeList.get(0).genomeList.size())genomeSlider.setValue(0);
     drawGenome=tribeList.get(tribeSlider.getValue()).genomeList.get(genomeSlider.getValue());
    if(!paused){
     for(Tribe myTribe:tribeList)
@@ -674,17 +671,17 @@ public class TriangleGenomeGUI extends JFrame
    
     }
     
-   //System.out.println("intraCross ends");
   }
+  
+  
+  /****************************************************************************
+   *  getGenome returns the genome that should be active based on slider information
+  ****************************************************************************/
   public Genome getGenome()
   {
 	 return tribeList.get(tribeSlider.getValue()).genomeList.get(genomeSlider.getValue());
   }
 
-  public Genome getDrawGenome()
-  {
-    return drawGenome;
-  }
 
   // for reading images from file names
   public BufferedImage readImage(String filename) throws IOException
@@ -708,7 +705,9 @@ public class TriangleGenomeGUI extends JFrame
       writeButton.setEnabled(s);
       appendButton.setEnabled(s);
   }
-
+  /****************************************************************************
+   *  getRunDuration returns a formated string for time
+  ****************************************************************************/
   private String getRunDuration(long start)
   {
     seconds = (int) ((System.nanoTime() - start) * 0.000000001);
@@ -718,8 +717,10 @@ public class TriangleGenomeGUI extends JFrame
     if(seconds%60 < 10) time += ":0" + seconds%60;
     else time += ":" + seconds%60;
     return time;
-    //return seconds/60 + ":" + seconds%60 + "";
   }
+  /****************************************************************************
+   *  getGenPerSec returns a formated string for time
+  ****************************************************************************/  
   private String getGenPerSec()
   {
     try { return String.format("%.5g%n", (double)numUdates/(double)seconds); }
