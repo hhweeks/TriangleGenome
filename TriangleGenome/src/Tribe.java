@@ -25,20 +25,20 @@ public class Tribe extends Thread {
 		startingTribeSize = TriangleGenomeGUI.STARTINGTRIBESIZE;
 		masterImage = image;
 		imagePanel = tg;
-		boolean haveGrid=false;
 		// populate genome list
+		double seedSigma=4/3;
 		for (int i = 0; i < startingTribeSize; i++) {
 			
 			Genome genome = new Genome(masterImage);
-			int seed=(int) Math.abs(rand.nextGaussian() *2/3);
+			int seed=(int) Math.abs(rand.nextGaussian() *seedSigma);
 			
 			while(seed>GenomeUtilities.NSEEDING){
-				seed=(int) Math.abs(rand.nextGaussian() * 2/3);
+				seed=(int) Math.abs(rand.nextGaussian() * seedSigma);
 				
 			}
 			
 			
-			if(!haveGrid)seed++;
+			//if(!haveGrid)seed++;
 			//System.out.println("tribe builder   "+seed);
 			switch (seed) {
 			case 0:
@@ -51,7 +51,7 @@ public class Tribe extends Thread {
 				
 			case 2:
 				GenomeUtilities.averageGridGenome(genome, masterImage);
-				haveGrid=true;
+				//haveGrid=true;
 				break;
 			
 

@@ -1,5 +1,12 @@
+/****************************************************************************
+   *  Authors: Hans Weeks, Paige Romero, and Ben Packer
+   * 
+   * This class is the main class called. This instantiates the GUI, and acts as a
+   * controller thread for all operations. This displays and finds fits for Images
+   * in the image folder.
+  ****************************************************************************/
+
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -23,21 +30,24 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 //TODO ensure genetic diversity
 public class TriangleGenomeGUI extends JFrame
 {
-  public static final int NBREEDSTEPS=200;
-  public static /*final*/ int NTRIBES=5;
+  public static final int NBREEDSTEPS=50;
   public static final int DRAWSTEPS=1;
   public static final int STARTINGTRIBESIZE=5;
-  public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*NTRIBES;
   public static final int TRIANGLECOUNT= 200;
+  public static int nTribes=5;
+  public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*nTribes;
   public Tribe displayTribe;
-  static ImagePanel imageWindow;
-  static ImagePanel triangleWindow;
-  static JPanel buttonPanel;
-  static JPanel sliderPanel=new JPanel();
-  static JPanel controlPanel=new JPanel();
+  Genome drawGenome;
+  Genome readInGenome;
+  
+  ImagePanel imageWindow;
+  ImagePanel triangleWindow;
+  JPanel buttonPanel;
+  JPanel sliderPanel=new JPanel();
+  JPanel controlPanel=new JPanel();
   JComboBox<String> imageSelect;
   JSlider triangleSlider=new JSlider(0, TRIANGLECOUNT, 0);
-  JSlider tribeSlider=new JSlider(0, NTRIBES-1, 0);
+  JSlider tribeSlider=new JSlider(0, nTribes-1, 0);
   JLabel triangleLabel=new JLabel("triangles");
   JLabel tribeLabel=new JLabel("tribes");
   JSlider genomeSlider=new JSlider(0, STARTINGTRIBESIZE-1, 0);
@@ -52,31 +62,35 @@ public class TriangleGenomeGUI extends JFrame
   JLabel genomeStats=new JLabel();
   JTextField userNoTribesField = new JTextField();
   TriangleGenomeGUI tg;
-  Genome drawGenome;
   BufferedImage img;
-  String path="images/";
-  Genome readInGenome;
+  String path="images/"; 
   String saveToXmlName;
-  boolean buildCheck;
+  String tmpGenomeStats="min:sec=0.0   gen=0   gen/sec=NaN   Fitness=";
+  String flname;  
   int numUdates;//used by triangleWindowUpdate
   long stats;
   public int tribeIndex;
   public int genomeIndex;
   ArrayList<Tribe> tribeList;
-  String tmpGenomeStats="min:sec=0.0   gen=0   gen/sec=NaN   Fitness=";
-  String flname;
   public long startTime = System.nanoTime();
   static int seconds = 1;
+  boolean buildCheck;
   boolean reset = false;
   public boolean paused=false;
   final JFileChooser fc = new JFileChooser();
   FileNameExtensionFilter xmlFilter = new FileNameExtensionFilter("xml files (*.xml)", "xml");
   Random rand=new Random();
   
+  
+  
+  
+  
+  
+  
+  
   public TriangleGenomeGUI() throws IOException
   {
     tg=this;
-    //System.out.println("start");
     File folder=new File(path);
     ArrayList<String> findFiles=new ArrayList<String>();
     File[] listOfFiles=folder.listFiles();
@@ -133,8 +147,6 @@ public class TriangleGenomeGUI extends JFrame
 
     // make triange window
 
-    // Genome genome=new Genome();
-
     triangleWindow=new ImagePanel(img.getWidth(), img.getHeight());
     // build new tribes of appropriate image
 
@@ -146,10 +158,9 @@ public class TriangleGenomeGUI extends JFrame
 
     // generate statistics
     stats=Statistics.getFitScore(GenomeUtilities.getBufferedImage(drawGenome), drawGenome.masterImage);
-    // System.out.println(stats);
+    
 
     // populate control panel
-    // imageSelect.setFont(new Font(imageSelect.getFont().getFontName(), 0,10));
     buttonPanel.add(imageSelect);
 
     resetButton.addActionListener(new ActionListener()
@@ -170,6 +181,9 @@ public class TriangleGenomeGUI extends JFrame
       	
       }
     });
+    /****************************************************************************
+     *  The nextButton is used to show generation at a time.
+    ****************************************************************************/
     nextButton.addActionListener(new ActionListener()
     {
       @Override
@@ -182,7 +196,9 @@ public class TriangleGenomeGUI extends JFrame
         triangleWindowUpdate(true);
       }
     });
-
+    /****************************************************************************
+     * The runPauseButton is used to start and pause the fitting routine.
+    ****************************************************************************/
     runPauseButton.addActionListener(new ActionListener()
     {
       @Override
@@ -245,6 +261,9 @@ public class TriangleGenomeGUI extends JFrame
       }
     }});
     
+    /****************************************************************************
+     *  Displays a table for the current genome being displayed.
+    ****************************************************************************/
     tableButton.addActionListener(new ActionListener()
     {
       @Override
@@ -303,6 +322,10 @@ public class TriangleGenomeGUI extends JFrame
         //XMLUtil.writeXML(System.nanoTime() + ".xml", drawGenome, path+flname);
       }
     });
+    
+    /****************************************************************************
+     *  triangleSlider is used to display only a certain number of triangles at a time
+    ****************************************************************************/
     triangleSlider.addChangeListener(new ChangeListener()
     {
       @Override
@@ -314,6 +337,9 @@ public class TriangleGenomeGUI extends JFrame
         
       }
     });
+    /****************************************************************************
+     *  tribeSlider selects which tribe is displayed
+    ****************************************************************************/
     tribeSlider.addChangeListener(new ChangeListener()
     {
       @Override
@@ -326,6 +352,9 @@ public class TriangleGenomeGUI extends JFrame
         tribeLabel.setText("Tribe #"+tribeIndex);
       }
     });
+    /****************************************************************************
+     *  genomeSlider selects which genome is displayed
+    ****************************************************************************/   
     genomeSlider=new JSlider(0,STARTINGTRIBESIZE - 1, 0);
     genomeSlider.addChangeListener(new ChangeListener()
     {
@@ -364,7 +393,6 @@ public class TriangleGenomeGUI extends JFrame
     imagePane.add(triangleWindow);
     imagePane.setSize(600, 800);
 
-    //genomeStats.setText(tmpGenomeStats+stats);
     genomeStats.setText("Duration = " + getRunDuration(startTime)+
     		"    gen = " + numUdates +
     		"    gen/sec = " + getGenPerSec() +
@@ -373,14 +401,13 @@ public class TriangleGenomeGUI extends JFrame
     		);
     this.add(genomeStats, BorderLayout.SOUTH);
 
-    // buttonPanel.setPreferredSize(new Dimension(1150, 250));
     controlPanel.setPreferredSize(new Dimension(1150, 195));
     this.add(imagePane, BorderLayout.CENTER);
-    sliderPanel.setLayout(new GridLayout(8, 0));
+    sliderPanel.setLayout(new GridLayout(9, 0));
     sliderPanel.add(triangleLabel);
     sliderPanel.add(triangleSlider);
     JPanel genomePanel = new JPanel();
-    genomePanel.setLayout(new GridLayout(0, 2));
+    genomePanel.setLayout(new GridLayout(0, 5));
     userNoTribesField.setColumns(5);
     userNoTribesField.addActionListener(new ActionListener(){
     	public void actionPerformed(ActionEvent e)
@@ -390,34 +417,50 @@ public class TriangleGenomeGUI extends JFrame
     			int value = Integer.parseInt(userNoTribesField.getText());
     			if(value >= 0 && value <= 1000)
     			{
-    				NTRIBES = value;
-    				tribeSlider.setMaximum(NTRIBES - 1);
+    				nTribes = value;
+    				tribeSlider.setMaximum(nTribes - 1);
     				makeTribes(imageWindow.image);
-    				//tribeSlider=new JSlider(0, NTRIBES-1, 0);
-    				//System.out.println("NTRIBE value = " + NTRIBES);
     			}
     		}
     		catch(Exception x){}
     	}
     });
+    
+    
+    
+    
+    
+    JPanel p1 = new JPanel();
+    p1.setMaximumSize(new Dimension(100, 200));
+    
+    p1.add(new JLabel("NThreads:"));
+    p1.add(userNoTribesField);
+    
+    
+    
+    
+    
+    
+    
+    
     genomePanel.add(genomeLabel);
-    genomePanel.add(userNoTribesField);
     sliderPanel.add(genomePanel);
-    //sliderPanel.add(genomeLabel);
-    //sliderPanel.add(userNoTribesField);
     
     sliderPanel.add(genomeSlider);
     sliderPanel.add(tribeLabel);
     sliderPanel.add(tribeSlider);
     sliderPanel.add(genomeStats);
     controlPanel.add(sliderPanel);
-    // controlPanel.add(genomeStats);
+    this.add(p1, BorderLayout.EAST);
     this.add(controlPanel, BorderLayout.SOUTH);
     this.setSize(1150, 650);
     this.setVisible(true);
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 
+  /****************************************************************************
+   *  ImagePanel is a class that is used to hold and display images
+  ****************************************************************************/
   public class ImagePanel extends JPanel
   {
 
@@ -450,7 +493,7 @@ public class TriangleGenomeGUI extends JFrame
       buttonPanel.repaint();
       g.drawImage(image, x, y, null);
     }
-
+    
     private void changeImage(BufferedImage cim)
     {
       image=cim;
@@ -463,11 +506,14 @@ public class TriangleGenomeGUI extends JFrame
     }
 
   }
-
+  /****************************************************************************
+   *  makeTribes instantiates the Tribes to be used in the model fitting routine
+  ****************************************************************************/
+ 
   public void makeTribes(BufferedImage image)
   {
     tribeList=new ArrayList<>();
-    for(int i=0;i<NTRIBES;i++)
+    for(int i=0;i<nTribes;i++)
     {
       Tribe tribe=new Tribe(image,tg);
       tribe.tribeId=i;
@@ -475,7 +521,10 @@ public class TriangleGenomeGUI extends JFrame
       tribeList.add(tribe);
     }
   }
-
+  /****************************************************************************
+   *  triangeWindowUpdate refreshes triangleWindow with the updated Genome
+  ****************************************************************************/
+ 
   public void triangleWindowUpdate()
   {
     numUdates++;
@@ -541,7 +590,7 @@ public class TriangleGenomeGUI extends JFrame
     BufferedImage localMasterImage=null;
     
     // call intraCross
-    if(NTRIBES>1){
+    if(nTribes>1){
     for (Tribe myTribe : tribeList)
     {      
       synchronized(myTribe)
@@ -575,7 +624,7 @@ public class TriangleGenomeGUI extends JFrame
     int sigma=genomesToCross.size()/2;
     
 //    for(int i=0; i<genomesToCross.size()/2;i++)
-    for(int i=0; i<NTRIBES;i++)//breed 50 times
+    for(int i=0; i<nTribes;i++)//breed 50 times
     {
       Genome son=new Genome(localMasterImage);
       Genome daughter=new Genome(localMasterImage);
