@@ -503,7 +503,10 @@ public class TriangleGenomeGUI extends JFrame
 
   }
   /****************************************************************************
-   *  makeTribes instantiates the Tribes to be used in the model fitting routine
+   *  makeTribes
+   * Input:BufferedImage
+   * Output:none
+   * Description:instantiates the Tribes to be used in the model fitting routine
   ****************************************************************************/
  
   public void makeTribes(BufferedImage image)
@@ -518,7 +521,10 @@ public class TriangleGenomeGUI extends JFrame
     }
   }
   /****************************************************************************
-   *  triangeWindowUpdate refreshes triangleWindow with the updated Genome
+   *  triangleWindowUpdate
+   * Input:none
+   * Output:none
+   * Description:triangeWindowUpdate refreshes triangleWindow with the updated Genome
   ****************************************************************************/
  
   public void triangleWindowUpdate()
@@ -544,8 +550,11 @@ public class TriangleGenomeGUI extends JFrame
     		);
   }
   /****************************************************************************
-   *  triangeWindowUpdate override refreshes triangleWindow with the updated Genome
-   *  without checking numUpdates
+   *  triangleWindowUpdate
+   * Input:boolean
+   * Output:none
+   * Description: override refreshes triangleWindow with the updated Genome without
+   * checking num Updates
   ****************************************************************************/
   public void triangleWindowUpdate(boolean drawNow)
   {
@@ -575,9 +584,11 @@ public class TriangleGenomeGUI extends JFrame
   
   
   
-  
   /****************************************************************************
-   * breedBetween tribes
+   *  crossTribes
+   * Input:none
+   * Output:none
+   * Description:breedBetween tribes
    ***************************************************************************/
   
   public void crossTribes()
@@ -668,10 +679,11 @@ public class TriangleGenomeGUI extends JFrame
     }
     
   }
-  
-  
   /****************************************************************************
-   *  getGenome returns the genome that should be active based on slider information
+   * getGenome
+   * Input:none
+   * Output:Genome
+   * Description:getGenome returns the genome that should be active based on slider information
   ****************************************************************************/
   public Genome getGenome()
   {
@@ -702,7 +714,10 @@ public class TriangleGenomeGUI extends JFrame
       appendButton.setEnabled(s);
   }
   /****************************************************************************
-   *  getRunDuration returns a formated string for time
+   * getRunDuration
+   * Input:long
+   * Output:Start
+   * Description: returns a formated string for time
   ****************************************************************************/
   private String getRunDuration(long start)
   {
@@ -715,7 +730,10 @@ public class TriangleGenomeGUI extends JFrame
     return time;
   }
   /****************************************************************************
-   *  getGenPerSec returns a formated string for time
+   * getGenPerSec 
+   * Input:long
+   * Output:Start
+   * Description:returns a formated string for time
   ****************************************************************************/  
   private String getGenPerSec()
   {
