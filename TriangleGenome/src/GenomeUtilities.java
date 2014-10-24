@@ -35,8 +35,7 @@ public class GenomeUtilities
    *  no assurance of covering the background.
    ****************************************************************************/
   public static void setRandomGenome(Genome genome)
-  {
-    
+  {    
     for(Gene myGene:genome.geneList)
     {
       Point[] myVertices=new Point[NPOINTS];
@@ -102,9 +101,7 @@ public class GenomeUtilities
     }
 
     for (Gene myGene : genome.geneList)
-    {
-         
-      
+    { 
       int geneCase=rand.nextInt(10);
       if(geneCase<9)
       {
@@ -121,7 +118,8 @@ public class GenomeUtilities
     }
     genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), genome.masterImage);
     
-  }  
+  }
+  
   public static void averagingGenome(Genome genome, BufferedImage masterImage)
   {
     BufferedImage copiedImage = deepCopy(masterImage);
@@ -174,19 +172,8 @@ public class GenomeUtilities
 
     	  
     }
-    genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), genome.masterImage);
-    
-  }  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+    genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), genome.masterImage);    
+  }
   
   public static void averageGridGenome(Genome genome, BufferedImage masterImage)
   {
@@ -199,8 +186,7 @@ public class GenomeUtilities
 	  for(int k=0; k<2;k++){
 		
     for (int i = 0; i < 100; i++)
-    {
-    	
+    {    	
       Point[] myVertices = new Point[NPOINTS];
       for (int j = 0; j < NPOINTS; j++)
       {
@@ -240,18 +226,8 @@ public class GenomeUtilities
 
     	  
     }
-    genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), genome.masterImage);
-    
-  }  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+    genome.startFitscore=Statistics.getFitScore(GenomeUtilities.getBufferedImage(genome), genome.masterImage);    
+  }
   
   static BufferedImage deepCopy(BufferedImage bi)
   {
@@ -270,10 +246,13 @@ public class GenomeUtilities
     int x=-1;
     int y=-1;
     
+    int i=0;
     while(!myGene.contains(x, y))
     {
       x=rand.nextInt(genesMaxX-genesMinX)+genesMinX;
       y=rand.nextInt(genesMaxY-genesMinY)+genesMinY;
+      if(i>3)break;
+      i++;
     }
     
     int[] samplePixel=new int[4];
@@ -366,14 +345,10 @@ public class GenomeUtilities
           // System.out.println(red+";"+green+";"+blue);
           int rgb = new Color(red, green, blue).getRGB();
           image.setRGB(x, y, rgb);
-
         }
       }
     }
   }
-  
-  
-  
   
   public static int[] getAreaColorAvg(Gene gene, BufferedImage image)
   {
@@ -416,15 +391,7 @@ public class GenomeUtilities
     int[] pixout = {red,blue,green};
     return pixout;
   }
-	
-	  
-	  
-	  
   
-  
-  
-  
-
   /****************************************************************************
    * drawNTriangles
    * Input:int N (0-200), imagePanel where triangles are being drawn, and Genome being drawn
@@ -600,7 +567,6 @@ public class GenomeUtilities
 	if(gene.g<0)gene.g=0;
 	if(gene.b>255)gene.b=255;
 	if(gene.b<0)gene.b=0;
-	
 	  
   }
   

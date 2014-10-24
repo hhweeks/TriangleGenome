@@ -112,7 +112,13 @@ public class Tribe extends Thread
    ****************************************************************************/
   public void interCrossRoutine(int sigma)
   {
-    for (int i = 0; i < imagePanel.STARTINGTRIBESIZE; i++)
+    int listSize=genomeList.size();
+    if(listSize==1)
+      {
+        goToLocalMax(TriangleGenomeGUI.NBREEDSTEPS);
+        return;
+      }
+    for (int i = 0; i < TriangleGenomeGUI.STARTINGTRIBESIZE; i++)
     {
       checkForPaused();
       Genome genome = genomeList.get(i);

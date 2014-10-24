@@ -30,7 +30,7 @@ public class TriangleGenomeGUI extends JFrame
 {
   public static final int NBREEDSTEPS=50;
   public static final int DRAWSTEPS=1;
-  public static final int STARTINGTRIBESIZE=3;
+  public static final int STARTINGTRIBESIZE=5;
   public static final int TRIANGLECOUNT= 200;
   public static int nTribes=5;
   public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*nTribes;
@@ -740,9 +740,9 @@ public class TriangleGenomeGUI extends JFrame
     try { return String.format("%.5g%n", (double)numUdates/(double)seconds); }
     catch(ArithmeticException e) { return ""+-1; }
   }
+  
   public static void main(String[] args) throws IOException
   {
 	  new TriangleGenomeGUI();
   }
-
 }
