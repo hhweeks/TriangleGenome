@@ -105,7 +105,7 @@ public class GenomeUtilities
     {
          
       
-      int geneCase=rand.nextInt(15);
+      int geneCase=rand.nextInt(10);
       if(geneCase<9)
       {
         sampleRanomPixel(myGene,masterRaster);
@@ -497,7 +497,6 @@ public class GenomeUtilities
 
   public static BufferedImage getScaledBufferedImage(Genome myGenome,int scale)
   {
-	  //long startTime=System.currentTimeMillis();
     BufferedImage myIm=new BufferedImage(myGenome.IMG_WIDTH,
         myGenome.IMG_HEIGHT, BufferedImage.TYPE_INT_RGB);
     Graphics myGraphics=myIm.getGraphics();
