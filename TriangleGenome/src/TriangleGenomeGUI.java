@@ -23,10 +23,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 //TODO ensure genetic diversity
 public class TriangleGenomeGUI extends JFrame
 {
-  public static final int NBREEDSTEPS=50;
-  public static /*final*/ int NTRIBES=2;
+  public static final int NBREEDSTEPS=200;
+  public static /*final*/ int NTRIBES=5;
   public static final int DRAWSTEPS=1;
-  public static final int STARTINGTRIBESIZE=2;
+  public static final int STARTINGTRIBESIZE=5;
   public static final int GEN_BETWEEN_CROSS=NBREEDSTEPS*NTRIBES;
   public static final int TRIANGLECOUNT= 200;
   public Tribe displayTribe;
@@ -369,7 +369,7 @@ public class TriangleGenomeGUI extends JFrame
     		"    gen = " + numUdates +
     		"    gen/sec = " + getGenPerSec() +
     		"    Fitness = " + stats+
-    		"    Improvment/Time = " + ((0/(System.nanoTime()-startTime)*1E9))
+    		"    Improvment/Time = " + (int)((0/(System.nanoTime()-startTime)*1E9))
     		);
     this.add(genomeStats, BorderLayout.SOUTH);
 
@@ -394,7 +394,7 @@ public class TriangleGenomeGUI extends JFrame
     				tribeSlider.setMaximum(NTRIBES - 1);
     				makeTribes(imageWindow.image);
     				//tribeSlider=new JSlider(0, NTRIBES-1, 0);
-    				System.out.println("NTRIBE value = " + NTRIBES);
+    				//System.out.println("NTRIBE value = " + NTRIBES);
     			}
     		}
     		catch(Exception x){}
@@ -535,7 +535,7 @@ public class TriangleGenomeGUI extends JFrame
   ///TODO delselecting or removing threads that are being displayed. should reasign drawgenome
   public void crossTribes()
   {    
-    System.out.println("intraCross begins");
+   // System.out.println("intraCross begins");
     ArrayList<Genome> genomesToCross=new ArrayList<>();
     ArrayList<Genome> returnList=new ArrayList<>();
     BufferedImage localMasterImage=null;
@@ -575,7 +575,7 @@ public class TriangleGenomeGUI extends JFrame
     int sigma=genomesToCross.size()/2;
     
 //    for(int i=0; i<genomesToCross.size()/2;i++)
-    for(int i=0; i<2;i++)//breed 50 times
+    for(int i=0; i<NTRIBES;i++)//breed 50 times
     {
       Genome son=new Genome(localMasterImage);
       Genome daughter=new Genome(localMasterImage);
@@ -592,7 +592,6 @@ public class TriangleGenomeGUI extends JFrame
       {
         index1=(int) Math.abs(rand.nextGaussian()*sigma);
       }
-      System.out.println(1);
       CrossOver.multiBreed(genomesToCross.get(index0), genomesToCross.get(index1), son, daughter, rand.nextInt(TRIANGLECOUNT*10));
       returnList.add(son);
       returnList.add(daughter);
@@ -601,7 +600,7 @@ public class TriangleGenomeGUI extends JFrame
     
     for(Tribe myTribe:tribeList)//then have tribes pop the top Genomes
     {
-    	 System.out.println(2);
+    	 
     	for(Tribe tribe:tribeList){
     	for(int i=0;i<tribe.genomeList.size();i++){
         Genome genome=tribe.genomeList.get(i);
@@ -619,7 +618,6 @@ public class TriangleGenomeGUI extends JFrame
    if(!paused){
     for(Tribe myTribe:tribeList)
     {
-    	 System.out.println(4);
       myTribe.resumeThread();
     }
     
@@ -627,7 +625,7 @@ public class TriangleGenomeGUI extends JFrame
    
     }
     
-    System.out.println("intraCross ends");
+   //System.out.println("intraCross ends");
   }
   public Genome getGenome()
   {

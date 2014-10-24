@@ -10,12 +10,13 @@ public class Tribe extends Thread {
 	BufferedImage masterImage;
 	ImageContainer imagecontainer;
 	private final Object GUI_INITIALIZATION_MONITOR = new Object();
+	public final long GENEDIFFERENCELIMIT=500;
 	public volatile boolean pauseThreadFlag = false;
 	long timeStamp;
 	public int tribeId;
 	// private volatile boolean running=true; // Run unless told to pause
 	// public static final int STARTINGTRIBESIZE=8;
-	public static final int ENDINGTRIBESIZE = 4;
+	public static final int ENDINGTRIBESIZE = 10;
 	public volatile boolean climbLoop = true;
 	int startingTribeSize;
 	TriangleGenomeGUI imagePanel;
@@ -29,9 +30,16 @@ public class Tribe extends Thread {
 		for (int i = 0; i < startingTribeSize; i++) {
 			
 			Genome genome = new Genome(masterImage);
-			int seed = rand.nextInt(GenomeUtilities.NSEEDING-1);
+			int seed=(int) Math.abs(rand.nextGaussian() *2/3);
+			
+			while(seed>GenomeUtilities.NSEEDING){
+				seed=(int) Math.abs(rand.nextGaussian() * 2/3);
+				
+			}
+			
+			
 			if(!haveGrid)seed++;
-			System.out.println("tribe builder   "+seed);
+			//System.out.println("tribe builder   "+seed);
 			switch (seed) {
 			case 0:
 				GenomeUtilities.mixedSampleGenome(genome, masterImage);
@@ -68,8 +76,7 @@ public class Tribe extends Thread {
 	}
 
 	public void interCrossRoutine(int sigma) {
-		System.out.println("inerCross Begins   :"+sigma+this);
-		for (int i=0;i<genomeList.size();i++){ 
+		for (int i=0;i<imagePanel.STARTINGTRIBESIZE;i++){ 
 			checkForPaused();
 			Genome genome = genomeList.get(i);
 			try {
@@ -79,17 +86,17 @@ public class Tribe extends Thread {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("threads paused   :"+this);
+		//System.out.println("threads paused   :"+this);
 		
 		Genome son = new Genome(masterImage);
 		Genome daughter = new Genome(masterImage);
 
 		generateFitScores();
 		Collections.sort(genomeList);
-		System.out.println("sorted   :"+this);
+		//System.out.println("sorted   :"+this);
 		int index0 = (int) Math.abs(rand.nextGaussian() * sigma);
 		int index1 = (int) Math.abs(rand.nextGaussian() * sigma);
-
+		int geneDiffAttempts=0;
 		while (index0 >= genomeList.size()) {
 			index0 = (int) Math.abs(rand.nextGaussian() * sigma);
 		}
@@ -98,12 +105,26 @@ public class Tribe extends Thread {
 			index1 = (int) Math.abs(rand.nextGaussian() * sigma);
 		}
 		
+		//ensure genetic diversity
+while(HammingDistance.calcDiff(genomeList.get(index0), genomeList.get(index1))<GENEDIFFERENCELIMIT){
+		while (index0 >= genomeList.size()) {
+			index0 = (int) Math.abs(rand.nextGaussian() * sigma);
+		}
+
+		while (index1 >= genomeList.size() || index1 == index0) {
+			index1 = (int) Math.abs(rand.nextGaussian() * sigma);
+		}
+		if(geneDiffAttempts<5) break;
+}
+		
+		
+		
 		checkForPaused();
-		System.out.println(index0+";"+index1);
+		
 		CrossOver.multiBreed(genomeList.get(index0), genomeList.get(index1),son, daughter, 3);
 		genomeList.add(GenomeUtilities.genomeCopy(son));
 		genomeList.add(GenomeUtilities.genomeCopy(daughter));
-		System.out.println("crossover");
+		//System.out.println("crossover");
 		if (genomeList.size() > ENDINGTRIBESIZE) {
 			generateFitScores();
 			try{
@@ -128,7 +149,7 @@ public class Tribe extends Thread {
 				.getValue()).genomeList.get(imagePanel.genomeSlider.getValue());
 		goToLocalMax(TriangleGenomeGUI.NBREEDSTEPS);
 
-		System.out.println("inerCross ends");
+		//System.out.println("inerCross ends");
 	}
 
 	public LinkedList<Genome> intraCrossRoutin() {
@@ -189,7 +210,7 @@ public class Tribe extends Thread {
 	public void pauseThread() throws InterruptedException {
 		synchronized (GUI_INITIALIZATION_MONITOR) {
 		pauseThreadFlag = true;
-		for (int i=0;i<genomeList.size();i++){ 
+		for (int i=0;i<imagePanel.STARTINGTRIBESIZE;i++){ 
 			Genome genome = genomeList.get(i);
 			//synchronized (genome){
 			//genome.hc.interrupt();
@@ -203,7 +224,7 @@ public class Tribe extends Thread {
 		synchronized (GUI_INITIALIZATION_MONITOR) {
 			pauseThreadFlag = false;
 			GUI_INITIALIZATION_MONITOR.notify();
-			for (int i=0;i<genomeList.size();i++){ 
+			for (int i=0;i<imagePanel.STARTINGTRIBESIZE;i++){ 
 				Genome genome = genomeList.get(i);
 				//synchronized (genome){
 				//genome.hc.start();
@@ -232,7 +253,7 @@ public class Tribe extends Thread {
 	
 
 		checkForPaused();
-		for (int i = 0; i < genomeList.size(); i++) {
+		for (int i = 0; i < imagePanel.STARTINGTRIBESIZE; i++) {
 			Genome genome = genomeList.get(i);
 			genome.hc = new HillClimber(masterImage,genome, N);
 
