@@ -25,9 +25,12 @@ public class HillClimber extends Thread {
 	int lastAllele;
 	int lastShift;
 	int nSteps;
+	int hcCount;
 	public final int ALLELE_VALUES = 12;
+	public boolean live;
 
 	public HillClimber(BufferedImage img) {
+		live = true;
 		image = img;
 		repeat = false;
 		gradientClimb = true;
@@ -39,6 +42,8 @@ public class HillClimber extends Thread {
 	 * steps, number of times to mutate before calling crossover
 	 ****************************************************************************/
 	public HillClimber(BufferedImage img, Genome myGenome, int steps) {
+		hcCount=0;
+		live = true;
 		image = img;
 		repeat = false;
 		gradientClimb = true;
@@ -51,20 +56,36 @@ public class HillClimber extends Thread {
 	 * in the Genome nSteps times. When climb is done being called, sets a flag
 	 * to tell the Tribe to crossover
 	 ****************************************************************************/
+	public boolean isPaused(){
+		return this.pauseThreadFlag;
+	}
 	public void run() {
+		live = true;
 		gradientClimb = false;
-		for (int i = 0; i < nSteps; i++) {
-			climbStep(genome);
-			if (tribe != null) {
-				if (tribe.imagePanel.drawGenome == genome)
-					tribe.imagePanel.triangleWindowUpdate();
-				checkForPaused();
+		while (true) {
+			
+			for (int i = 0; i < 50; i++) {
+
+				climbStep(genome);
+				
+				if (tribe != null) {
+					if (tribe.imagePanel.drawGenome == genome)
+						
+						{tribe.imagePanel.triangleWindowUpdate();
+						}
+					checkForPaused();
+					
+				}
 			}
-		}
-		if (tribe != null && doBreed) {
-			int sigma = tribe.genomeList.size() / 2;
-			tribe.generateFitScores();
-			tribe.interCrossRoutine(sigma);
+			tribe.countToCross++;
+			if (tribe != null && doBreed&&tribe.countToCross>=nSteps*TriangleGenomeGUI.STARTINGTRIBESIZE) {
+				
+				int sigma = tribe.genomeList.size() / 2;
+				//tribe.generateFitScores();
+				tribe.interCrossRoutine(sigma);
+				tribe.countToCross=0;
+			}
+
 		}
 	}
 
@@ -398,10 +419,14 @@ public class HillClimber extends Thread {
 	 ****************************************************************************/
 	public Gene getGene(Genome myGenome) {
 		int randomGeneInt;
-		Gene myGene;
+		Gene myGene=new Gene();
 		randomGeneInt = rand.nextInt(Genome.NUM_GENES);
+		try{
 		myGene = myGenome.geneList.get(randomGeneInt);
-
+		}
+		catch(IndexOutOfBoundsException e){
+			
+		}
 		return myGene;
 	}
 

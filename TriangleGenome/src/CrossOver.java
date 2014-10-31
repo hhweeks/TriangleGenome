@@ -42,9 +42,11 @@ public class CrossOver {
 		int genesplit = crossPoint % 10;
 
 		sonGenome.geneList.clear();
+		
 		sonGenome.geneList.addAll(papaGenome.geneList.subList(0, genecross));
 		sonGenome.geneList.add(geneSplice(papaGenome.geneList.get(genecross),
 				mamaGenome.geneList.get(genecross), genesplit));
+		
 		for (int i = genecross + 1; i < mamaGenome.geneList.size(); i++) {
 			Gene tempGene = GenomeUtilities
 					.geneCopy(mamaGenome.geneList.get(i));

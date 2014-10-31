@@ -33,7 +33,7 @@ public class Genome implements Comparable<Genome> {
 
 		masterImage = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_RGB);
-		hc = new HillClimber(masterImage, this, 50);
+		hc = new HillClimber(masterImage, this,TriangleGenomeGUI.DRAWSTEPS);
 		IMG_WIDTH = width;
 		IMG_HEIGHT = height;
 		for (int i = 0; i < NUM_GENES; i++) {
@@ -49,7 +49,7 @@ public class Genome implements Comparable<Genome> {
 	public Genome(BufferedImage image) {
 		masterImage = new BufferedImage(image.getWidth(), image.getHeight(),
 				BufferedImage.TYPE_INT_RGB);
-		hc = new HillClimber(masterImage, this, 50);
+		hc = new HillClimber(image, this, TriangleGenomeGUI.DRAWSTEPS);
 		IMG_WIDTH = image.getTileWidth();
 		IMG_HEIGHT = image.getHeight();
 		for (int i = 0; i < NUM_GENES; i++) {
@@ -57,7 +57,21 @@ public class Genome implements Comparable<Genome> {
 			geneList.add(myGene);
 		}
 	}
-
+	/****************************************************************************
+	 * Constructor given BufferedImage Input:image being recreated
+	 * Description:saves global variables and adds 200 new genes
+	 ****************************************************************************/
+	public Genome(BufferedImage image,boolean makeNewHC) {
+		masterImage = new BufferedImage(image.getWidth(), image.getHeight(),
+				BufferedImage.TYPE_INT_RGB);
+		if(makeNewHC) hc = new HillClimber(image, this, TriangleGenomeGUI.DRAWSTEPS);
+		IMG_WIDTH = image.getTileWidth();
+		IMG_HEIGHT = image.getHeight();
+		for (int i = 0; i < NUM_GENES; i++) {
+			Gene myGene = new Gene();
+			geneList.add(myGene);
+		}
+	}
 	/****************************************************************************
 	 * compareTo Input:Genome Output:int representing which Genome has better
 	 * fitness score Description:compares 2 genomes, returns negative if passed

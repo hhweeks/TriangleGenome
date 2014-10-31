@@ -430,7 +430,7 @@ public class GenomeUtilities {
 		myGraphics.setColor(Color.white);
 		myGraphics.fillRect(0, 0, width, height);
 		// Color polyColor=new Color(0,0,0);
-		for (int i = 0; i < myGenome.NUM_GENES; i++) {
+		for (int i = 0; i < myGenome.geneList.size(); i++) {
 			Gene gene = myGenome.geneList.get(i);
 			checkColorValues(gene);
 			// gene.print();
@@ -441,8 +441,12 @@ public class GenomeUtilities {
 			// System.out.println(System.currentTimeMillis()-startTime);
 
 			myGraphics.setColor(new Color(gene.r, gene.g, gene.b, gene.a));
-
+			try{
 			myGraphics.fillPolygon(myGenome.geneList.get(i));
+			}
+			catch(IndexOutOfBoundsException e){
+				
+			}
 		}
 		return myIm;
 	}
@@ -463,7 +467,7 @@ public class GenomeUtilities {
 		myGraphics.setColor(Color.white);
 		myGraphics.fillRect(0, 0, width, height);
 		// Color polyColor=new Color(0,0,0);
-		for (int i = 0; i < myGenome.NUM_GENES; i++) {
+		for (int i = 0; i < myGenome.geneList.size(); i++) {
 			Gene gene = GenomeUtilities.geneCopy(myGenome.geneList.get(i));
 
 			checkColorValues(gene);
@@ -603,6 +607,20 @@ public class GenomeUtilities {
 		}
 		return genomeOut;
 	}
+	/****************************************************************************
+	 * genomeOverWrite Input:Genome Output:none
+	 * Description:overwrite the genome of one input with that of another
+	 ****************************************************************************/
+	
+	public static void genomeOverWrite(Genome saveGenome,Genome copyGenome) {
+
+		
+		for (int i = 0; i < copyGenome.geneList.size(); i++) {
+
+			saveGenome.geneList.set(i,geneCopy(copyGenome.geneList.get(i)));
+
+		}
+	}
 
 	/****************************************************************************
 	 * geneCopy Input:Gene Output:new Gene with same alleles (base-pairs)
@@ -610,6 +628,7 @@ public class GenomeUtilities {
 	 ****************************************************************************/
 	public static Gene geneCopy(Gene myGene) {
 		Gene geneOut = new Gene();
+		try{
 		geneOut.xpoints[0] = myGene.xpoints[0];
 		geneOut.ypoints[0] = myGene.ypoints[0];
 		geneOut.xpoints[1] = myGene.xpoints[1];
@@ -621,7 +640,11 @@ public class GenomeUtilities {
 		geneOut.b = myGene.b;
 		geneOut.a = myGene.a;
 		geneOut.npoints = myGene.npoints;
-
+		}
+		catch(NullPointerException e){
+			
+			
+		}
 		return geneOut;
 	}
 
